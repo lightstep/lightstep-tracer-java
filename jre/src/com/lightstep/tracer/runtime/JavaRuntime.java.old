@@ -1,0 +1,40 @@
+package com.lightstep.tracer.tracer;
+
+import com.lightstep.tracer.shared.*;
+import java.util.HashMap;
+
+public class JavaTracer extends AbstractTracer {
+
+    private static class JavaTracerHolder {
+        private static final JavaTracer INSTANCE = new JavaTracer();
+    }
+
+    /**
+     * Returns the singleton Tracer instance that can be utilized to record logs and spans. 
+     * @return  tracer instance
+     */
+    public static JavaTracer getInstance() {
+        return JavaTracerHolder.INSTANCE;
+    }
+
+    // Flush any data stored in the log and span buffers
+    public void flush() {
+        if (disabledTracer) return;
+
+        if (initializedTracer) {
+            if (debugReporter != null) {
+                debugFlush();
+            } else {
+                Connection connection = new Connection(this.serviceUrl);
+                connection.openConnection();
+                flushWorker(connection);
+                connection.closeConnection();            
+            }
+        }
+    }
+
+    protected HashMap<String, String> retrieveDeviceInfo() {
+        // TODO: Implement for Java Desktop Applications
+        return null;
+    }
+}

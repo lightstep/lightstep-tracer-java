@@ -1,0 +1,154 @@
+apply plugin: 'android-library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+    }
+}
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        // If you change minSdkVersion or targetSdkVersion below, you must also
+        // change the relevant attributes of the <uses-sdk> tag in
+        // AndroidManifest.xml
+        minSdkVersion 14
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+// OSSRH needs javadocs for artifact submissions.
+android.libraryVariants.all { variant ->
+    task("generate${variant.name}Javadoc", type: Javadoc) {
+        description "Generates Javadoc for $variant.name."
+        source = variant.javaCompile.source
+        ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+        classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
+        exclude(
+            '**/R.*',
+        )
+        options {
+            encoding = 'UTF-8'
+            docEncoding = 'UTF-8'
+            charSet = 'UTF-8'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:21.0.3'
+
+    compile 'org.apache.httpcomponents:httpcore:4.2.4'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.6.0'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.6.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.0'
+    compile 'javax.annotation:javax.annotation-api:1.2'
+    compile 'junit:junit:4.12'
+    compile 'org.apache.thrift:libthrift:0.9.2'
+    compile 'log4j:log4j:1.2.14'
+    compile 'javax.servlet:servlet-api:2.5'
+    compile 'commons-codec:commons-codec:1.6'
+    compile 'org.slf4j:slf4j-api:1.5.8'
+    compile 'org.slf4j:slf4j-log4j12:1.5.8'    
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+def isReleaseVersion() {
+    return !version.endsWith("SNAPSHOT");
+}
+
+if (isReleaseVersion()) {
+    signing {
+        required { gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
+}
+
+uploadArchives {
+    configuration = configurations.archives
+
+    repositories.mavenDeployer {
+        pom.project {
+            name project.name
+            groupId 'io.traceguide'
+            artifactId 'api-android'
+            version=androidAPIVersion  // from ./gradle.properties
+            packaging 'aar'
+            description 'The Android integration library for Traceguide\n' +
+                'http://github.com/traceguide/api-android'
+            url 'https://github.com/traceguide/api-android'
+            scm {
+                url 'http://github.com/traceguide/api-android'
+                connection 'scm:git:http://github.com/traceguide/api-android'
+                developerConnection 'scm:git:git@github.com:traceguide/api-android.git'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                    distribution 'repo'
+                }
+            }
+            developers {
+                developer {
+                    id 'traceguide'
+                    name 'Resonance Labs'
+                    email 'apis@resonancelabs.com'
+                }
+            }
+        }
+
+        if (project.hasProperty("sonatypeUsername")) {
+            /**
+             * In order to do nexus deploys, you'll need to setup a
+             * $HOME/.gradle/gradle.properties file with the following
+             * properties. You'll need the reslabs.key file and then import it
+             * using GnuPG which will provide you with the keyId and the
+             * secring.gpg file
+             *
+             * signing.keyId=
+             * signing.password=
+             * signing.secretKeyRingFile=
+             *
+             * sonatypeRepo=https://oss.sonatype.org/service/local/staging/deploy/maven2/
+             * sonatypeUsername=
+             * sonatypePassword=
+             */
+
+            beforeDeployment {
+                MavenDeployment deployment -> signing.signPom(deployment)
+            }
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+        } else {
+
+            println("\n\n\n    READ android/instrument/build.gradle !!!\n\n    You can't uploadArchives until you've configured ~/.gradle properly.\n\n\n")
+
+            repository(url:'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath)
+        }
+    }
+}

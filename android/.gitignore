@@ -1,0 +1,14 @@
+# Android build-related
+.idea/
+.gradle
+*.iml
+*.class
+local.properties
+tracer/build/**
+
+
+dist/**
+docs/**
+
+.DS_Store
+/captures

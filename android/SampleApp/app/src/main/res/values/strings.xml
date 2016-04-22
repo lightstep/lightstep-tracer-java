@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">LightStep Example</string>
+
+    <string name="input_label">GitHub Username</string>
+    <string name="input_hint">username</string>
+    <string name="input_default">lightstep</string>
+    <string name="press_me_btn">Get GitHub Info</string>
+</resources>
+
