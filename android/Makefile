@@ -16,11 +16,13 @@ copy-sources:
 clean:
 	cd SampleApp/tracer && gradle clean && rm -rf .gradle
 
+inc-version:
+	awk 'BEGIN { FS = "." }; { printf("%d.%d.%d", $$1, $$2, $$3+1) }' SampleApp/tracer/VERSION > SampleApp/tracer/VERSION.incr
+	mv SampleApp/tracer/VERSION.incr SampleApp/tracer/VERSION
+
 publish:
 	echo "NOT IMPLEMENTED"
 
 # An internal LightStep target for regenerating the thrift protocol files
 thrift:
-	rm -rf $(THRIFT_DIR)
-	mkdir -p $(THRIFT_DIR)
 	thrift -r -gen java -out $(THRIFT_DIR) $(LIGHTSTEP_HOME)/go/src/crouton/crouton.thrift
