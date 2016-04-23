@@ -2,15 +2,12 @@
 
 **TODOS**
 
-* Build shared code JAR
-* Build JRE lib
-* Build Android lib
-* Build sample app
-* Use gradle for the JRE code too (instead of ant)?
-* All the TBDs below...
-* Get the Android lib out of the sample app?
-
-
+* [x] Build shared code JAR
+* [ ] Build JRE lib using common JAR
+* [ ] Build Android lib as an artiface in itself
+* [ ] Build sample app using lib artifact
+* [ ] Use gradle for the JRE code too (instead of ant)?
+* [ ] All the TBDs below...
 
 ## Getting started
 
