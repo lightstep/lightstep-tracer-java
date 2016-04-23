@@ -4,10 +4,11 @@
 
 * [x] Build shared code JAR
 * [x] Build JRE lib using common JAR
-* [ ] Build single 'fat' JAR with dependencies
-* [ ] Build Android lib as an artiface in itself
+* [ ] How to package library dependencies?
+* [ ] Build Android lib as an artifact in itself
 * [ ] Build sample app using lib artifact
 * [ ] Use gradle for the JRE code too (instead of ant)?
+* [ ] JAR names and versions
 * [ ] All the TBDs below...
 
 ## Getting started
