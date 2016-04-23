@@ -2,6 +2,10 @@
 
 **TODOS**
 
+* Build shared code JAR
+* Build JRE lib
+* Build Android lib
+* Build sample app
 * Use gradle for the JRE code too (instead of ant)?
 * All the TBDs below...
 * Get the Android lib out of the sample app?
