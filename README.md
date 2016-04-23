@@ -3,7 +3,8 @@
 **TODOS**
 
 * [x] Build shared code JAR
-* [ ] Build JRE lib using common JAR
+* [x] Build JRE lib using common JAR
+* [ ] Build single 'fat' JAR with dependencies
 * [ ] Build Android lib as an artiface in itself
 * [ ] Build sample app using lib artifact
 * [ ] Use gradle for the JRE code too (instead of ant)?

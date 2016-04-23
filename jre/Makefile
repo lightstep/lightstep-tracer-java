@@ -1,11 +1,10 @@
-.PHONY: build
+.PHONY: build thrift clean
 
 THRIFT_DIR=src
 
 build:
-	ant compile
-	ant dist
+	gradle jar
 
-# An internal LightStep target for regenerating the thrift protocol files
-thrift:
-	thrift -r -gen java -out $(THRIFT_DIR) $(LIGHTSTEP_HOME)/go/src/crouton/crouton.thrift
+clean:
+	gradle clean
+	rm -rf build
