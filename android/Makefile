@@ -3,15 +3,11 @@
 ANDROID_DEST_BASE=android/SampleApp/tracer/src/main/java/com/lightstep
 THRIFT_DIR=SampleApp/tracer/src/main/java
 
-build: copy-sources
+build:
 ifndef ANDROID_HOME
     $(error ANDROID_HOME environment variable must be defined)
 endif
 	cd SampleApp/tracer && gradle assemble
-
-copy-sources:
-	cd .. && mkdir -p $(ANDROID_DEST_BASE)
-	cd .. && cp -R jre/src/com/lightstep/tracer/. $(ANDROID_DEST_BASE)/tracer
 
 clean:
 	cd SampleApp/tracer && gradle clean && rm -rf .gradle
