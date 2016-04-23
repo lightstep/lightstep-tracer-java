@@ -1,4 +1,4 @@
-# Android 
+# Android
 
 **TL;DR:**
 
@@ -10,7 +10,7 @@
 Required dependencies and tools:
 
 * `brew install gradle` to install gradle
-* [spoons: No longer true?] Manually download and install Oracle JDK 1.7 (might be possible to `brew` this?). Note: JDK 1.8 does *not* work with Android currently.
+* `brew cask install java`
 * Manually download and install Android Studio.
 * Open Android Studio and open the SDK Manager.
     * Use the SDK Manager to install SDK version 21.
@@ -29,13 +29,13 @@ Heads up about the build process:
 
 #### Test Application Notes
 
-Test application is under `/sample/SampleApp`. 
+Test application is under `/sample/SampleApp`.
 
 ## Customer integration
 
 Ideally, eventually the integration should mirror: https://mixpanel.com/help/reference/android.  For now, it's a bit more manual.
 
-Notes: 
+Notes:
 
 * "jcenter" seems to be the distribution mechanism of choice for libraries, but this seems to have a non-trivial setup and non-trivial cost for non-open source projects
 * Distributing an AAR directory simply does not seem to work despite Andriod Studio having a feature that imports AARs (dependencies do not resolve correctly even after manual edits to the gradle files).
@@ -67,8 +67,3 @@ The SampleApp already imports LightStep, so all you need to do is uncomment the 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 ```
-
-
-
-
-        

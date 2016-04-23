@@ -1,6 +1,6 @@
 apply plugin: 'android-library'
-apply plugin: 'maven'
-apply plugin: 'signing'
+// apply plugin: 'maven'
+// apply plugin: 'signing'
 
 buildscript {
     repositories {
@@ -64,7 +64,7 @@ dependencies {
     compile 'javax.servlet:servlet-api:2.5'
     compile 'commons-codec:commons-codec:1.6'
     compile 'org.slf4j:slf4j-api:1.5.8'
-    compile 'org.slf4j:slf4j-log4j12:1.5.8'    
+    compile 'org.slf4j:slf4j-log4j12:1.5.8'
 }
 
 allprojects {
