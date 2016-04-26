@@ -1,26 +1,14 @@
+#
+# Encapsulate the common tasks in a Makefile so one does not need to be familiar
+# with gradle (or any Java-specific build tool) to get useful things done.
+#
 .PHONY: build clean
 
-COMMON_SOURCES=$(shell find ../common/src/main/java -type f -name *.java)
-JRE_SOURCES=$(shell find src/main/java -type f -name *.java)
-SOURCES=$(COMMON_SOURCES) $(JRE_SOURCES)
-
-CLASSPATH_LIST=$(shell find dependencies -type f -name *.jar)
-EMPTY :=
-SPACE := $(EMPTY) $(EMPTY)
-CLASSPATH=$(subst $(SPACE),:,$(CLASSPATH_LIST))
-
-BUILD_DIR=build/classes/main
-JAR_FILE=build/libs/lightstep-tracer-jre-0.1.0.jar
-
-build: $(BUILD_DIR) $(JAR_FILE)
-
-$(JAR_FILE): $(SOURCES)
-	javac -d $(BUILD_DIR) -classpath $(CLASSPATH) $(SOURCES)
-	jar cvf $(JAR_FILE) build/classes/main
-
-$(BUILD_DIR):
-	mkdir -p build/classes/main
-	mkdir -p build/libs
+build:
+	gradle build
 
 clean:
-	rm -rf build
+	gradle clean
+
+publish:
+	gradle bintray
