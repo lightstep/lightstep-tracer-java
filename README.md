@@ -1,15 +1,6 @@
 # Work-in-progress
 
-**TODOS**
-
-* [x] Build shared code JAR
-* [x] Build JRE lib using common JAR
-* [ ] How to package library dependencies?
-* [ ] Build Android lib as an artifact in itself
-* [ ] Build sample app using lib artifact
-* [ ] Use gradle for the JRE code too (instead of ant)?
-* [ ] JAR names and versions
-* [ ] All the TBDs below...
+**NOTE: this instrumentation library is still in active development and is not ready for production use.**
 
 ## Getting started
 
@@ -23,39 +14,19 @@
 
 ## Development info
 
-### Building the libraries
+`Makefile`s are used to encapsulate the various tools in the toolchain:
 
 ```bash
-make build   # builds Android and JRE versions
+make build      # builds Android and JRE versions
+make publish    # publish the artifacts to bintray
 ```
-
-### Publishing the libraries
-
-**TBD**
 
 ###  Directory structure
 
-*Note: the below is a target...the code's not there yet...*
-
 ```
-Makefile                   <- Top-level Makefile to encapsulate tools specifics
-settings.gradle            <- definition of sub-projects
-
-build.gradle               <- main Gradle build file, dependencies & plugins
-gradlew                    <- script that will run Gradle on Unix systems
-gradlew.bat                <- script that will run Gradle on Windows
-gradle                     <- local gradle wrapper
-
-common/
-    build.gradle           <- Gradle build file for common project
-    src/                   <- Source for shared code
-android/
-    build.gradle           <- Gradle build file for Android lib
-    AndroidManifest.xml    <- Android specific config
-    src/                   <- Source for Android lib
-    sample/                <- sample app
-jre/
-    build.gradle           <- Gradle build file for the html project*
-    src/                   <- Source for JRE Java library
-    sample/                <- sample app
+Makefile        # Top-level Makefile to encapsulate tools specifics
+common/         # Shared source code for JRE and Android    
+android/        # Android instrumentation library source
+jre/            # JRE instrumentation library source
+samples/        # Sample code for both JRE and Android
 ```
