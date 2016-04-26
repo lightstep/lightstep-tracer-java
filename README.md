@@ -12,6 +12,23 @@
 
 *TBD*
 
+**Gradle**
+
+Include the below in your `build.gradle` (see the [bintray repository](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view) for details):
+
+```
+repositories {
+    jcenter()
+    maven {
+        url  "http://dl.bintray.com/lightstep/maven"
+    }
+}
+dependencies {
+    compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.1'
+}
+```
+
+
 ## Development info
 
 `Makefile`s are used to encapsulate the various tools in the toolchain:

@@ -1,6 +1,6 @@
+def current_version = '0.1.1'
 
 // This sets up the dependencies for the build script *itself*, not the package.
-// E.g. the classpath for the plugins
 buildscript {
     repositories {
         jcenter()
@@ -12,13 +12,12 @@ buildscript {
 
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
-apply plugin: 'java'
 apply plugin: 'com.jfrog.bintray'
-
+apply plugin: 'java'
 
 jar {
     baseName 'lightstep-tracer-jre'
-    version '0.1.0'
+    version = current_version
 }
 
 // By default, only "src/" will be included, but we want to include the code
@@ -51,7 +50,7 @@ publishing {
 			from components.java
 			groupId 'com.lightstep.tracer'
     		artifactId 'lightstep-tracer-jre'
-    		version '0.1.0'
+    		version = current_version
 		}
 	}
 }
@@ -71,7 +70,7 @@ bintray {
         vcsUrl = 'https://github.com/lightstep/lightstep-tracer-java.git'
         publicDownloadNumbers = true
         version {
-            name = '0.1.0'
+            name = current_version
             released  = new Date()
         }
     }

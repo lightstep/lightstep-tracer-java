@@ -1,13 +1,7 @@
-.PHONY: build clean thrift
-
-THRIFT_DIR=src/main/java
+.PHONY: build thrift
 
 build:
-	gradle jar
-
-clean:
-	gradle clean
-	rm -rf build
+	@echo "Nothing is built directly in this directory!"
 
 # An internal LightStep target for regenerating the thrift protocol files
 thrift:
