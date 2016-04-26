@@ -1,10 +1,26 @@
-.PHONY: build thrift clean
+.PHONY: build clean
 
-THRIFT_DIR=src
+COMMON_SOURCES=$(shell find ../common/src/main/java -type f -name *.java)
+JRE_SOURCES=$(shell find src/main/java -type f -name *.java)
+SOURCES=$(COMMON_SOURCES) $(JRE_SOURCES)
 
-build:
-	gradle jar
+CLASSPATH_LIST=$(shell find dependencies -type f -name *.jar)
+EMPTY :=
+SPACE := $(EMPTY) $(EMPTY)
+CLASSPATH=$(subst $(SPACE),:,$(CLASSPATH_LIST))
+
+BUILD_DIR=build/classes/main
+JAR_FILE=build/libs/lightstep-tracer-jre-0.1.0.jar
+
+build: $(BUILD_DIR) $(JAR_FILE)
+
+$(JAR_FILE): $(SOURCES)
+	javac -d $(BUILD_DIR) -classpath $(CLASSPATH) $(SOURCES)
+	jar cvf $(JAR_FILE) build/classes/main
+
+$(BUILD_DIR):
+	mkdir -p build/classes/main
+	mkdir -p build/libs
 
 clean:
-	gradle clean
 	rm -rf build
