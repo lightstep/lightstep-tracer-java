@@ -11,4 +11,11 @@ clean:
 	gradle clean
 
 publish:
+ifndef BINTRAY_USER
+    $(error Environment varialbe BINTRAY_USER is undefined. This must be set in order to publish the artifact.)
+endif
+ifndef BINTRAY_KEY
+    $(error Environment varialbe BINTRAY_KEY is undefined. This must be set in order to publish the artifact.)
+endif
+	@echo "Publishing with bintray credentials for: $(BINTRAY_USER)"
 	gradle bintray

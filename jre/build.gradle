@@ -10,12 +10,11 @@ buildscript {
     }
 }
 
-// Include...
-// - java plugin to build the jar
-// - the bintray plugin to publish the jar to bintra
-//
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'java'
 apply plugin: 'com.jfrog.bintray'
+
 
 jar {
     baseName 'lightstep-tracer-jre'
@@ -46,12 +45,24 @@ dependencies {
     compile 'org.json:json:20160212'
 }
 
+publishing {
+	publications {
+		MyPublication(MavenPublication) {
+			from components.java
+			groupId 'com.lightstep.tracer'
+    		artifactId 'lightstep-tracer-jre'
+    		version '0.1.0'
+		}
+	}
+}
+
 // Bintray configuration so we can publish publically.  Requires the environment
 // variables below be set.
 // https://github.com/bintray/gradle-bintray-plugin
 bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_KEY')
+    publications = ['MyPublication']
     pkg {
         repo = 'maven'
         name = 'lightstep-tracer-jre'
@@ -59,7 +70,6 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/lightstep/lightstep-tracer-java.git'
         publicDownloadNumbers = true
-
         version {
             name = '0.1.0'
             released  = new Date()

@@ -1,5 +1,7 @@
 # Java Tracer
 
+[![Download](https://api.bintray.com/packages/lightstep/maven/lightstep-tracer-jre/images/download.svg) ](https://bintray.com/lightstep/maven/lightstep-tracer-jre/_latestVersion)
+
 ### Build
 
 To build from source use:
@@ -18,12 +20,12 @@ Note: ant commands include those for running SpanLogsTests, ThreadTest, PayloadT
 
 To use the Java Runtime you must:
 
-  `import com.lightstep.tracer.*` 
+  `import com.lightstep.tracer.*`
 
   `import com.lightstep.tracer.runtime.*` - only needed where singleton must be retrieved
 
 To retrieve a runtime instance:
-  
+
   `com.lightstep.tracer.Runtime runtime = com.lightstep.tracer.runtime.JavaRuntime.getInstance();`    
 
 ### Directory Navigation
