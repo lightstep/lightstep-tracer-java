@@ -6,11 +6,11 @@
 
 ### Using the Android library
 
-**TBD**
+*TBD*
 
 ### Using the JRE library
 
-**TBD**
+*TBD*
 
 ## Development info
 
