@@ -6,11 +6,11 @@ repositories {
         url  "http://dl.bintray.com/lightstep/maven"
     }
 }
-
-// Dependencies to build this JAR archive
 dependencies {
-    compile 'org.apache.thrift:libthrift:0.9.2'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
-    compile 'org.json:json:20160212'
     compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.0'
+}
+
+task runSample(type: JavaExec, dependsOn: 'classes') {
+    main = 'com.lightstep.tracer.samples.jre.Simple'
+    classpath = sourceSets.main.runtimeClasspath
 }
