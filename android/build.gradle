@@ -18,7 +18,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "0.1.2"
+version = "0.1.3"
 def current_version = version
 group = "com.lightstep.tracer"
 
@@ -54,7 +54,8 @@ bintray {
         userOrg = 'lightstep'
         websiteUrl = siteUrl
         vcsUrl = gitUrl
-        licenses = ["Apache-2.0"]
+        licenses = ['MIT']
+        publicDownloadNumbers = true
         publish = true
         version {
             name = current_version
@@ -70,12 +71,6 @@ install {
                 packaging 'aar'
                 name 'The LightStep OpenTracing Implementation for Android'
                 url siteUrl
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
                 developers {
                 }
                 scm {

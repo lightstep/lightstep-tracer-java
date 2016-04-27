@@ -69,6 +69,7 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/lightstep/lightstep-tracer-java.git'
         publicDownloadNumbers = true
+        publish = true
         version {
             name = current_version
             released  = new Date()
