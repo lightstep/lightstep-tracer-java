@@ -1,7 +1,0 @@
-/build/**
-/src/main/java/com/lightstep/tracer/**
-!/src/main/java/com/lightstep/tracer/android/Tracer.java
-gradlew
-gradlew.bat
-/gradle
-

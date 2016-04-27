@@ -1,0 +1,19 @@
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+
+# Android build-related
+.gradle
+*.iml
+*.class
+local.properties
+
+dist/**
+docs/**
+
+.DS_Store
+/captures

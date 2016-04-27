@@ -1,4 +1,5 @@
-def current_version = '0.1.2'
+// The library versions are kept in sync
+def current_version = new File('../common/VERSION').text
 
 // This sets up the dependencies for the build script *itself*, not the package.
 buildscript {
@@ -14,6 +15,10 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'java'
+
+// Make sure the library is Java 7 compatible
+targetCompatibility = '1.7'
+sourceCompatibility = '1.7'
 
 jar {
     baseName 'lightstep-tracer-jre'
