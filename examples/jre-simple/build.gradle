@@ -1,0 +1,16 @@
+apply plugin: 'java'
+
+repositories {
+    jcenter()
+    maven {
+        url  "http://dl.bintray.com/lightstep/maven"
+    }
+}
+dependencies {
+    compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.13'
+}
+
+task runSample(type: JavaExec, dependsOn: 'classes') {
+    main = 'com.lightstep.tracer.samples.jre.Simple'
+    classpath = sourceSets.main.runtimeClasspath
+}
