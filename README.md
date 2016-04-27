@@ -13,6 +13,14 @@ The published Android AAR library is available on Bintray at [lightstep/maven/li
 
 *TBD*
 
+* Note: ensure the app's `AndroidManifest.xml` has the following (under the `<manifest>` tag):
+
+```xml
+    <!-- Permissions required to make http calls -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```
+
 ### Using the JRE library
 
 The published JRE library is available on Bintray at [lightstep/maven/lightstep-tracer-jre](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view).

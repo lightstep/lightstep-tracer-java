@@ -1,10 +1,5 @@
 # Android
 
-**TL;DR:**
-
-* run `rbuild build` - builds the Android instrumentation library
-* `sample/SampleApp` - contains a *non-quite-yet-instrumented* sample app to test the customer integration steps against
-
 ## Developer notes (i.e. non-customer)
 
 Required dependencies and tools:
@@ -56,14 +51,4 @@ The SampleApp already imports LightStep, so all you need to do is uncomment the 
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/NOTICE.txt'
     }
-```
-
-### Finally allow internet permissions to the app if it does not already have it:
-
-* Then ensure the app's `AndroidManifest.xml` has the following (under the `<manifest>` tag):
-
-```xml
-    <!-- Permissions required to make http calls -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 ```
