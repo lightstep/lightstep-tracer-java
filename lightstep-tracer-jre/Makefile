@@ -5,10 +5,10 @@
 .PHONY: build clean publish
 
 build:
-	gradle build
+	./gradlew build
 
 clean:
-	gradle clean
+	./gradlew clean
 
 # TODO: Need to incorporate version incrementing
 # TODO: Need to incorporate a git push with tags
@@ -16,4 +16,4 @@ publish:
 	@test -n "$$BINTRAY_USER" || echo "BINTRAY_USER must be defined to publish"
 	@test -n "$$BINTRAY_API_KEY" || echo "BINTRAY_API_KEY must be defined to publish"
 	@echo "Publishing with bintray credentials for: $(BINTRAY_USER)"
-	gradle bintray
+	./gradlew bintray

@@ -5,11 +5,9 @@
 `Makefile`s are used to encapsulate the various tools in the toolchain:
 
 ```bash
-make build      # builds Android and JRE versions
-make publish    # publish the artifacts to bintray
+make build      # builds Android and JRE versions locally
+make publish    # increment versions and publish the artifacts to bintray
 ```
-
-* `make publish` *does not* currently auto-increment the library version
 
 ###  Directory structure
 
@@ -18,7 +16,7 @@ Makefile                    # Top-level Makefile to encapsulate tool-specifics
 common/                     # Shared source code for JRE and Android    
 lightstep-tracer-android/   # Android instrumentation library
 lightstep-tracer-jre/       # JRE instrumentation library
-samples/                    # Sample code for both JRE and Android
+examples/                   # Sample code for both JRE and Android
 ```
 
 ## Miscellaneous notes

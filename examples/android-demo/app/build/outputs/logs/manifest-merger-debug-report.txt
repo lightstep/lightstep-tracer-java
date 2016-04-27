@@ -1,0 +1,72 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:2:1-25:12
+	package
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:3:5-46
+		INJECTED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:2:11-69
+	android:versionCode
+		INJECTED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml
+uses-permission#android.permission.INTERNET
+ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:6:5-67
+	android:name
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:6:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:7:5-79
+	android:name
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:7:22-76
+application
+ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:9:5-23:19
+MERGED from [com.android.support:appcompat-v7:23.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v4:23.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.0.0/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:design:22.2.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/design/22.2.0/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:appcompat-v7:23.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v4:23.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.0.0/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v4:23.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.0.0/AndroidManifest.xml:22:5-20
+MERGED from [com.android.volley:volley:1.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.volley/volley/1.0.0/AndroidManifest.xml:9:5-20
+	android:label
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:12:9-41
+	android:allowBackup
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:10:9-35
+	android:icon
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:11:9-43
+	android:theme
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:13:9-40
+activity#com.lightstep.samples.sampleapp.MainActivity
+ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:14:9-22:20
+	android:label
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:16:13-45
+	android:name
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:15:13-41
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:17:13-21:29
+action#android.intent.action.MAIN
+ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:18:17-69
+	android:name
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:18:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:20:17-77
+	android:name
+		ADDED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml:20:27-74
+uses-sdk
+INJECTED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+MERGED from [com.android.support:appcompat-v7:23.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v4:23.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.0.0/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:design:22.2.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/design/22.2.0/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:appcompat-v7:23.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v4:23.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.0.0/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v4:23.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.0.0/AndroidManifest.xml:20:5-43
+MERGED from [com.android.volley:volley:1.0.0] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.volley/volley/1.0.0/AndroidManifest.xml:7:5-43
+MERGED from [com.lightstep.tracer:lightstep-tracer-android:0.1.12] /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.lightstep.tracer/lightstep-tracer-android/0.1.12/AndroidManifest.xml:6:5-8:41
+	android:targetSdkVersion
+		INJECTED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/AndroidManifest.xml

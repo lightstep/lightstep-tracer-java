@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="lightstep-tracer-android-0.1.8">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.lightstep.tracer/lightstep-tracer-android/0.1.8/res" />
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.lightstep.tracer/lightstep-tracer-android/0.1.8/jars/libs/lightstep-tracer-jre-0.1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.lightstep.tracer/lightstep-tracer-android/0.1.8/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.lightstep.tracer/lightstep-tracer-android/0.1.8/e8f3fd58942d3e91333f673b7dbad7ce2f8fc92c/lightstep-tracer-android-0.1.8-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

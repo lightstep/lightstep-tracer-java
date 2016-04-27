@@ -1,0 +1,332 @@
+[
+    {
+        "outputFile": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/res/merged/debug/values-sw600dp-v13/values-sw600dp-v13.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 68,
+                    "endOffset": 119
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 280,
+                        "endColumn": 68,
+                        "endOffset": 344
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 124,
+                    "endColumn": 69,
+                    "endOffset": 189
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 5,
+                        "startColumn": 4,
+                        "startOffset": 349,
+                        "endColumn": 69,
+                        "endOffset": 414
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 194,
+                    "endColumn": 73,
+                    "endOffset": 263
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 419,
+                        "endColumn": 73,
+                        "endOffset": 488
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 5,
+                    "startColumn": 4,
+                    "startOffset": 268,
+                    "endColumn": 75,
+                    "endOffset": 339
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 7,
+                        "startColumn": 4,
+                        "startOffset": 493,
+                        "endColumn": 75,
+                        "endOffset": 564
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 6,
+                    "startColumn": 4,
+                    "startOffset": 344,
+                    "endColumn": 58,
+                    "endOffset": 398
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 10,
+                        "startColumn": 4,
+                        "startOffset": 794,
+                        "endColumn": 58,
+                        "endOffset": 848
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 7,
+                    "startColumn": 4,
+                    "startOffset": 403,
+                    "endColumn": 70,
+                    "endOffset": 469
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 13,
+                        "startColumn": 4,
+                        "startOffset": 1078,
+                        "endColumn": 70,
+                        "endOffset": 1144
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 8,
+                    "startColumn": 4,
+                    "startOffset": 474,
+                    "endColumn": 67,
+                    "endOffset": 537
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 14,
+                        "startColumn": 4,
+                        "startOffset": 1149,
+                        "endColumn": 67,
+                        "endOffset": 1212
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 9,
+                    "startColumn": 4,
+                    "startOffset": 542,
+                    "endColumn": 62,
+                    "endOffset": 600
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/design/22.2.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 289,
+                        "endColumn": 62,
+                        "endOffset": 347
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 10,
+                    "startColumn": 4,
+                    "startOffset": 605,
+                    "endColumn": 63,
+                    "endOffset": 664
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/design/22.2.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 5,
+                        "startColumn": 4,
+                        "startOffset": 352,
+                        "endColumn": 63,
+                        "endOffset": 411
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 11,
+                    "startColumn": 4,
+                    "startOffset": 669,
+                    "endColumn": 64,
+                    "endOffset": 729
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/design/22.2.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 416,
+                        "endColumn": 64,
+                        "endOffset": 476
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 12,
+                    "startColumn": 4,
+                    "startOffset": 734,
+                    "endColumn": 50,
+                    "endOffset": 780
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/design/22.2.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 7,
+                        "startColumn": 4,
+                        "startOffset": 481,
+                        "endColumn": 50,
+                        "endOffset": 527
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 13,
+                    "startColumn": 4,
+                    "startOffset": 785,
+                    "endColumn": 50,
+                    "endOffset": 831
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/design/22.2.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 8,
+                        "startColumn": 4,
+                        "startOffset": 532,
+                        "endColumn": 50,
+                        "endOffset": 578
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 14,
+                    "startColumn": 4,
+                    "startOffset": 836,
+                    "endColumn": 91,
+                    "endOffset": 923
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/design/22.2.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 9,
+                        "startColumn": 4,
+                        "startOffset": 583,
+                        "endColumn": 91,
+                        "endOffset": 670
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 15,
+                    "startColumn": 4,
+                    "startOffset": 928,
+                    "endColumn": 45,
+                    "endOffset": 969
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/design/22.2.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 10,
+                        "startColumn": 4,
+                        "startOffset": 675,
+                        "endColumn": 45,
+                        "endOffset": 716
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 16,
+                    "startColumn": 4,
+                    "startOffset": 974,
+                    "endColumn": 54,
+                    "endOffset": 1024
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 15,
+                        "startColumn": 4,
+                        "startOffset": 1217,
+                        "endColumn": 54,
+                        "endOffset": 1267
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 17,
+                    "startColumn": 4,
+                    "startOffset": 1029,
+                    "endColumn": 55,
+                    "endOffset": 1080
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/design/22.2.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 13,
+                        "startColumn": 4,
+                        "startOffset": 955,
+                        "endColumn": 55,
+                        "endOffset": 1006
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 18,
+                    "startColumn": 4,
+                    "startOffset": 1085,
+                    "endLine": 21,
+                    "endColumn": 12,
+                    "endOffset": 1262
+                },
+                "from": {
+                    "file": "/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/build/intermediates/exploded-aar/com.android.support/design/22.2.0/res/values-sw600dp/values-sw600dp.xml",
+                    "position": {
+                        "startLine": 16,
+                        "startColumn": 4,
+                        "startOffset": 1245,
+                        "endLine": 19,
+                        "endColumn": 12,
+                        "endOffset": 1422
+                    }
+                }
+            }
+        ]
+    }
+]
