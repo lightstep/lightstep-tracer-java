@@ -6,15 +6,18 @@
 
 ### Using the Android library
 
+The published JRE library is available on Bintray at [lightstep/maven/lightstep-tracer-android](https://bintray.com/lightstep/maven/lightstep-tracer-android/view).
+
+
+**Gradle**
+
 *TBD*
 
 ### Using the JRE library
 
-*TBD*
+The published JRE library is available on Bintray at [lightstep/maven/lightstep-tracer-jre](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view).
 
 **Gradle**
-
-Include the below in your `build.gradle` (see the [bintray repository](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view) for details):
 
 ```
 repositories {
@@ -24,26 +27,6 @@ repositories {
     }
 }
 dependencies {
-    compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.1'
+    compile 'com.lightstep.tracer:lightstep-tracer-jre:<DESIRED_VERSION>'
 }
-```
-
-
-## Development info
-
-`Makefile`s are used to encapsulate the various tools in the toolchain:
-
-```bash
-make build      # builds Android and JRE versions
-make publish    # publish the artifacts to bintray
-```
-
-###  Directory structure
-
-```
-Makefile        # Top-level Makefile to encapsulate tools specifics
-common/         # Shared source code for JRE and Android    
-android/        # Android instrumentation library source
-jre/            # JRE instrumentation library source
-samples/        # Sample code for both JRE and Android
 ```
