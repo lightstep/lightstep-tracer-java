@@ -6,7 +6,7 @@
 
 ### Using the Android library
 
-The published JRE library is available on Bintray at [lightstep/maven/lightstep-tracer-android](https://bintray.com/lightstep/maven/lightstep-tracer-android/view).
+The published Android AAR library is available on Bintray at [lightstep/maven/lightstep-tracer-android](https://bintray.com/lightstep/maven/lightstep-tracer-android/view).
 
 
 **Gradle**
