@@ -18,7 +18,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "0.1.3"
+version = "0.1.6"
 def current_version = version
 group = "com.lightstep.tracer"
 
@@ -35,7 +35,6 @@ android {
         targetSdkVersion 21
         versionCode 2
         versionName version
-
     }
     buildTypes {
     }
@@ -93,7 +92,7 @@ dependencies {
     compile 'org.json:json:20160212'
 
     // TODO: can we remove this awkward dependency on the JRE JAR?
-    compile files('../jre/build/libs/lightstep-tracer-jre-0.1.1.jar')
+    compile files('../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-0.1.1.jar')
 }
 
 task sourcesJar(type: Jar) {
