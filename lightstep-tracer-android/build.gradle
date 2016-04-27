@@ -1,3 +1,7 @@
+// The library versions are kept in sync
+version = new File('../common/VERSION').text
+def current_version = version
+
 // This sets up the dependencies for the build script *itself*, not the package.
 buildscript {
     // Work around a defect in the 'android-library' plugin's version check
@@ -22,8 +26,6 @@ apply plugin: 'com.jfrog.bintray'
 targetCompatibility = '1.7'
 sourceCompatibility = '1.7'
 
-version = "0.1.8"
-def current_version = version
 group = "com.lightstep.tracer"
 
 def siteUrl = 'https://github.com/lightstep/lightstep-tracer-java'

@@ -28,11 +28,18 @@ android {
     }
 }
 
+repositories {
+    jcenter()
+    maven {
+        url  "http://dl.bintray.com/lightstep/maven"
+    }
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.0.0'
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.volley:volley:1.0.0'
 
-    compile 'com.lightstep.tracer:lightstep-tracer-android:0.1.8'
+    compile 'com.lightstep.tracer:lightstep-tracer-android:0.1.12'
 }
