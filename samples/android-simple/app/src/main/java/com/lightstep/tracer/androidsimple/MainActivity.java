@@ -1,6 +1,7 @@
 package com.lightstep.tracer.androidsimple;
 
 import android.os.Bundle;
+import android.content.Context;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,11 +10,22 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.lightstep.tracer.Span;
+import com.lightstep.tracer.Tracer;
+
 public class MainActivity extends AppCompatActivity {
+
+    private Tracer tracer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        this.tracer = new com.lightstep.tracer.android.Tracer(
+                this,
+                new com.lightstep.tracer.shared.Options("{your_access_token}"));
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
