@@ -2,19 +2,15 @@
 
 **NOTE: this instrumentation library is still in active development and is not ready for production use.**
 
-[![MIT license](http://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
-
-* Android: [ ![Download](https://api.bintray.com/packages/lightstep/maven/lightstep-tracer-android/images/download.svg) ](https://bintray.com/lightstep/maven/lightstep-tracer-android/_latestVersion)
-
-* JRE: [ ![Download](https://api.bintray.com/packages/lightstep/maven/lightstep-tracer-jre/images/download.svg) ](https://bintray.com/lightstep/maven/lightstep-tracer-jre/_latestVersion)
-
-
+[ ![Download](https://api.bintray.com/packages/lightstep/maven/lightstep-tracer-android/images/download.svg) ](https://bintray.com/lightstep/maven/) [![MIT license](http://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 LightStep implementation of the [OpenTracing API](http://opentracing.io/) for Android and the standard Java JRE.
 
 ## Getting started
 
 ### Using the Android library
+
+[ ![Download](https://api.bintray.com/packages/lightstep/maven/lightstep-tracer-android/images/download.svg) ](https://bintray.com/lightstep/maven/lightstep-tracer-android/_latestVersion)
 
 The published Android AAR library is available on Bintray at [lightstep/maven/lightstep-tracer-android](https://bintray.com/lightstep/maven/lightstep-tracer-android/view).
 
@@ -44,6 +40,9 @@ dependencies {
 ```
 
 ### Using the JRE library
+
+[ ![Download](https://api.bintray.com/packages/lightstep/maven/lightstep-tracer-jre/images/download.svg) ](https://bintray.com/lightstep/maven/lightstep-tracer-jre/_latestVersion)
+
 
 The published JRE library is available on Bintray at [lightstep/maven/lightstep-tracer-jre](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view).
 
