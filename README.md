@@ -1,6 +1,4 @@
-# WORK IN PROGRESS
-
-**NOTE: this instrumentation library is still in active development and is not ready for production use.**
+# lightstep-tracer-java
 
 [ ![Download](https://api.bintray.com/packages/lightstep/maven/lightstep-tracer-android/images/download.svg) ](https://bintray.com/lightstep/maven/) [![MIT license](http://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 

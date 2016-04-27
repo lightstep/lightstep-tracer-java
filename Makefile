@@ -1,4 +1,4 @@
-.PHONY: build publish
+.PHONY: build publish ci_test
 
 build:
 	make -C lightstep-tracer-jre  build
@@ -14,3 +14,7 @@ publish:
 	git push --tags
 	make -C lightstep-tracer-jre publish
 	make -C lightstep-tracer-android publish
+
+# CircleCI test
+ci_test:
+	true
