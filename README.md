@@ -10,8 +10,6 @@ LightStep implementation of the [OpenTracing API](http://opentracing.io/) for An
 
 ### Using the Android library
 
-[ ![Download](https://api.bintray.com/packages/lightstep/maven/lightstep-tracer-android/images/download.svg) ](https://bintray.com/lightstep/maven/lightstep-tracer-android/_latestVersion)
-
 The published Android AAR library is available on Bintray at [lightstep/maven/lightstep-tracer-android](https://bintray.com/lightstep/maven/lightstep-tracer-android/view).
 
 
@@ -40,9 +38,6 @@ dependencies {
 ```
 
 ### Using the JRE library
-
-[ ![Download](https://api.bintray.com/packages/lightstep/maven/lightstep-tracer-jre/images/download.svg) ](https://bintray.com/lightstep/maven/lightstep-tracer-jre/_latestVersion)
-
 
 The published JRE library is available on Bintray at [lightstep/maven/lightstep-tracer-jre](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view).
 
