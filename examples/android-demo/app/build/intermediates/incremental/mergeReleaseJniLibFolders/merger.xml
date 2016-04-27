@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/main/jniLibs"/></dataSet><dataSet config="release"><source path="/Users/bcronin/lightstep/lightstep-tracer-java/samples/android-demo/app/src/release/jniLibs"/></dataSet></merger>
