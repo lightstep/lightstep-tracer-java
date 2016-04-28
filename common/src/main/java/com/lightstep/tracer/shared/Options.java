@@ -7,6 +7,7 @@ import java.util.Map;
  * Options control behaviors specific to the LightStep tracer.
  */
 public class Options {
+
   /**
    * The unique identifier for this application.
    */
@@ -16,6 +17,7 @@ public class Options {
    * The host to which the tracer will send data.  If null, the default will be used.
    */
   public String collectorHost;
+
   /**
    * The port to which the tracer will send data.  If 0, the default will be
    * used.
@@ -38,6 +40,7 @@ public class Options {
      */
     NONE
   }
+
   /**
    * Determines how the tracer communicates with the collector.
    */
@@ -70,7 +73,7 @@ public class Options {
   public Options(String accessToken) {
     this.accessToken = accessToken;
   }
-  
+
   public Options withAccessToken(String accessToken) {
     this.accessToken = accessToken;
     return this;

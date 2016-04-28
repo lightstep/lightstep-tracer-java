@@ -1,3 +1,6 @@
+// Keep in sync with the current version
+def current_version = new File('../../common/VERSION').text
+
 apply plugin: 'java'
 
 repositories {
@@ -8,11 +11,11 @@ repositories {
 }
 dependencies {
     // Include this *as well* to use the local files instead of the published version
-    // compile files('../../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-0.1.16.jar')
-    compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.16'
+    compile files('../../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-' + current_version + '.jar')
+    compile 'com.lightstep.tracer:lightstep-tracer-jre:' + current_version
 }
 
 task runSample(type: JavaExec, dependsOn: 'classes') {
-    main = 'com.lightstep.tracer.samples.jre.Simple'
+    main = 'Simple'
     classpath = sourceSets.main.runtimeClasspath
 }

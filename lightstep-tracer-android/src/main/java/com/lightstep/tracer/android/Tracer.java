@@ -63,7 +63,7 @@ public class Tracer extends AbstractTracer {
   private class AsyncFlush extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void ...voids) {
-      sendReport();
+      sendReport(false);
       return null;
     }
   }

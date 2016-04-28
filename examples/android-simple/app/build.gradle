@@ -1,3 +1,6 @@
+// Keep in sync with the current version
+def current_version = new File('../../common/VERSION').text
+
 apply plugin: 'com.android.application'
 
 android {
@@ -35,5 +38,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:design:23.3.0'
 
-    compile 'com.lightstep.tracer:lightstep-tracer-android:0.1.15'
+    compile 'com.lightstep.tracer:lightstep-tracer-android:' + current_version
 }

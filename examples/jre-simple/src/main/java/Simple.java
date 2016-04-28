@@ -1,5 +1,3 @@
-package com.lightstep.tracer.samples.jre;
-
 import com.lightstep.tracer.Tracer;
 import com.lightstep.tracer.Span;
 

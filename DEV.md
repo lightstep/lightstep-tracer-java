@@ -5,7 +5,7 @@
 `Makefile`s are used to encapsulate the various tools in the toolchain:
 
 ```bash
-make build      # builds Android and JRE versions locally
+make build      # builds Android, JRE libraries and examples
 make publish    # increment versions and publish the artifacts to bintray
 ```
 
@@ -18,6 +18,17 @@ lightstep-tracer-android/   # Android instrumentation library
 lightstep-tracer-jre/       # JRE instrumentation library
 examples/                   # Sample code for both JRE and Android
 ```
+
+## Running with local source vs. published libraries
+
+In the `build.gradle` for the given project find the `dependencies` block and comment/uncomment the `files(...)` call that precedes the `compile` clause to use the published libraries or local source (respectively). For example:
+
+```
+//  files('../../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-0.1.16.jar')
+compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.16'
+```
+
+**Note:** due to the Android library currently depending on the JRE library, it's necessary to apply the above to everything in the dependency chain for this to work with the Android library.
 
 ## Miscellaneous notes
 

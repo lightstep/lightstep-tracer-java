@@ -197,9 +197,15 @@ public abstract class AbstractTracer implements Tracer {
 
   /**
    * Sends buffered data to the collector.
+   *
+   * TODO: calls to flush() should likely be reversed to explicit, client calls
+   * to flush the buffered data ASAP/synchronously -- the internal reporting loop likely
+   * should use a different mechanism.  Otherwise there is no way to differentiate
+   * the two (which require slightly different implementations).
+   *
+   * This method should invoke sendReport() on a thread appropriate for making
+   * network calls.
    */
-  // This method should invoke sendReport() on a thread appropriate for making
-  // network calls.
   public abstract void flush();
 
   /**
@@ -214,8 +220,14 @@ public abstract class AbstractTracer implements Tracer {
 
   /**
    * Does the work of a flush by sending spans to the collector.
+   *
+   * @param explicitRequest   if true, the report request was made explicitly
+   *                          rather than implicitly (via a reporting loop) and
+   *                          therefore the code should make a 'best effort' to
+   *                          truly report (i.e. send even if the clock state is
+   *                          not ready).
    */
-  protected void sendReport() {
+  protected void sendReport(boolean explicitRequest) {
     ArrayList<SpanRecord> spans;
     synchronized (this.mutex) {
       if (this.reportInProgress) {
@@ -228,7 +240,7 @@ public abstract class AbstractTracer implements Tracer {
       // Make sure other threads don't try to start sending a report.
       this.reportInProgress = true;
 
-      if (this.clockState.isReady()) {
+      if (this.clockState.isReady() || explicitRequest) {
         // Copy the reference to the spans...
         spans = this.spans;
         // ... and make a new array for other spans.
