@@ -7,7 +7,7 @@ repositories {
     }
 }
 dependencies {
-    compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.0'
+    compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.15'
 }
 
 task runSample(type: JavaExec, dependsOn: 'classes') {

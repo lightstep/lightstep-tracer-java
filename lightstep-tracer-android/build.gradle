@@ -98,7 +98,7 @@ dependencies {
     compile 'org.json:json:20160212'
 
     // TODO: can we remove this awkward dependency on the JRE JAR?
-    compile files('../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-0.1.3.jar')
+    compile files('../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-' + current_version + '.jar')
 }
 
 task sourcesJar(type: Jar) {

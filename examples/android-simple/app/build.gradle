@@ -35,5 +35,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:design:23.3.0'
 
-    compile 'com.lightstep.tracer:lightstep-tracer-android:0.1.8'
+    compile 'com.lightstep.tracer:lightstep-tracer-android:0.1.15'
 }
