@@ -3,21 +3,21 @@ package com.lightstep.tracer.jre;
 import com.lightstep.tracer.shared.*;
 import java.util.HashMap;
 
-public class JreTracer extends AbstractTracer {
+public class JRETracer extends AbstractTracer {
 
     private static class JavaTracerHolder {
-        private static final JreTracer INSTANCE = new JreTracer(null);
+        private static final JRETracer INSTANCE = new JRETracer(null);
     }
 
     /**
      * Returns the singleton Tracer instance that can be utilized to record logs and spans.
      * @return  tracer instance
      */
-    public static JreTracer getInstance() {
+    public static JRETracer getInstance() {
         return JavaTracerHolder.INSTANCE;
     }
 
-    public JreTracer(Options options) {
+    public JRETracer(Options options) {
         super(options);
     }
 
