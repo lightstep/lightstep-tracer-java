@@ -23,6 +23,7 @@ public class JRETracer extends AbstractTracer {
 
     // Flush any data stored in the log and span buffers
     public void flush() {
+        sendReport();
         /*if (disabledTracer) return;
 
         if (initializedTracer) {
