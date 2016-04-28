@@ -27,6 +27,10 @@ publish: clean build
 	git push --tags
 	make -C lightstep-tracer-jre publish
 	make -C lightstep-tracer-android publish
+	@echo
+	@echo "\033[92mSUCCESS: published v`cat common/VERSION` \033[0m"
+	@echo
+
 
 # CircleCI test
 ci_test:
