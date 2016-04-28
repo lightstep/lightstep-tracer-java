@@ -13,6 +13,15 @@ public class Simple {
         Span span = tracer.buildSpan("test_span").start();
         span.finish();
 
+        com.lightstep.tracer.jre.JRETracer lsTracer = (com.lightstep.tracer.jre.JRETracer)tracer;
+        lsTracer.flush();
+
+        // TODO: this is a terrible hack to ensure the flush finishes before the
+        // process is interrupted
+        try {
+            Thread.sleep(2500);
+        } catch (InterruptedException e) {}
+
         System.out.println("Done!");
     }
 }

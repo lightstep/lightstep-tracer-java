@@ -7,7 +7,9 @@ repositories {
     }
 }
 dependencies {
-    compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.15'
+    // Include this *as well* to use the local files instead of the published version
+    // compile files('../../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-0.1.16.jar')
+    compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.16'
 }
 
 task runSample(type: JavaExec, dependsOn: 'classes') {
