@@ -1,11 +1,14 @@
-.PHONY: build publish pre-publish ci_test clean test
+.PHONY: build build-libs publish pre-publish ci_test clean test
 
-build:
-	make -C lightstep-tracer-jre  build
-	make -C lightstep-tracer-android build
+build: build-libs
 	make -C examples/jre-simple build
 	make -C examples/android-simple build
 	make -C examples/android-demo build
+
+build-libs:
+	make -C lightstep-tracer-jre  build
+	make -C lightstep-tracer-android build
+
 
 # gradle can fail on clean, thus the "|| true"
 clean:
@@ -21,6 +24,8 @@ test:
 # The publish step does a clean and rebuild as the `gradle build` hasn't seemed
 # 100% reliable in rebuilding when files are changed (?).  This may very much be
 # a setup error -- but for now, a clean build is done just in case.
+#
+# See https://bintray.com/lightstep for published artifacts
 publish: pre-publish clean build test
 	@git diff-index --quiet HEAD || (echo "git has uncommitted changes. Refusing to publish." && false)
 	make -C common inc-version
