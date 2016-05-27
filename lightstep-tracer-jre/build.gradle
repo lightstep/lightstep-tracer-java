@@ -36,6 +36,10 @@ sourceSets {
     }
 }
 
+test {
+    testLogging.showStandardStreams = true
+}
+
 // Defines the repositories need for dependencies below
 repositories {
     jcenter()
