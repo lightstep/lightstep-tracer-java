@@ -37,8 +37,7 @@ publish: pre-publish clean build test
 pre-publish:
 	@test -n "$$BINTRAY_USER" || echo "BINTRAY_USER must be defined to publish"
 	@test -n "$$BINTRAY_API_KEY" || echo "BINTRAY_API_KEY must be defined to publish"
-	echo "Publishing as $$BINTRAY_USER with key <HIDDEN>"
-
+	@echo "\033[92mPublishing as $$BINTRAY_USER with key <HIDDEN> \033[0m"
 
 # CircleCI test
 ci_test:
