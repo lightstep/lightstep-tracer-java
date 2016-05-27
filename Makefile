@@ -20,7 +20,7 @@ test:
 # The publish step does a clean and rebuild as the `gradle build` hasn't seemed
 # 100% reliable in rebuilding when files are changed (?).  This may very much be
 # a setup error -- but for now, a clean build is done just in case.
-publish: clean build
+publish: clean build test
 	@git diff-index --quiet HEAD || (echo "git has uncommitted changes. Refusing to publish." && false)
 	make -C common inc-version
 	git add common/VERSION
