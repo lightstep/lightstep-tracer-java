@@ -331,12 +331,12 @@ public abstract class AbstractTracer implements Tracer {
   class SpanBuilder implements Tracer.SpanBuilder{
     private String operationName;
     private com.lightstep.tracer.Span parent;
-    private Map<String, Object> tags;
+    private Map<String, String> tags;
     private long startTimestampMicros;
 
     SpanBuilder(String operationName) {
       this.operationName = operationName;
-      this.tags = new HashMap<String, Object>();
+      this.tags = new HashMap<String, String>();
     }
 
     public Tracer.SpanBuilder withOperationName(String operationName) {
@@ -355,12 +355,12 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     public Tracer.SpanBuilder withTag(String key, boolean value) {
-      this.tags.put(key, value);
+      this.tags.put(key, value ? "true" : "false");
       return this;
     }
 
     public Tracer.SpanBuilder withTag(String key, Number value) {
-      this.tags.put(key, value);
+      this.tags.put(key, value.toString());
       return this;
     }
 
@@ -395,7 +395,11 @@ public abstract class AbstractTracer implements Tracer {
       }
       record.addToJoin_ids(new TraceJoinId(TRACE_GUID_KEY, traceID));
 
-      return new Span(AbstractTracer.this, record, traceID);
+      com.lightstep.tracer.Span span = new Span(AbstractTracer.this, record, traceID);
+      for (Map.Entry<String, String> pair : this.tags.entrySet()) {
+           span.setTag(pair.getKey(), pair.getValue());
+      }
+      return span;
     }
 
     public com.lightstep.tracer.Span start(long microseconds) {

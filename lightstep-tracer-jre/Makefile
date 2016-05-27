@@ -2,13 +2,16 @@
 # Encapsulate the common tasks in a Makefile so one does not need to be familiar
 # with gradle (or any Java-specific build tool) to get useful things done.
 #
-.PHONY: build clean publish
+.PHONY: build clean publish test
 
 build:
 	./gradlew build
 
 clean:
 	./gradlew clean
+
+test:
+	./gradlew test
 
 # TODO: Need to incorporate version incrementing
 # TODO: Need to incorporate a git push with tags

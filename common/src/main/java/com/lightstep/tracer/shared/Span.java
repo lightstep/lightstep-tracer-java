@@ -19,7 +19,7 @@ public class Span implements com.lightstep.tracer.Span {
   private final SpanRecord record;
   private final String traceID;
   private final ObjectMapper objectToJsonMapper;
-  
+
   Span (AbstractTracer tracer, SpanRecord record, String traceID) {
     this.tracer = tracer;
     this.record = record;
@@ -56,7 +56,7 @@ public class Span implements com.lightstep.tracer.Span {
   private static final boolean isJoinKey(String key) {
     return key.startsWith("join:");
   }
-  
+
   public com.lightstep.tracer.Span setTag(String key, String value) {
     synchronized (this.mutex) {
       if (isJoinKey(key)) {
@@ -109,7 +109,7 @@ public class Span implements com.lightstep.tracer.Span {
 
     log.setTimestamp_micros(timestampMicroseconds);
     log.setMessage(message);
-      
+
     if (payload != null) {
       // TODO perhaps if the payload is an exception, treat log as an error?
       if (payload instanceof JSONObject || payload instanceof JSONArray) {
@@ -139,5 +139,8 @@ public class Span implements com.lightstep.tracer.Span {
         "&at_micros=" + (System.currentTimeMillis() * 1000);
     }
   }
-}
 
+  public SpanRecord thriftRecord() {
+    return this.record;
+  }
+}
