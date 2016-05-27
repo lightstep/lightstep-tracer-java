@@ -9,6 +9,8 @@ make build      # builds Android, JRE libraries and examples
 make publish    # increment versions and publish the artifacts to bintray
 ```
 
+NOTE: to publish, `BINTRAY_USER` and `BINTRAY_API_KEY` need to be set in the shell environment.
+
 ###  Directory structure
 
 ```
