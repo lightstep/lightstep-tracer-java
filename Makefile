@@ -1,4 +1,4 @@
-.PHONY: build publish ci_test clean
+.PHONY: build publish ci_test clean test
 
 build:
 	make -C lightstep-tracer-jre  build
@@ -13,6 +13,9 @@ clean:
 	make -C examples/jre-simple clean
 	make -C lightstep-tracer-android clean
 	make -C lightstep-tracer-jre  clean
+
+test:
+	make -C lightstep-tracer-jre test
 
 # The publish step does a clean and rebuild as the `gradle build` hasn't seemed
 # 100% reliable in rebuilding when files are changed (?).  This may very much be
