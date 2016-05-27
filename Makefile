@@ -7,12 +7,13 @@ build:
 	make -C examples/android-simple build
 	make -C examples/android-demo build
 
+# gradle can fail on clean, thus the "|| true"
 clean:
-	make -C examples/android-demo clean
-	make -C examples/android-simple clean
-	make -C examples/jre-simple clean
-	make -C lightstep-tracer-android clean
-	make -C lightstep-tracer-jre  clean
+	make -C examples/android-demo clean || true
+	make -C examples/android-simple clean || true
+	make -C examples/jre-simple clean || true
+	make -C lightstep-tracer-android clean || true
+	make -C lightstep-tracer-jre  clean || true
 
 test:
 	make -C lightstep-tracer-jre test
