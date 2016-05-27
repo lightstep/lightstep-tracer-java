@@ -18,8 +18,7 @@ clean:
 	make -C lightstep-tracer-android clean || true
 	make -C lightstep-tracer-jre  clean || true
 
-test:
-	make -C lightstep-tracer-jre test
+test: ci_test
 
 # The publish step does a clean and rebuild as the `gradle build` hasn't seemed
 # 100% reliable in rebuilding when files are changed (?).  This may very much be
@@ -47,4 +46,4 @@ pre-publish:
 
 # CircleCI test
 ci_test:
-	true
+	make -C lightstep-tracer-jre test
