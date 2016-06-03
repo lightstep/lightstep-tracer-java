@@ -1,5 +1,5 @@
 // The library versions are kept in sync
-def current_version = new File('../common/VERSION').text
+def current_version = new File(project.projectDir, '/../common/VERSION').text
 
 // This sets up the dependencies for the build script *itself*, not the package.
 buildscript {
