@@ -183,7 +183,7 @@ public abstract class AbstractTracer implements Tracer {
     }
   }
 
-  public io.opentracing.Tracer.SpanBuilder buildSpan(String operationName) {
+  public Tracer.SpanBuilder buildSpan(String operationName) {
     return this.new SpanBuilder(operationName);
   }
 
@@ -371,10 +371,10 @@ public abstract class AbstractTracer implements Tracer {
       return this;
     }
 
-    public Span start() {
+    public io.opentracing.Span start() {
       synchronized (AbstractTracer.this.mutex) {
         if (AbstractTracer.this.isDisabled) {
-          return AbstractTracer.NoopSpan;
+          return NoopSpan.INSTANCE;
         }
       }
 
@@ -408,32 +408,4 @@ public abstract class AbstractTracer implements Tracer {
       return this.withStartTimestamp(microseconds).start();
     }
   }
-
-
-
-  // A span which is returned when the tracer is disabled.
-  private static final Span NoopSpan = new Span(null, null, null) {
-      public void finish() {}
-      public Span setTag(String key, String value) {
-        return this;
-      }
-      public Span setTag(String key, boolean value) {
-        return this;
-      }
-      public Span setTag(String key, Number value) {
-        return this;
-      }
-      public Span setBaggageItem(String key, String value) {
-        return this;
-      }
-      public String getBaggageItem(String key) {
-        return null;
-      }
-      public Span log(String message, /* @Nullable */ Object payload) {
-        return this;
-      }
-      public Span log(long instantMicroseconds, String message, /* @Nullable */ Object payload) {
-        return this;
-      }
-    };
 }
