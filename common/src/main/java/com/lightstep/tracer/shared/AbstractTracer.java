@@ -28,9 +28,9 @@ import com.lightstep.tracer.thrift.ReportingService;
 import com.lightstep.tracer.thrift.ReportRequest;
 import com.lightstep.tracer.thrift.ReportResponse;
 import com.lightstep.tracer.thrift.TraceJoinId;
+import com.lightstep.tracer.shared.Span;
 
 import io.opentracing.Tracer;
-import com.lightstep.tracer.shared.Span;
 
 public abstract class AbstractTracer implements Tracer {
   // Delay before sending the initial report

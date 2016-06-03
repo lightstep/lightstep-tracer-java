@@ -3,7 +3,7 @@ package com.lightstep.tracer.shared;
 import io.opentracing.Span;
 
 // A span which is returned when the tracer is disabled.
-public class NoopSpan implements Span {
+class NoopSpan implements Span {
 
     static final Span INSTANCE = new NoopSpan();
 
