@@ -1,7 +1,7 @@
 package com.lightstep.tracer.jre;
 
-import com.lightstep.tracer.Tracer;
-import com.lightstep.tracer.Span;
+import io.opentracing.Tracer;
+import io.opentracing.Span;
 import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.thrift.SpanRecord;
 import com.lightstep.tracer.thrift.KeyValue;
@@ -21,7 +21,7 @@ public class RuntimeTest {
 
     @Test
     public void spanSetTagTest() {
-        Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
+        Tracer tracer = new JRETracer(
             new com.lightstep.tracer.shared.Options("{your_access_token}"));
 
         Span span = tracer.buildSpan("test_span").start();
@@ -33,7 +33,7 @@ public class RuntimeTest {
 
     @Test
     public void spanBuilderWithTagTest() {
-        Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
+        Tracer tracer = new JRETracer(
             new com.lightstep.tracer.shared.Options("{your_access_token}"));
 
         Span span = tracer

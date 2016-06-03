@@ -12,7 +12,7 @@ import com.lightstep.tracer.thrift.LogRecord;
 import com.lightstep.tracer.thrift.SpanRecord;
 import com.lightstep.tracer.thrift.TraceJoinId;
 
-public class Span implements com.lightstep.tracer.Span {
+public class Span implements io.opentracing.Span {
 
   private final Object mutex = new Object();
   private final AbstractTracer tracer;
@@ -53,11 +53,15 @@ public class Span implements com.lightstep.tracer.Span {
     }
   }
 
+  public void close() {
+    this.finish();
+  }
+
   private static final boolean isJoinKey(String key) {
     return key.startsWith("join:");
   }
 
-  public com.lightstep.tracer.Span setTag(String key, String value) {
+  public Span setTag(String key, String value) {
     synchronized (this.mutex) {
       if (isJoinKey(key)) {
         this.record.addToJoin_ids(new TraceJoinId(key, value));
@@ -68,7 +72,7 @@ public class Span implements com.lightstep.tracer.Span {
     return this;
   }
 
-  public com.lightstep.tracer.Span setTag(String key, boolean value){
+  public Span setTag(String key, boolean value){
     synchronized (this.mutex) {
       if (isJoinKey(key)) {
         this.record.addToJoin_ids(new TraceJoinId(key, value ? "true" : "false"));
@@ -79,7 +83,7 @@ public class Span implements com.lightstep.tracer.Span {
     return this;
   }
 
-  public com.lightstep.tracer.Span setTag(String key, Number value) {
+  public Span setTag(String key, Number value) {
     synchronized (this.mutex) {
       if (isJoinKey(key)) {
         this.record.addToJoin_ids(new TraceJoinId(key, value.toString()));
@@ -90,7 +94,7 @@ public class Span implements com.lightstep.tracer.Span {
     return this;
   }
 
-  public com.lightstep.tracer.Span setBaggageItem(String key, String value) {
+  public Span setBaggageItem(String key, String value) {
     // TODO implement baggage
     return this;
   }
@@ -100,11 +104,11 @@ public class Span implements com.lightstep.tracer.Span {
     return "";
   }
 
-  public com.lightstep.tracer.Span log(String message, /* @Nullable */ Object payload) {
+  public Span log(String message, /* @Nullable */ Object payload) {
     return log(System.currentTimeMillis() * 1000, message, payload);
   }
 
-  public com.lightstep.tracer.Span log(long timestampMicroseconds, String message, /* @Nullable */ Object payload) {
+  public Span log(long timestampMicroseconds, String message, /* @Nullable */ Object payload) {
     LogRecord log = new LogRecord();
 
     log.setTimestamp_micros(timestampMicroseconds);
