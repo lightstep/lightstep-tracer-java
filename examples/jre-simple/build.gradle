@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     compile project(':lightstep-tracer-jre')
-    
+
     //compile 'com.lightstep.tracer:lightstep-tracer-jre:' + current_version
 }
 
