@@ -53,7 +53,6 @@ public class Span implements io.opentracing.Span {
     }
   }
 
-  // Added to implement the opentracing API; is this the best way to do it?
   public void close() {
     this.finish();
   }
