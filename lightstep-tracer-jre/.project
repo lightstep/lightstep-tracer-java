@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>lightstep-tracer-jre</name>
-	<comment/>
-	<projects/>
-	<natures>
-		<nature>org.eclipse.jdt.core.javanature</nature>
-	</natures>
+	<comment></comment>
+	<projects>
+	</projects>
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.jdt.core.javabuilder</name>
-			<arguments/>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.buildship.core.gradleprojectbuilder</name>
+			<arguments>
+			</arguments>
 		</buildCommand>
 	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.buildship.core.gradleprojectnature</nature>
+	</natures>
 	<linkedResources>
 		<link>
 			<name>src</name>
@@ -19,4 +27,24 @@
 			<location>/Users/kcamenzind/go/src/github.com/lightstep/java/common/src</location>
 		</link>
 	</linkedResources>
+	<filteredResources>
+		<filter>
+			<id>1464988285049</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-build</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1464988285061</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-.gradle</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
 </projectDescription>

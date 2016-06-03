@@ -1,5 +1,5 @@
 // Keep in sync with the current version
-def current_version = new File('../../common/VERSION').text
+def current_version = new File(project.projectDir, '../../common/VERSION').text
 
 apply plugin: 'java'
 
@@ -23,8 +23,6 @@ repositories {
 
 dependencies {
     compile project(':lightstep-tracer-jre')
-
-    //compile 'com.lightstep.tracer:lightstep-tracer-jre:' + current_version
 }
 
 

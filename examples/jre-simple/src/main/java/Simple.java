@@ -13,7 +13,6 @@ public class Simple {
         );
 
         Span span = tracer.buildSpan("test_span").start();
-        // is null ok to pass in for payload?
         span.log("Hello", null);
 
         Span childSpan = tracer.buildSpan("test_child_span").withParent(span).withTag("hi", "bye").start();
