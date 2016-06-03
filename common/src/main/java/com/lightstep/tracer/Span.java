@@ -32,6 +32,8 @@ public interface Span {
    */
   void finish();
 
+  // TODO: to implement open tracing, needs a close() method
+
   /**
    * Set a key:value tag on the Span.
    */
