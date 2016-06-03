@@ -1,0 +1,2 @@
+include ':lightstep-tracer-jre'
+project(':lightstep-tracer-jre').projectDir = new File(settingsDir, '../../lightstep-tracer-jre')
