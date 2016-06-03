@@ -43,16 +43,24 @@ The published JRE library is available on Bintray at [lightstep/maven/lightstep-
 
 *Replace `<VERSION>` below with the current version of the library.*
 
+build.gradle
 ```
 repositories {
     jcenter()
     maven {
-        url  "http://dl.bintray.com/lightstep/maven"
+      url  "http://oss.jfrog.org/oss-snapshot-local/"
     }
 }
 dependencies {
-    compile 'com.lightstep.tracer:lightstep-tracer-jre:<VERSION>'
+  compile project(':lightstep-tracer-jre')
 }
+```
+
+settings.gradle
+```
+include ':lightstep-tracer-jre'
+project(':lightstep-tracer-jre').projectDir = new File(settingsDir, '../../lightstep-tracer-jre')
+
 ```
 
 ## Development info
