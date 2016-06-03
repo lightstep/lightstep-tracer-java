@@ -1,0 +1,19 @@
+INDEX VERSION 1.127+/Users/kcamenzind/go/src/github.com/lightstep/java/.metadata/.plugins/org.eclipse.jdt.core
+506999199.index
+521061135.index
+1271342938.index
+3670248649.index
+3962986872.index
+1067258947.index
+3735975305.index
+1315525803.index
+3131291862.index
+2634225966.index
+1969767409.index
+4238018145.index
+3767115374.index
+404199878.index
+1753319412.index
+2363563081.index
+2867016645.index
+4036230714.index

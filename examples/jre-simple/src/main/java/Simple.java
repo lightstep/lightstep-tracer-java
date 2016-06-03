@@ -1,17 +1,31 @@
-import com.lightstep.tracer.Tracer;
-import com.lightstep.tracer.Span;
+
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+import com.lightstep.tracer.jre.JRETracer;
+import com.lightstep.tracer.shared.*;
 
 public class Simple {
     public static void main(String[] args) {
         System.out.println("Starting Simple example...");
 
-        Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
-            new com.lightstep.tracer.shared.Options("{your_access_token}"));
+        Tracer tracer = new JRETracer(
+            new Options("678ed8df5cb556751a4bfdfa51347666")
+        );
 
         Span span = tracer.buildSpan("test_span").start();
-        span.finish();
+        // is null ok to pass in for payload?
+        span.log("Hello", null);
 
-        com.lightstep.tracer.jre.JRETracer lsTracer = (com.lightstep.tracer.jre.JRETracer)tracer;
+        Span childSpan = tracer.buildSpan("test_child_span").withParent(span).withTag("hi", "bye").start();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {}
+        childSpan.finish();
+
+        span.log("World!", null);
+        span.close();
+
+        JRETracer lsTracer = (JRETracer)tracer;
         lsTracer.flush();
 
         // TODO: this is a terrible hack to ensure the flush finishes before the

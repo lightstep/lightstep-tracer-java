@@ -28,7 +28,9 @@ import com.lightstep.tracer.thrift.ReportingService;
 import com.lightstep.tracer.thrift.ReportRequest;
 import com.lightstep.tracer.thrift.ReportResponse;
 import com.lightstep.tracer.thrift.TraceJoinId;
-import com.lightstep.tracer.Tracer;
+
+import io.opentracing.Tracer;
+import com.lightstep.tracer.shared.Span;
 
 public abstract class AbstractTracer implements Tracer {
   // Delay before sending the initial report
@@ -181,11 +183,11 @@ public abstract class AbstractTracer implements Tracer {
     }
   }
 
-  public com.lightstep.tracer.Tracer.SpanBuilder buildSpan(String operationName) {
+  public io.opentracing.Tracer.SpanBuilder buildSpan(String operationName) {
     return this.new SpanBuilder(operationName);
   }
 
-  public <T> void inject(com.lightstep.tracer.Span span, T carrier) {
+  public <T> void inject(io.opentracing.Span span, T carrier) {
     // TODO implement
     throw new RuntimeException("inject: unimplemented");
   }
@@ -330,7 +332,7 @@ public abstract class AbstractTracer implements Tracer {
 
   class SpanBuilder implements Tracer.SpanBuilder{
     private String operationName;
-    private com.lightstep.tracer.Span parent;
+    private io.opentracing.Span parent;
     private Map<String, String> tags;
     private long startTimestampMicros;
 
@@ -344,7 +346,7 @@ public abstract class AbstractTracer implements Tracer {
       return this;
     }
 
-    public Tracer.SpanBuilder withParent(com.lightstep.tracer.Span parent) {
+    public Tracer.SpanBuilder withParent(io.opentracing.Span parent) {
       this.parent = parent;
       return this;
     }
@@ -369,7 +371,7 @@ public abstract class AbstractTracer implements Tracer {
       return this;
     }
 
-    public com.lightstep.tracer.Span start() {
+    public Span start() {
       synchronized (AbstractTracer.this.mutex) {
         if (AbstractTracer.this.isDisabled) {
           return AbstractTracer.NoopSpan;
@@ -386,7 +388,7 @@ public abstract class AbstractTracer implements Tracer {
       record.setSpan_guid(generateGUID());
 
       String traceID;
-      if (this.parent instanceof Span) {
+      if (this.parent instanceof io.opentracing.Span) {
         Span parentSpan = (Span)parent;
         traceID = parentSpan.getTraceID();
         record.addToAttributes(new KeyValue(PARENT_SPAN_GUID_KEY, parentSpan.getGUID()));
@@ -395,40 +397,42 @@ public abstract class AbstractTracer implements Tracer {
       }
       record.addToJoin_ids(new TraceJoinId(TRACE_GUID_KEY, traceID));
 
-      com.lightstep.tracer.Span span = new Span(AbstractTracer.this, record, traceID);
+      Span span = new Span(AbstractTracer.this, record, traceID);
       for (Map.Entry<String, String> pair : this.tags.entrySet()) {
            span.setTag(pair.getKey(), pair.getValue());
       }
       return span;
     }
 
-    public com.lightstep.tracer.Span start(long microseconds) {
+    public io.opentracing.Span start(long microseconds) {
       return this.withStartTimestamp(microseconds).start();
     }
   }
 
+
+
   // A span which is returned when the tracer is disabled.
-  private static final com.lightstep.tracer.Span NoopSpan = new com.lightstep.tracer.Span() {
+  private static final Span NoopSpan = new Span(null, null, null) {
       public void finish() {}
-      public com.lightstep.tracer.Span setTag(String key, String value) {
+      public Span setTag(String key, String value) {
         return this;
       }
-      public com.lightstep.tracer.Span setTag(String key, boolean value) {
+      public Span setTag(String key, boolean value) {
         return this;
       }
-      public com.lightstep.tracer.Span setTag(String key, Number value) {
+      public Span setTag(String key, Number value) {
         return this;
       }
-      public com.lightstep.tracer.Span setBaggageItem(String key, String value) {
+      public Span setBaggageItem(String key, String value) {
         return this;
       }
       public String getBaggageItem(String key) {
         return null;
       }
-      public com.lightstep.tracer.Span log(String message, /* @Nullable */ Object payload) {
+      public Span log(String message, /* @Nullable */ Object payload) {
         return this;
       }
-      public com.lightstep.tracer.Span log(long instantMicroseconds, String message, /* @Nullable */ Object payload) {
+      public Span log(long instantMicroseconds, String message, /* @Nullable */ Object payload) {
         return this;
       }
     };
