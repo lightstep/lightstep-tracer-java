@@ -1,19 +1,30 @@
 // Keep in sync with the current version
-def current_version = new File('../../common/VERSION').text
+def current_version = new File(project.projectDir, '../../common/VERSION').text
 
 apply plugin: 'java'
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [ "src/main" ]
+        }
+    }
+}
 
 repositories {
     jcenter()
     maven {
-        url  "http://dl.bintray.com/lightstep/maven"
+        // lightstep tracer (currently not updated)
+        //url  "http://dl.bintray.com/lightstep/maven"
+        // published beta artifacts of opentracing API 
+        url  "http://oss.jfrog.org/oss-snapshot-local/"
     }
 }
+
 dependencies {
-    // Include this *as well* to use the local files instead of the published version
-    compile files('../../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-' + current_version + '.jar')
-    compile 'com.lightstep.tracer:lightstep-tracer-jre:' + current_version
+    compile project(':lightstep-tracer-jre')
 }
+
 
 task runSample(type: JavaExec, dependsOn: 'classes') {
     main = 'Simple'
