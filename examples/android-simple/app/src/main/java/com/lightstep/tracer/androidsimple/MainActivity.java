@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.tracer = new com.lightstep.tracer.android.Tracer(
                 this,
-                new com.lightstep.tracer.shared.Options("{your_access_token}"));
+                new com.lightstep.tracer.shared.Options("678ed8df5cb556751a4bfdfa51347666"));
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

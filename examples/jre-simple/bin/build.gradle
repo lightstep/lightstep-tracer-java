@@ -6,7 +6,7 @@ apply plugin: 'java'
 sourceSets {
     main {
         java {
-            srcDirs = [ "src/main"]
+            srcDirs = [ "src/main" ]
         }
     }
 }
@@ -14,8 +14,8 @@ sourceSets {
 repositories {
     jcenter()
     maven {
-        // lightstep tracer  
-        url  "http://dl.bintray.com/lightstep/maven"
+        // lightstep tracer (currently not updated)
+        //url  "http://dl.bintray.com/lightstep/maven"
         // published beta artifacts of opentracing API 
         url  "http://oss.jfrog.org/oss-snapshot-local/"
     }
@@ -23,8 +23,7 @@ repositories {
 
 dependencies {
     compile 'io.opentracing:opentracing-api:0.1.0-SNAPSHOT'
-    compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.0'
-    //compile files("../../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-" + current_version + ".jar")
+    compile files("../../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-" + current_version + ".jar")
 }
 
 
