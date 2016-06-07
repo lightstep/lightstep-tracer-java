@@ -94,7 +94,6 @@ repositories {
         // published beta artifacts of opentracing API
         url  "http://oss.jfrog.org/oss-snapshot-local/"
         url  "http://dl.bintray.com/lightstep/maven"
-
     }
 }
 
