@@ -90,12 +90,18 @@ install {
 
 repositories {
     jcenter()
+    maven {
+        // published beta artifacts of opentracing API
+        url  "http://oss.jfrog.org/oss-snapshot-local/"
+    }
 }
 
 dependencies {
     compile 'org.apache.thrift:libthrift:0.9.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
     compile 'org.json:json:20160212'
+    compile 'io.opentracing:opentracing-api:0.1.0-SNAPSHOT'
+
 
     // TODO: can we remove this awkward dependency on the JRE JAR?
     compile files('../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-' + current_version + '.jar')
