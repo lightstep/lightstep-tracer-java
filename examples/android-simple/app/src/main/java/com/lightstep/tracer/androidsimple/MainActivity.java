@@ -10,8 +10,10 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.lightstep.tracer.Span;
-import com.lightstep.tracer.Tracer;
+import com.lightstep.tracer.shared.Options;
+
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,7 +26,9 @@ public class MainActivity extends AppCompatActivity {
 
         this.tracer = new com.lightstep.tracer.android.Tracer(
                 this,
-                new com.lightstep.tracer.shared.Options("{your_access_token}"));
+                new Options("{your LightStep token}"));
+
+        final Span span = tracer.buildSpan("showing button").start();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -38,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        span.finish();
     }
 
     @Override
