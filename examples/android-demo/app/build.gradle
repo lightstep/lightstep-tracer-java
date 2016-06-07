@@ -35,6 +35,7 @@ repositories {
     jcenter()
     maven {
         url  "http://dl.bintray.com/lightstep/maven"
+        url  "http://oss.jfrog.org/oss-snapshot-local/"
     }
 }
 

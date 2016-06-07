@@ -104,7 +104,8 @@ dependencies {
 
 
     // TODO: can we remove this awkward dependency on the JRE JAR?
-    compile files('../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-' + current_version + '.jar')
+    //compile files('../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-' + current_version + '.jar')
+    compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.24'
 }
 
 task sourcesJar(type: Jar) {
