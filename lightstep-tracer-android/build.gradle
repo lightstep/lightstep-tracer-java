@@ -93,6 +93,7 @@ repositories {
     maven {
         // published beta artifacts of opentracing API
         url  "http://oss.jfrog.org/oss-snapshot-local/"
+        url 
     }
 }
 
@@ -104,8 +105,7 @@ dependencies {
 
 
     // TODO: can we remove this awkward dependency on the JRE JAR?
-    //compile files('../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-' + current_version + '.jar')
-    compile 'com.lightstep.tracer:lightstep-tracer-jre:0.1.24'
+    compile 'com.lightstep.tracer:lightstep-tracer-jre:' + current_version
 }
 
 task sourcesJar(type: Jar) {
