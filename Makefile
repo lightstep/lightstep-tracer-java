@@ -25,7 +25,7 @@ test: ci_test
 # a setup error -- but for now, a clean build is done just in case.
 #
 # See https://bintray.com/lightstep for published artifacts
-publish: pre-publish clean build-libs test
+publish: pre-publish build-libs test
 	@git diff-index --quiet HEAD || (echo "git has uncommitted changes. Refusing to publish." && false)
 	make -C common inc-version
 	git add common/VERSION
