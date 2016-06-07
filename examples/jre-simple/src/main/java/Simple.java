@@ -9,7 +9,7 @@ public class Simple {
         System.out.println("Starting Simple example...");
 
         Tracer tracer = new JRETracer(
-            new Options("{your Lightstep access token}")
+            new Options("{your_access_token}")
         );
 
         Span span = tracer.buildSpan("test_span").start();
