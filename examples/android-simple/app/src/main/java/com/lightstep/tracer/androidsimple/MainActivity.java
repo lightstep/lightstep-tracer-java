@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.tracer = new com.lightstep.tracer.android.Tracer(
                 this,
-                new Options("{your LightStep token}"));
+                new Options("{your_access_token}"));
 
         final Span span = tracer.buildSpan("showing button").start();
 
