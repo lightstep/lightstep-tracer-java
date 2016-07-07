@@ -21,6 +21,9 @@ repositories {
     maven {
         url  "http://dl.bintray.com/lightstep/maven"
     }
+    maven {
+        url  "http://oss.jfrog.org/oss-snapshot-local/"
+    }
 }
 dependencies {
     compile 'com.lightstep.tracer:lightstep-tracer-android:<VERSION>'
