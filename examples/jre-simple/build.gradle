@@ -16,7 +16,7 @@ repositories {
     maven {
         // lightstep tracer (currently not updated)
         //url  "http://dl.bintray.com/lightstep/maven"
-        // published beta artifacts of opentracing API 
+        // published beta artifacts of opentracing API
         url  "http://oss.jfrog.org/oss-snapshot-local/"
     }
 }
