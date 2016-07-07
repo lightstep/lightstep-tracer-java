@@ -10,8 +10,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.lightstep.tracer.Span;
-import com.lightstep.tracer.Tracer;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 
 public class MainActivity extends AppCompatActivity {
 
