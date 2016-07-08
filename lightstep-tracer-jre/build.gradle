@@ -23,6 +23,9 @@ sourceCompatibility = '1.7'
 jar {
     baseName 'lightstep-tracer-jre'
     version = current_version
+    from {
+        configurations.compile.collect { it.isDirectory()? it : zipTree(it) }
+    }
 }
 
 // By default, only "src/" will be included, but we want to include the code
@@ -60,14 +63,14 @@ dependencies {
 }
 
 publishing {
-	publications {
-		MyPublication(MavenPublication) {
-			from components.java
-			groupId 'com.lightstep.tracer'
-    		artifactId 'lightstep-tracer-jre'
-    		version = current_version
-		}
-	}
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            groupId 'com.lightstep.tracer'
+            artifactId 'lightstep-tracer-jre'
+            version = current_version
+        }
+    }
 }
 
 // Bintray configuration so we can publish publically.  Requires the environment

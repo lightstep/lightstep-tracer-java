@@ -9,11 +9,12 @@ buildscript {
 
     repositories {
         jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:2.1.2'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
-        classpath 'com.github.dcendents:android-maven-plugin:1.2'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
     }
 }
 
@@ -40,7 +41,7 @@ android {
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 21
+        targetSdkVersion 23
         versionCode 2
         versionName version
     }
@@ -56,6 +57,12 @@ android {
                 srcDirs = [ "src/main", "../common/src"]
             }
         }
+    }
+
+    // lint throws an InvalidPackage error for java.nio.file, javax.security.sasl, javax.servlet.http, and javax.servlet.
+    // For now, I'm just going to ignore them.
+    lintOptions {
+        disable 'InvalidPackage'
     }
 }
 
@@ -110,6 +117,7 @@ repositories {
 }
 
 dependencies {
+    compile 'io.opentracing:opentracing-api:0.1.0-SNAPSHOT'
     compile 'org.apache.thrift:libthrift:0.9.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
     compile 'org.json:json:20160212'
@@ -118,7 +126,10 @@ dependencies {
 }
 
 task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
+    from {
+        android.sourceSets.main.java.srcDirs
+        configurations.compile.collect { it.isDirectory()? it : zipTree(it) }
+    }
     classifier = 'sources'
 }
 

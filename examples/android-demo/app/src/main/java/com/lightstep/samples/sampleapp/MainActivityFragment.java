@@ -22,6 +22,8 @@ import com.android.volley.toolbox.Volley;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 
+import com.lightstep.tracer.shared.Options;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,7 +54,7 @@ public class MainActivityFragment extends Fragment {
     // Initialize tracer
     this.tracer = new com.lightstep.tracer.android.Tracer(
             getContext(),
-            new com.lightstep.tracer.shared.Options("{your_access_token}"));
+            new Options("{your_access_token}"));
     Log.d(TAG, "Tracer successfully initialized!");
 
     View fragmentView = (View) inflater.inflate(R.layout.fragment_main, container, false);
