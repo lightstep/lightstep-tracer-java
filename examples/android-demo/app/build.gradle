@@ -39,7 +39,10 @@ repositories {
     }
     maven {
         url  "http://oss.jfrog.org/oss-snapshot-local/"
-    }    
+    }
+    flatDir {
+        dirs '../../../lightstep-tracer-android/build/outputs/aar'
+    }
 }
 
 dependencies {
@@ -49,5 +52,8 @@ dependencies {
     compile 'com.android.volley:volley:1.0.0'
     compile 'io.opentracing:opentracing-api:0.1.0-SNAPSHOT'
 
+    // Toggle the below to use the code in the source tree rather than the
+    // published version
     compile 'com.lightstep.tracer:lightstep-tracer-android:' + current_version
+    //compile(name:'lightstep-tracer-android-release', ext:'aar')
 }
