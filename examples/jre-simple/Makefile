@@ -1,11 +1,10 @@
 .PHONY: run build clean
 
-run: $(TARGET)
-	gradle runSample
+run:
+	./gradlew runSample
 
 clean:
-	gradle clean
+	./gradlew clean
 
-build: $(TARGET)
-$(TARGET): $(shell find src/main/java -type f -name *.java)
-	gradle build
+build:
+	./gradlew build

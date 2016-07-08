@@ -23,8 +23,10 @@ repositories {
 
 dependencies {
     compile 'io.opentracing:opentracing-api:0.1.0-SNAPSHOT'
-    compile 'com.lightstep.tracer:lightstep-tracer-jre:' + current_version
-    //compile files("../../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-" + current_version + ".jar")
+
+    // Toggle the below to alternate between the published and locally built artifacts
+    //compile 'com.lightstep.tracer:lightstep-tracer-jre:' + current_version
+    compile files("../../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-" + current_version + ".jar")
 }
 
 
