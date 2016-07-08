@@ -14,9 +14,9 @@ sourceSets {
 repositories {
     jcenter()
     maven {
-        // lightstep tracer  
         url  "http://dl.bintray.com/lightstep/maven"
-        // published beta artifacts of opentracing API 
+    }
+    maven {
         url  "http://oss.jfrog.org/oss-snapshot-local/"
     }
 }

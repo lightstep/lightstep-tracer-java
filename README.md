@@ -21,6 +21,9 @@ repositories {
     maven {
         url  "http://dl.bintray.com/lightstep/maven"
     }
+    maven {
+        url  "http://oss.jfrog.org/oss-snapshot-local/"
+    }
 }
 dependencies {
     compile 'com.lightstep.tracer:lightstep-tracer-android:<VERSION>'
@@ -52,15 +55,8 @@ repositories {
     }
 }
 dependencies {
-  compile project(':lightstep-tracer-jre')
+  compile 'com.lightstep.tracer:lightstep-tracer-jre:<VERSION>'
 }
-```
-
-settings.gradle
-```
-include ':lightstep-tracer-jre'
-project(':lightstep-tracer-jre').projectDir = new File(settingsDir, '../../lightstep-tracer-jre')
-
 ```
 
 ## Development info

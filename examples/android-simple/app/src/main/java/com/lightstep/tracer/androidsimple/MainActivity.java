@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.lightstep.tracer.shared.Options;
-
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 

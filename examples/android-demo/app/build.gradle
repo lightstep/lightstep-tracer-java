@@ -37,6 +37,9 @@ repositories {
         url  "http://dl.bintray.com/lightstep/maven"
         url  "http://oss.jfrog.org/oss-snapshot-local/"
     }
+    maven {
+        url  "http://oss.jfrog.org/oss-snapshot-local/"
+    }    
 }
 
 dependencies {
