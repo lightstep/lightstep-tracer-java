@@ -63,6 +63,7 @@ android {
     // For now, I'm just going to ignore them.
     lintOptions {
         disable 'InvalidPackage'
+        abortOnError false
     }
 }
 
@@ -122,7 +123,6 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
     compile 'org.json:json:20160212'
     compile 'javax.annotation:jsr250-api:1.0'
-    compile 'io.opentracing:opentracing-api:0.1.0-SNAPSHOT'
 }
 
 task sourcesJar(type: Jar) {
