@@ -37,6 +37,30 @@ dependencies {
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 ```
+* Initializing the Tracer and create a Span
+
+```java
+// Important the OpenTracing interfaces
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+
+...
+
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    
+    // Initialize LightStep tracer implementation in the main activity
+    // (or anywhere with a valid android.content.Context).
+    this.tracer = new com.lightstep.tracer.android.Tracer(
+         this,
+         new com.lightstep.tracer.shared.Options("{your_access_token}"));
+    ...
+    
+    // Start and finish a Span
+    Span span = this.tracer.buildSpan("hello_span").start();
+    this.doSomeWorkHere();
+    span.finish();
+```
 
 ### Using the JRE library
 
