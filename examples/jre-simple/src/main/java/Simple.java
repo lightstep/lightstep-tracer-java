@@ -50,7 +50,7 @@ public class Simple {
         System.out.println("Done!");
     }
 
-    public static void spawnWorkers(Tracer tracer, Span outerSpan) throws InterruptedException  {
+    public static void spawnWorkers(final Tracer tracer, Span outerSpan) throws InterruptedException  {
         final Span parentSpan = tracer.buildSpan("spawn_workers")
             .withParent(outerSpan)
             .start();
