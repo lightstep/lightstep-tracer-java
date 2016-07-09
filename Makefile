@@ -45,5 +45,6 @@ pre-publish:
 	@echo "\033[92mPublishing as $$BINTRAY_USER with key <HIDDEN> \033[0m"
 
 # CircleCI test
-ci_test:
+ci_test: build-libs
 	make -C lightstep-tracer-jre test
+	make -C examples/jre-simple run
