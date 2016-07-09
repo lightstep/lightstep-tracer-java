@@ -17,7 +17,7 @@ public class Simple {
         );
 
         // Create an outer span to capture all activity
-        Span parentSpan = tracer.buildSpan("outer_span").start();
+        final Span parentSpan = tracer.buildSpan("outer_span").start();
         parentSpan.log("Starting outer span", null);
 
         // Create a simple child span
@@ -51,7 +51,7 @@ public class Simple {
     }
 
     public static void spawnWorkers(Tracer tracer, Span outerSpan) throws InterruptedException  {
-        Span parentSpan = tracer.buildSpan("spawn_workers")
+        final Span parentSpan = tracer.buildSpan("spawn_workers")
             .withParent(outerSpan)
             .start();
 
