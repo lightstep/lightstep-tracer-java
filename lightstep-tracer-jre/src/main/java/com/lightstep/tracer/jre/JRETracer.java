@@ -19,27 +19,30 @@ public class JRETracer extends AbstractTracer {
 
     public JRETracer(Options options) {
         super(options);
+        this.addShutdownHook();
     }
 
     // Flush any data stored in the log and span buffers
     public void flush() {
         sendReport(true);
-        /*if (disabledTracer) return;
-
-        if (initializedTracer) {
-            if (debugReporter != null) {
-                debugFlush();
-            } else {
-                Connection connection = new Connection(this.serviceUrl);
-                connection.openConnection();
-                flushWorker(connection);
-                connection.closeConnection();
-            }
-        }*/
     }
 
     protected HashMap<String, String> retrieveDeviceInfo() {
         // TODO: Implement for Java Desktop Applications
         return null;
+    }
+
+    protected void addShutdownHook() {
+        final JRETracer self = this;
+        try {
+            Runtime.getRuntime().addShutdownHook(
+                new Thread() {
+                    public void run() {
+                        self.sendReport(true);
+                    }
+                }
+            );
+        } catch (Throwable t) {
+        }
     }
 }
