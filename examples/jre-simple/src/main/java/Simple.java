@@ -12,7 +12,7 @@ public class Simple {
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Starting Simple example...");
 
-        Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
+        final Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
             new com.lightstep.tracer.shared.Options("{your_access_token}")
         );
 
