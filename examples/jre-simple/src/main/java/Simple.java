@@ -14,9 +14,6 @@ public class Simple {
 
         Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
             new com.lightstep.tracer.shared.Options("{your_access_token}")
-                .withCollectorHost("localhost")
-                .withCollectorPort(9998)
-                .withCollectorEncryption(com.lightstep.tracer.shared.Options.Encryption.NONE)
         );
 
         // Create an outer span to capture all activity
