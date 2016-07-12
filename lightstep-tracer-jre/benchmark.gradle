@@ -1,0 +1,35 @@
+def current_version = new File(project.projectDir, '../common/VERSION').text
+
+apply plugin: 'java'
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [ "src/benchmark"]
+        }
+    }
+}
+
+repositories {
+    jcenter()
+    maven {
+        url  "http://dl.bintray.com/lightstep/maven"
+    }
+    maven {
+        url  "http://oss.jfrog.org/oss-snapshot-local/"
+    }
+}
+
+dependencies {
+    compile 'io.opentracing:opentracing-api:0.1.0-SNAPSHOT'
+
+    compile files("../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-" + current_version + ".jar")
+
+    testCompile 'junit:junit:4.11'
+}
+
+
+task runBench(type: JavaExec, dependsOn: 'classes') {
+    main = 'BenchmarkClient'
+    classpath = sourceSets.main.runtimeClasspath
+}
