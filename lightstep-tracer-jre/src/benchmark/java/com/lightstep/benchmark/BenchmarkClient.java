@@ -1,29 +1,107 @@
 package com.lightstep.benchmark;
 
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
 import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.shared.Options;
 
 class BenchmarkClient {
     public static final String clientName = "java";
 
+    BenchmarkClient(JRETracer testTracer, String baseUrl) {
+	this.baseUrl = baseUrl;
+	this.testTracer = testTracer;
+	this.objectMapper = new ObjectMapper();
+    }
+
     private String baseUrl;
     private JRETracer testTracer;
+    private ObjectMapper objectMapper;
 
     public static void main(String[] args) {
-	BenchmarkClient bc = new BenchmarkClient();
 	Options opts = new Options("notUsed").
 	    withCollectorHost("localhost").
 	    withCollectorPort(8000).
 	    withCollectorEncryption(Options.Encryption.TLS);
-	bc.testTracer = new JRETracer(opts);
-	bc.baseUrl = "http://" + opts.collectorHost + ":" + opts.collectorPort;
+	BenchmarkClient bc = new BenchmarkClient(new JRETracer(opts),
+						 "http://" + opts.collectorHost + ":" + opts.collectorPort + "/");
+
 	System.out.println("I Love LightStep-Java!");
 
 	bc.loop();
     }
 
+    public static class Control {
+	public int Concurrent;
+	public long Work;
+	public long Repeat;
+
+	public long Sleep;
+	public long SleepInterval;
+
+	public long BytesPerLog;
+	public long NumLogs;
+
+	public boolean Trace;
+	public boolean Exit;
+	public boolean Profile;
+    };
+
+    private <T> T getUrl(String path, Class<T> cl) {
+	try {
+	    URL u = new URL(baseUrl + path);
+	    URLConnection c = u.openConnection();
+	    c.setDoOutput(true);
+	    c.setDoInput(true);
+	    c.getOutputStream().close();
+
+	    BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream()));
+	    T obj = objectMapper.readValue(in, cl);
+	    in.close();
+	    return obj;
+	} catch(MalformedURLException e) {
+	    throw new RuntimeException(e);
+	} catch(IOException e) {
+	    throw new RuntimeException(e);
+	}
+    }
+
     private void loop() {
 	while (true) {
+	    Control c = getUrl("/control", Control.class);
+
+	    if (c.Exit) {
+		return;
+	    }
+
+	    // 	timing, flusht, sleeps, answer := t.run(&control)
+	    // 	var sleeps_buf bytes.Buffer
+	    // 	for _, s := range sleeps {
+	    // 		sleeps_buf.WriteString(fmt.Sprint(int64(s)))
+	    // 		sleeps_buf.WriteString(",")
+	    // 	}
+	    // 	t.getURL(fmt.Sprint(
+	    // 		benchlib.ResultPath,
+	    // 		"?timing=",
+	    // 		timing.Seconds(),
+	    // 		"&flush=",
+	    // 		flusht.Seconds(),
+	    // 		"&s=",
+	    // 		sleeps_buf.String(),
+	    // 		"&a=",
+	    // 		answer))
 	}
     }
 }
@@ -69,36 +147,6 @@ class BenchmarkClient {
 // 		glog.Fatal("Bench error reading body: ", err)
 // 	}
 // 	return body
-// }
-
-// func (t *testClient) loop() {
-// 	for {
-// 		body := t.getURL(benchlib.ControlPath)
-
-// 		control := benchlib.Control{}
-// 		if err := json.Unmarshal(body, &control); err != nil {
-// 			glog.Fatal("Bench control parse error: ", err)
-// 		}
-// 		if control.Exit {
-// 			return
-// 		}
-// 		timing, flusht, sleeps, answer := t.run(&control)
-// 		var sleeps_buf bytes.Buffer
-// 		for _, s := range sleeps {
-// 			sleeps_buf.WriteString(fmt.Sprint(int64(s)))
-// 			sleeps_buf.WriteString(",")
-// 		}
-// 		t.getURL(fmt.Sprint(
-// 			benchlib.ResultPath,
-// 			"?timing=",
-// 			timing.Seconds(),
-// 			"&flush=",
-// 			flusht.Seconds(),
-// 			"&s=",
-// 			sleeps_buf.String(),
-// 			"&a=",
-// 			answer))
-// 	}
 // }
 
 // func testBody(control *benchlib.Control) ([]time.Duration, int64) {

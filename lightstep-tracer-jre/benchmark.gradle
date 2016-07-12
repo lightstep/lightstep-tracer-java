@@ -23,11 +23,20 @@ repositories {
 dependencies {
     compile 'io.opentracing:opentracing-api:0.1.0-SNAPSHOT'
 
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
+
     compile files("../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-" + current_version + ".jar")
 
     testCompile 'junit:junit:4.11'
 }
 
+jar {
+    baseName 'lightstep-benchmark'
+    version = current_version
+    from {
+        configurations.compile.collect { it.isDirectory()? it : zipTree(it) }
+    }
+}
 
 task runBench(type: JavaExec, dependsOn: 'classes') {
     main = 'com.lightstep.benchmark.BenchmarkClient'
