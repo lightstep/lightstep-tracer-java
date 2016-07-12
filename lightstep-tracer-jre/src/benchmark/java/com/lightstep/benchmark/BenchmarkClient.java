@@ -1,4 +1,4 @@
-package com.lightstep.test;
+package com.lightstep.benchmark;
 
 import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.shared.Options;
@@ -179,20 +179,4 @@ class BenchmarkClient {
 // 		answer_final += answer[c]
 // 	}
 // 	return endTime.Sub(beginTest), flushDur, sleep_final, answer_final
-// }
-
-// func main() {
-// 	flag.Parse()
-// 	tc := &testClient{
-// 		baseURL: fmt.Sprint("http://",
-// 			benchlib.ControllerHost, ":",
-// 			benchlib.ControllerPort),
-// 		tracer: ls.NewTracer(ls.Options{
-// 			AccessToken: benchlib.ControllerAccessToken,
-// 			Collector: ls.Endpoint{
-// 				Host:      benchlib.ControllerHost,
-// 				Port:      benchlib.ControllerPort,
-// 				Plaintext: true},
-// 		})}
-// 	tc.loop()
 // }

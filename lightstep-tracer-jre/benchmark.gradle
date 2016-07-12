@@ -30,6 +30,6 @@ dependencies {
 
 
 task runBench(type: JavaExec, dependsOn: 'classes') {
-    main = 'BenchmarkClient'
+    main = 'com.lightstep.benchmark.BenchmarkClient'
     classpath = sourceSets.main.runtimeClasspath
 }
