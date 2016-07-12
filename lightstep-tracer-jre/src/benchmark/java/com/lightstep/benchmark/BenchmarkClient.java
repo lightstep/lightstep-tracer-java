@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
@@ -59,18 +60,14 @@ class BenchmarkClient {
 	public boolean Profile;
     };
 
-    private <T> T getUrl(String path, Class<T> cl) {
+    private InputStream getUrlReader(String path) {
 	try {
 	    URL u = new URL(baseUrl + path);
 	    URLConnection c = u.openConnection();
 	    c.setDoOutput(true);
 	    c.setDoInput(true);
 	    c.getOutputStream().close();
-
-	    BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream()));
-	    T obj = objectMapper.readValue(in, cl);
-	    in.close();
-	    return obj;
+	    return c.getInputStream();
 	} catch(MalformedURLException e) {
 	    throw new RuntimeException(e);
 	} catch(IOException e) {
@@ -78,9 +75,31 @@ class BenchmarkClient {
 	}
     }
 
+    private <T> T postGetJson(String path, Class<T> cl) {
+	try (BufferedReader br = new BufferedReader(new InputStreamReader(getUrlReader(path)))) {
+	    return objectMapper.readValue(br, cl);
+	} catch(IOException e) {
+	    throw new RuntimeException(e);
+	}
+    }
+
+    private Control getControl() {
+	return postGetJson("/control", Control.class);
+    }
+
+    private void postResult() {
+	// TODO THIS DATA IS BOGUS
+	String rq = String.format("/result?timing=%f&flush=%f&s=%s&a=%s",
+				  1.0, 1.0, "1,2,3", "1,2,3");
+	try (BufferedReader br = new BufferedReader(new InputStreamReader(getUrlReader(rq)))) {
+	} catch(IOException e) {
+	    throw new RuntimeException(e);
+	}
+    }
+
     private void loop() {
 	while (true) {
-	    Control c = getUrl("/control", Control.class);
+	    Control c = getControl();
 
 	    if (c.Exit) {
 		return;
@@ -102,6 +121,8 @@ class BenchmarkClient {
 	    // 		sleeps_buf.String(),
 	    // 		"&a=",
 	    // 		answer))
+
+	    postResult();
 	}
     }
 }
@@ -115,11 +136,6 @@ class BenchmarkClient {
 // 		lps[i] = 'A' + byte(i%26)
 // 	}
 // 	logPayloadStr = string(lps)
-// }
-
-// type testClient struct {
-// 	baseURL string
-// 	tracer  ot.Tracer
 // }
 
 // func work(n int64) int64 {
