@@ -40,7 +40,9 @@ sourceSets {
 }
 
 test {
-    testLogging.showStandardStreams = true
+    testLogging {
+        showStandardStreams = true
+    }
 }
 
 // Defines the repositories need for dependencies below
@@ -60,6 +62,10 @@ dependencies {
     compile 'org.json:json:20160212'
     compile 'javax.annotation:jsr250-api:1.0'
     testCompile 'junit:junit:4.11'
+}
+
+tasks.matching {it instanceof Test}.all {
+    testLogging.events = ["failed", "passed", "skipped"]
 }
 
 publishing {

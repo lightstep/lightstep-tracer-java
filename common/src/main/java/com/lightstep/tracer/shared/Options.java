@@ -66,9 +66,15 @@ public class Options {
   /**
    * Controls the amount of local output produced by the tracer.  It does not
    * affect which spans are sent to the collector.  It is useful for
-   * diagnosing problems in the tracer itself.
+   * diagnosing problems in the tracer itself. The default value is 1.
+   *
+   * 0 - never produce local output
+   * 1 - only the first error encountered will be echoed locally
+   * 2 - all errors are echoed locally
+   * 3 - all errors, warnings, and info statements are echoed locally
+   * 4 - all internal log statements, including debugging details
    */
-  public int verbose;
+  public int verbosity;
 
   public Options(String accessToken) {
     this.accessToken = accessToken;

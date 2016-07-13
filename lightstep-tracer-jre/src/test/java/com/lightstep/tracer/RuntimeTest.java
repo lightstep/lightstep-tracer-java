@@ -1,5 +1,8 @@
 package com.lightstep.tracer.jre;
 
+import java.io.PrintWriter;
+import java.util.Map;
+
 import io.opentracing.Tracer;
 import io.opentracing.Span;
 import com.lightstep.tracer.jre.JRETracer;
@@ -12,11 +15,20 @@ import org.junit.Test;
 
 public class RuntimeTest {
 
-    // Simple placeholder JUnit test
     @Test
-    public void sanityCheckTest() {
-        int result = 2 + 4;
-        assertEquals("Sanity check: 2 + 4 = 6", result, 6);
+    public void tracerHasStandardTags() throws Exception {
+        JRETracer tracer = new JRETracer(
+            new com.lightstep.tracer.shared.Options("{your_access_token}"));
+
+        JRETracer.Status status = tracer.status();
+
+        // Check standard tags
+        assertEquals(status.tags.containsKey("lightstep.component_name"), true);
+        assertEquals(status.tags.containsKey("lightstep.guid"), true);
+        assertEquals(status.tags.get("lightstep.tracer_platform"), "jre");
+        assertEquals(status.tags.containsKey("lightstep.tracer_platform_version"), true);
+        assertEquals(status.tags.containsKey("lightstep.tracer_version"), true);
+        assertEquals(status.tags.containsKey("lightstep.this_doesnt_exist"), false);
     }
 
     @Test
