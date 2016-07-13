@@ -133,7 +133,7 @@ class BenchmarkClient {
 	    r.answer = work(c.Work);
 
 	    for (long l = 0; l < c.NumLogs; l++) {
-		span.log("testlog", logPayloadStr.substr(0, c.BytesPerLog));
+		span.log("testlog", logPayloadStr.substring(0, (int)c.BytesPerLog));
 	    }
 
 	    span.finish();
