@@ -1,5 +1,6 @@
 .PHONY: build thrift inc-version generate-version-source-file
 
+THRIFT_DIR=src/main/java
 VERSION_SOURCE=src/main/java/com/lightstep/tracer/shared/Version.java
 
 build:
