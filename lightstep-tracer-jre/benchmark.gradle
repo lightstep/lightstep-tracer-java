@@ -22,6 +22,7 @@ repositories {
 
 dependencies {
     compile 'io.opentracing:opentracing-api:0.1.0-SNAPSHOT'
+    compile 'io.opentracing:opentracing-impl:0.1.0-SNAPSHOT'
 
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
 

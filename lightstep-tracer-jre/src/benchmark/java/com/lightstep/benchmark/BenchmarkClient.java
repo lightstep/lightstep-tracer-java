@@ -1,25 +1,27 @@
 package com.lightstep.benchmark;
 
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+// TODO several blocks of un-translated code (taken from goclient.go)
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.lightstep.tracer.jre.JRETracer;
+import com.lightstep.tracer.shared.Options;
+
+import io.opentracing.NoopTracer;
+import io.opentracing.Tracer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-
-import com.lightstep.tracer.jre.JRETracer;
-import com.lightstep.tracer.shared.Options;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
 
 class BenchmarkClient {
-    public static final String clientName = "java";
+    static final String clientName = "java";
 
     BenchmarkClient(JRETracer testTracer, String baseUrl) {
 	this.baseUrl = baseUrl;
@@ -27,40 +29,36 @@ class BenchmarkClient {
 	this.objectMapper = new ObjectMapper();
     }
 
-    private String baseUrl;
-    private JRETracer testTracer;
-    private ObjectMapper objectMapper;
+    String baseUrl;
+    JRETracer testTracer;
+    ObjectMapper objectMapper;
 
-    public static void main(String[] args) {
-	Options opts = new Options("notUsed").
-	    withCollectorHost("localhost").
-	    withCollectorPort(8000).
-	    withCollectorEncryption(Options.Encryption.TLS);
-	BenchmarkClient bc = new BenchmarkClient(new JRETracer(opts),
-						 "http://" + opts.collectorHost + ":" + opts.collectorPort + "/");
-
-	System.out.println("I Love LightStep-Java!");
-
-	bc.loop();
-    }
-
-    public static class Control {
+    static class Control {
 	public int Concurrent;
 	public long Work;
 	public long Repeat;
-
 	public long Sleep;
 	public long SleepInterval;
-
 	public long BytesPerLog;
 	public long NumLogs;
-
 	public boolean Trace;
 	public boolean Exit;
 	public boolean Profile;
     };
 
-    private InputStream getUrlReader(String path) {
+    static class Result {
+	double runTime;
+	double flushTime;
+	ArrayList<Long> sleepNanos;
+	long answer;
+    };
+
+    static class OneThreadResult {
+	ArrayList<Long> sleepNanos;
+	long answer;
+    };
+
+    InputStream getUrlReader(String path) {
 	try {
 	    URL u = new URL(baseUrl + path);
 	    URLConnection c = u.openConnection();
@@ -75,7 +73,7 @@ class BenchmarkClient {
 	}
     }
 
-    private <T> T postGetJson(String path, Class<T> cl) {
+    <T> T postGetJson(String path, Class<T> cl) {
 	try (BufferedReader br = new BufferedReader(new InputStreamReader(getUrlReader(path)))) {
 	    return objectMapper.readValue(br, cl);
 	} catch(IOException e) {
@@ -83,49 +81,27 @@ class BenchmarkClient {
 	}
     }
 
-    private Control getControl() {
+    Control getControl() {
 	return postGetJson("/control", Control.class);
     }
 
-    private void postResult() {
-	// TODO THIS DATA IS BOGUS
-	String rq = String.format("/result?timing=%f&flush=%f&s=%s&a=%s",
-				  1.0, 1.0, "1,2,3", "1,2,3");
-	try (BufferedReader br = new BufferedReader(new InputStreamReader(getUrlReader(rq)))) {
+    void postResult(Result r) {
+	StringBuilder rurl = new StringBuilder("/result?timing=");
+	rurl.append(r.runTime);
+	rurl.append("&flush=");
+	rurl.append(r.flushTime);
+	rurl.append("&a=");
+	rurl.append(r.answer);
+	rurl.append("&s=");
+	for (Long sleep : r.sleepNanos) {
+	    rurl.append(sleep.toString());
+	    rurl.append(",");
+	}
+	try (BufferedReader br = new BufferedReader(new InputStreamReader(getUrlReader(rurl.toString())))) {
 	} catch(IOException e) {
 	    throw new RuntimeException(e);
 	}
     }
-
-    private void loop() {
-	while (true) {
-	    Control c = getControl();
-
-	    if (c.Exit) {
-		return;
-	    }
-
-	    // 	timing, flusht, sleeps, answer := t.run(&control)
-	    // 	var sleeps_buf bytes.Buffer
-	    // 	for _, s := range sleeps {
-	    // 		sleeps_buf.WriteString(fmt.Sprint(int64(s)))
-	    // 		sleeps_buf.WriteString(",")
-	    // 	}
-	    // 	t.getURL(fmt.Sprint(
-	    // 		benchlib.ResultPath,
-	    // 		"?timing=",
-	    // 		timing.Seconds(),
-	    // 		"&flush=",
-	    // 		flusht.Seconds(),
-	    // 		"&s=",
-	    // 		sleeps_buf.String(),
-	    // 		"&a=",
-	    // 		answer))
-
-	    postResult();
-	}
-    }
-}
 
 // var (
 // 	logPayloadStr string
@@ -148,24 +124,10 @@ class BenchmarkClient {
 // 	return x
 // }
 
-// func (t *testClient) getURL(path string) []byte {
-// 	resp, err := http.Get(t.baseURL + path)
-// 	if err != nil {
-// 		glog.Fatal("Bench control request failed: ", err)
-// 	}
-// 	if resp.StatusCode != 200 {
-// 		glog.Fatal("Bench control status != 200: ", resp.Status)
-// 	}
-
-// 	defer resp.Body.Close()
-// 	body, err := ioutil.ReadAll(resp.Body)
-// 	if err != nil {
-// 		glog.Fatal("Bench error reading body: ", err)
-// 	}
-// 	return body
-// }
-
-// func testBody(control *benchlib.Control) ([]time.Duration, int64) {
+    OneThreadResult testBody(Control c, Tracer t) {
+	OneThreadResult r = new OneThreadResult();
+	r.sleepNanos = new ArrayList<Long>();
+	
 // 	var sleep_debt time.Duration
 // 	var answer int64
 // 	num_sleeps := (time.Duration(control.Repeat) * control.Sleep) / control.SleepInterval
@@ -190,57 +152,86 @@ class BenchmarkClient {
 // 		sleeps[sleep_cnt] = elapsed
 // 		sleep_cnt++
 // 	}
-// 	return sleeps, answer
-// }
 
-// func (t *testClient) run(control *benchlib.Control) (time.Duration, time.Duration, []time.Duration, int64) {
-// 	if control.Trace {
-// 		ot.InitGlobalTracer(t.tracer)
-// 	} else {
-// 		ot.InitGlobalTracer(ot.NoopTracer{})
-// 	}
-// 	conc := control.Concurrent
-// 	runtime.GOMAXPROCS(conc)
-// 	runtime.GC()
+	return r;
+    }
 
-// 	sleeps := make([][]time.Duration, conc, conc)
-// 	answer := make([]int64, conc, conc)
+    Result runTest(Control c) {
+	Tracer tracer;
+	if (c.Trace) {
+	    tracer = testTracer;
+	} else {
+	    tracer = new NoopTracer();
+	}
 
-// 	beginTest := time.Now()
-// 	if conc == 1 {
-// 		sleeps[0], answer[0] = testBody(control)
-// 	} else {
-// 		start := &sync.WaitGroup{}
-// 		finish := &sync.WaitGroup{}
-// 		start.Add(conc)
-// 		finish.Add(conc)
-// 		for c := 0; c < conc; c++ {
-// 			c := c
-// 			go func() {
-// 				start.Done()
-// 				start.Wait()
-// 				sleeps[c], answer[c] = testBody(control)
-// 				finish.Done()
-// 			}()
-// 		}
-// 		finish.Wait()
-// 	}
-// 	endTime := time.Now()
-// 	flushDur := time.Duration(0)
-// 	if control.Trace {
-// 		recorder := t.tracer.(basictracer.Tracer).Options().Recorder.(*ls.Recorder)
-// 		recorder.Flush()
-// 		flushDur = time.Now().Sub(endTime)
-// 	}
-// 	var sleep_final []time.Duration
-// 	var answer_final int64
-// 	for c := 0; c < conc; c++ {
-// 		for _, s := range sleeps[c] {
-// 			if s != 0 {
-// 				sleep_final = append(sleep_final, s)
-// 			}
-// 		}
-// 		answer_final += answer[c]
-// 	}
-// 	return endTime.Sub(beginTest), flushDur, sleep_final, answer_final
-// }
+	System.gc();
+
+	Result res = new Result();
+	int conc = c.Concurrent;
+
+	ArrayList<OneThreadResult> results = new ArrayList<OneThreadResult>();
+	long beginTest = System.currentTimeMillis();
+
+	if (conc == 1) {
+	    results.add(testBody(c, tracer));
+	} else {
+	    ArrayList<Thread> threads = new ArrayList<Thread>();
+	    for (int i = 0; i < conc; i++) {
+		Thread th = new Thread() {
+			public void run() {
+			    OneThreadResult tr = testBody(c, tracer);
+			    synchronized (results) {
+				results.add(tr);
+			    }
+			}};
+		th.start();
+		threads.add(th);
+	    }
+	    for (Thread th : threads) {
+		try {
+		    th.join();
+		} catch (InterruptedException e) {
+		    throw new RuntimeException(e);
+		}
+	    }
+	}
+ 	long endTest = System.currentTimeMillis();
+ 	if (c.Trace) {
+	    ((JRETracer)tracer).flush();
+	    res.flushTime = (System.currentTimeMillis() - endTest) / 1000.0;
+ 	}
+
+	res.runTime = (endTest - beginTest) / 1000.0;
+	res.sleepNanos = new ArrayList<Long>();
+	for (OneThreadResult r1 : results) {
+	    res.sleepNanos.addAll(r1.sleepNanos);
+	    res.answer += r1.answer;
+	}
+	return res;
+    }
+
+    void loop() {
+	while (true) {
+	    Control c = getControl();
+
+	    if (c.Exit) {
+		return;
+	    }
+
+	    postResult(runTest(c));
+	}
+    }
+
+    public static void main(String[] args) {
+	Options opts = new Options("notUsed").
+	    withCollectorHost("localhost").
+	    withCollectorPort(8000).
+	    withCollectorEncryption(Options.Encryption.TLS);
+	BenchmarkClient bc = new BenchmarkClient(new JRETracer(opts),
+						 "http://" + opts.collectorHost + ":" + opts.collectorPort + "/");
+
+	System.out.println("I Love LightStep-Java!");
+
+	bc.loop();
+    }
+}
