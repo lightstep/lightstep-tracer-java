@@ -1,5 +1,5 @@
 // Keep in sync with the current version
-def current_version = new File('../../common/VERSION').text
+def current_version = new File('../../common/VERSION').text.trim()
 
 apply plugin: 'com.android.application'
 

@@ -28,7 +28,7 @@ test: ci_test
 publish: pre-publish build-libs test
 	@git diff-index --quiet HEAD || (echo "git has uncommitted changes. Refusing to publish." && false)
 	make -C common inc-version
-	git add common/VERSION
+	git add common/VERSION common/src
 	git commit -m "Update VERSION"
 	git tag `cat common/VERSION`
 	git push

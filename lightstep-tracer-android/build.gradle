@@ -1,5 +1,5 @@
 // The library versions are kept in sync
-version = new File('../common/VERSION').text
+version = new File('../common/VERSION').text.trim()
 def current_version = version
 
 // This sets up the dependencies for the build script *itself*, not the package.
