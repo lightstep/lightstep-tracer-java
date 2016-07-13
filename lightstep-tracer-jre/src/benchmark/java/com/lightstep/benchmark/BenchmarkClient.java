@@ -231,7 +231,7 @@ class BenchmarkClient {
 	Options opts = new Options("notUsed").
 	    withCollectorHost("localhost").
 	    withCollectorPort(8000).
-	    withCollectorEncryption(Options.Encryption.TLS);
+	    withCollectorEncryption(Options.Encryption.NONE);
 	BenchmarkClient bc = new BenchmarkClient(new JRETracer(opts),
 						 "http://" + opts.collectorHost + ":" + opts.collectorPort + "/");
 	bc.loop();
