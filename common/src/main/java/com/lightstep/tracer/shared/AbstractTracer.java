@@ -44,8 +44,11 @@ public abstract class AbstractTracer implements Tracer {
   private static final int DEFAULT_PLAINTEXT_PORT = 80;
   private static final String COLLECTOR_PATH = "/_rpc/v1/reports/binary";
 
-  public static final String COMPONENT_NAME_KEY = "component_name";
-  public static final String GUID_KEY = "guid";
+  public static final String LIGHTSTEP_TRACER_PLATFORM_KEY = "lightstep.tracer_platform";
+  public static final String LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY = "lightstep.tracer_platform_version";
+  public static final String LIGHTSTEP_TRACER_VERSION_KEY = "lightstep.tracer_version";
+  public static final String COMPONENT_NAME_KEY = "lightstep.component_name";
+  public static final String GUID_KEY = "lightstep.guid";
 
   /**
    * The tag key used to define traces which are joined based on a GUID.
@@ -59,7 +62,7 @@ public abstract class AbstractTracer implements Tracer {
 
   // copied from options
   private final int maxBufferedSpans;
-  protected final int verbose;
+  protected final int verbosity;
 
   private final Auth auth;
   protected final Runtime runtime;
@@ -86,7 +89,7 @@ public abstract class AbstractTracer implements Tracer {
     this.spans = new ArrayList<SpanRecord>(maxBufferedSpans);
 
     this.clockState = new ClockState();
-    this.verbose = options.verbose;
+    this.verbosity = options.verbosity;
 
     this.auth = new Auth();
     auth.setAccess_token(options.accessToken);
@@ -111,7 +114,7 @@ public abstract class AbstractTracer implements Tracer {
     this.runtime = new Runtime();
     this.runtime.setStart_micros(System.currentTimeMillis() * 1000);
     for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
-      this.runtime.addToAttrs(new KeyValue(entry.getKey(), entry.getValue().toString()));
+      this.addTracerTag(entry.getKey(), entry.getValue().toString());
     }
 
     String host = options.collectorHost != null ? options.collectorHost : DEFAULT_HOST;
@@ -328,6 +331,10 @@ public abstract class AbstractTracer implements Tracer {
     // Note that ThreadLocalRandom is a singleton, thread safe Random Generator
     long guid = ThreadLocalRandom.current().nextLong(Long.MAX_VALUE);
     return Long.toHexString(guid);
+  }
+
+  protected void addTracerTag(String key, String value) {
+    this.runtime.addToAttrs(new KeyValue(key, value));
   }
 
   class SpanBuilder implements Tracer.SpanBuilder{
