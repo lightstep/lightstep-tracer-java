@@ -1,13 +1,12 @@
 package com.lightstep.benchmark;
 
-// TODO several blocks of un-translated code (taken from goclient.go)
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.shared.Options;
 
 import io.opentracing.NoopTracer;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 
 import java.io.BufferedReader;
@@ -114,44 +113,50 @@ class BenchmarkClient {
 // 	logPayloadStr = string(lps)
 // }
 
-// func work(n int64) int64 {
-// 	const primeWork = 982451653
-// 	x := int64(primeWork)
-// 	for n != 0 {
-// 		x *= primeWork
-// 		n--
-// 	}
-// 	return x
-// }
+    static final long primeWork = 982451653;
+
+    long work(long n) {
+	long x = primeWork;
+	for (; n != 0; --n) {
+	    x *= primeWork;
+	}
+ 	return x;
+    }
 
     OneThreadResult testBody(Control c, Tracer t) {
 	OneThreadResult r = new OneThreadResult();
 	r.sleepNanos = new ArrayList<Long>();
-	
-// 	var sleep_debt time.Duration
-// 	var answer int64
-// 	num_sleeps := (time.Duration(control.Repeat) * control.Sleep) / control.SleepInterval
-// 	sleeps := make([]time.Duration, num_sleeps)
-// 	sleep_cnt := 0
-// 	for i := int64(0); i < control.Repeat; i++ {
-// 		span := ot.StartSpan("span/test")
-// 		answer = work(control.Work)
+
+	long sleepDebt = 0;
+
+ 	for (long i = 0; i < c.Repeat; i++) {
+	    Span span = t.buildSpan("span/test").start();
+	    r.answer = work(c.Work);
+
 // 		for i := int64(0); i < control.NumLogs; i++ {
 // 			span.LogEventWithPayload("testlog",
 // 				logPayloadStr[0:control.BytesPerLog])
 // 		}
-// 		span.Finish()
-// 		sleep_debt += control.Sleep
-// 		if sleep_debt < control.SleepInterval {
-// 			continue
-// 		}
-// 		begin := time.Now()
-// 		time.Sleep(sleep_debt)
-// 		elapsed := time.Now().Sub(begin)
-// 		sleep_debt -= elapsed
-// 		sleeps[sleep_cnt] = elapsed
-// 		sleep_cnt++
-// 	}
+
+	    span.finish();
+	    sleepDebt += c.Sleep;
+
+	    if (sleepDebt <= c.SleepInterval) {
+		continue;
+	    }
+
+	    long beginSleep = System.currentTimeMillis();
+	    try {
+		long millis = sleepDebt / 1000000;
+		Thread.sleep(millis);
+	    } catch (InterruptedException e) {
+	    }
+
+	    long endSleep = System.currentTimeMillis();
+	    long slept = (endSleep - beginSleep) * 1000000;
+	    sleepDebt -= slept;
+	    r.sleepNanos.add(slept);
+ 	}
 
 	return r;
     }
