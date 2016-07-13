@@ -109,4 +109,9 @@ public class Options {
     this.maxReportingIntervalSeconds = maxReportingIntervalSeconds;
     return this;
   }
+
+  public Options withVerbosity(int verbosity) {
+    this.verbosity = verbosity;
+    return this;
+  }
 }

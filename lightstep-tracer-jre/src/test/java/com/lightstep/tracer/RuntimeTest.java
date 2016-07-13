@@ -32,6 +32,22 @@ public class RuntimeTest {
     }
 
     @Test
+    public void tracerOptionsAreSupported() {
+        // Ensure all the expected option methods are there and support
+        // chaining.
+        com.lightstep.tracer.shared.Options options =
+            new com.lightstep.tracer.shared.Options("{your_access_token}")
+                .withCollectorHost("localhost")
+                .withCollectorPort(4321)
+                .withCollectorEncryption(com.lightstep.tracer.shared.Options.Encryption.NONE)
+                .withVerbosity(2)
+                .withTag("my_tracer_tag", "zebra_stripes")
+                .withMaxReportingIntervalSeconds(30);
+
+        JRETracer tracer = new JRETracer(options);
+    }
+
+    @Test
     public void spanSetTagTest() {
         Tracer tracer = new JRETracer(
             new com.lightstep.tracer.shared.Options("{your_access_token}"));
