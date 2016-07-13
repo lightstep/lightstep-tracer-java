@@ -32,6 +32,16 @@ class BenchmarkClient {
     JRETracer testTracer;
     ObjectMapper objectMapper;
 
+    static String logPayloadStr;
+    
+    static {
+	StringBuilder b = new StringBuilder();
+ 	for (long i = 0; i < 1<<20; i++) {
+	    b.append('A');
+ 	}
+ 	logPayloadStr = b.toString();
+    }
+
     static class Control {
 	public int Concurrent;
 	public long Work;
@@ -102,17 +112,6 @@ class BenchmarkClient {
 	}
     }
 
-// var (
-// 	logPayloadStr string
-// )
-// func init() {
-// 	lps := make([]byte, benchlib.LogsSizeMax)
-// 	for i := 0; i < len(lps); i++ {
-// 		lps[i] = 'A' + byte(i%26)
-// 	}
-// 	logPayloadStr = string(lps)
-// }
-
     static final long primeWork = 982451653;
 
     long work(long n) {
@@ -133,10 +132,9 @@ class BenchmarkClient {
 	    Span span = t.buildSpan("span/test").start();
 	    r.answer = work(c.Work);
 
-// 		for i := int64(0); i < control.NumLogs; i++ {
-// 			span.LogEventWithPayload("testlog",
-// 				logPayloadStr[0:control.BytesPerLog])
-// 		}
+	    for (long l = 0; l < c.NumLogs; l++) {
+		span.log("testlog", logPayloadStr.substr(0, c.BytesPerLog));
+	    }
 
 	    span.finish();
 	    sleepDebt += c.Sleep;
