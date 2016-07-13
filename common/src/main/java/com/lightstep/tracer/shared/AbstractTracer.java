@@ -36,6 +36,8 @@ import com.lightstep.tracer.thrift.ReportResponse;
 import com.lightstep.tracer.thrift.TraceJoinId;
 import com.lightstep.tracer.shared.Span;
 
+import io.opentracing.Format;
+import io.opentracing.Reference;
 import io.opentracing.Tracer;
 
 public abstract class AbstractTracer implements Tracer {
@@ -71,12 +73,12 @@ public abstract class AbstractTracer implements Tracer {
   /**
    * The tag key used to define traces which are joined based on a GUID.
    */
-	public static final String TRACE_GUID_KEY = "join:trace_guid";
+  public static final String TRACE_GUID_KEY = "join:trace_guid";
   /**
    * The tag key used to record the relationship between child and parent
    * spans.
    */
-	public static final String PARENT_SPAN_GUID_KEY = "parent_span_guid";
+  public static final String PARENT_SPAN_GUID_KEY = "parent_span_guid";
 
   // copied from options
   private final int maxBufferedSpans;
@@ -295,12 +297,12 @@ public abstract class AbstractTracer implements Tracer {
     return this.new SpanBuilder(operationName);
   }
 
-  public <T> void inject(io.opentracing.Span span, T carrier) {
+  public <W> void inject(io.opentracing.SpanContext spanContext, Format<?, W> format, W carrier) {
     // TODO implement
     throw new RuntimeException("inject: unimplemented");
   }
 
-  public <T> Tracer.SpanBuilder join(T carrier) {
+  public <R> io.opentracing.SpanContext extract(Format<R, ?> format, R carrier) {
     // TODO implement
     throw new RuntimeException("join: unimplemented");
   }
@@ -473,7 +475,7 @@ public abstract class AbstractTracer implements Tracer {
 
   class SpanBuilder implements Tracer.SpanBuilder{
     private String operationName;
-    private io.opentracing.Span parent;
+    private io.opentracing.SpanContext parent;
     private Map<String, String> tags;
     private long startTimestampMicros;
 
@@ -487,8 +489,16 @@ public abstract class AbstractTracer implements Tracer {
       return this;
     }
 
-    public Tracer.SpanBuilder withParent(io.opentracing.Span parent) {
+    public Tracer.SpanBuilder withChildOf(io.opentracing.SpanContext parent) {
       this.parent = parent;
+      return this;
+    }
+
+    public Tracer.SpanBuilder withReference(Reference ref) {
+      if (ref.type() == Reference.Type.CHILD_OF ||
+          ref.type() == Reference.Type.FOLLOWS_FROM) {
+        this.parent = ref.referee();
+      }
       return this;
     }
 
@@ -528,17 +538,19 @@ public abstract class AbstractTracer implements Tracer {
       record.setOldest_micros(this.startTimestampMicros);
       record.setSpan_guid(generateGUID());
 
-      String traceID;
-      if (this.parent instanceof io.opentracing.Span) {
-        Span parentSpan = (Span)parent;
-        traceID = parentSpan.getTraceID();
-        record.addToAttributes(new KeyValue(PARENT_SPAN_GUID_KEY, parentSpan.getGUID()));
+      String traceId;
+      if (this.parent != null && this.parent instanceof SpanContext) {
+        SpanContext lightstepSpanContext = (SpanContext)parent;
+        traceId = lightstepSpanContext.getTraceId();
+        record.addToAttributes(new KeyValue(
+              PARENT_SPAN_GUID_KEY,
+              lightstepSpanContext.getSpanId()));
       } else {
-        traceID = generateGUID();
+        traceId = generateGUID();
       }
-      record.addToJoin_ids(new TraceJoinId(TRACE_GUID_KEY, traceID));
+      record.addToJoin_ids(new TraceJoinId(TRACE_GUID_KEY, traceId));
 
-      Span span = new Span(AbstractTracer.this, record, traceID);
+      Span span = new Span(AbstractTracer.this, new SpanContext(traceId), record);
       for (Map.Entry<String, String> pair : this.tags.entrySet()) {
            span.setTag(pair.getKey(), pair.getValue());
       }
