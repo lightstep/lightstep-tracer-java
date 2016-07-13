@@ -145,15 +145,15 @@ class BenchmarkClient {
 		continue;
 	    }
 
-	    long beginSleep = System.currentTimeMillis();
+	    long beginSleep = System.nanoTime();
 	    try {
 		long millis = sleepDebt / 1000000;
 		Thread.sleep(millis);
 	    } catch (InterruptedException e) {
 	    }
 
-	    long endSleep = System.currentTimeMillis();
-	    long slept = (endSleep - beginSleep) * 1000000;
+	    long endSleep = System.nanoTime();
+	    long slept = endSleep - beginSleep;
 	    sleepDebt -= slept;
 	    r.sleepNanos.add(slept);
  	}
@@ -175,7 +175,7 @@ class BenchmarkClient {
 	int conc = c.Concurrent;
 
 	ArrayList<OneThreadResult> results = new ArrayList<OneThreadResult>();
-	long beginTest = System.currentTimeMillis();
+	long beginTest = System.nanoTime();
 
 	if (conc == 1) {
 	    results.add(testBody(c, tracer));
@@ -200,13 +200,13 @@ class BenchmarkClient {
 		}
 	    }
 	}
- 	long endTest = System.currentTimeMillis();
+ 	long endTest = System.nanoTime();
  	if (c.Trace) {
 	    ((JRETracer)tracer).flush();
-	    res.flushTime = (System.currentTimeMillis() - endTest) / 1000.0;
+	    res.flushTime = (System.nanoTime() - endTest) / 1e9;
  	}
 
-	res.runTime = (endTest - beginTest) / 1000.0;
+	res.runTime = (endTest - beginTest) / 1e9;
 	res.sleepNanos = new ArrayList<Long>();
 	for (OneThreadResult r1 : results) {
 	    res.sleepNanos.addAll(r1.sleepNanos);
@@ -234,9 +234,6 @@ class BenchmarkClient {
 	    withCollectorEncryption(Options.Encryption.TLS);
 	BenchmarkClient bc = new BenchmarkClient(new JRETracer(opts),
 						 "http://" + opts.collectorHost + ":" + opts.collectorPort + "/");
-
-	System.out.println("I Love LightStep-Java!");
-
 	bc.loop();
     }
 }
