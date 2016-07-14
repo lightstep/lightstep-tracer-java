@@ -51,6 +51,17 @@ public abstract class AbstractTracer implements Tracer {
   public static final String GUID_KEY = "lightstep.guid";
 
   /**
+   * For mapping internal logs to Android log levels without importing Android
+   * pacakges.
+   */
+  protected enum InternalLogLevel {
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR
+  }
+
+  /**
    * The tag key used to define traces which are joined based on a GUID.
    */
 	public static final String TRACE_GUID_KEY = "join:trace_guid";
@@ -467,7 +478,7 @@ public abstract class AbstractTracer implements Tracer {
     if (this.verbosity < 4) {
         return;
     }
-    this.printLogToConsole("[LightStep:DEBUG] " + msg, payload);
+    this.printLogToConsole(InternalLogLevel.DEBUG, msg, payload);
   }
 
   /**
@@ -484,7 +495,7 @@ public abstract class AbstractTracer implements Tracer {
     if (this.verbosity < 3) {
         return;
     }
-    this.printLogToConsole("[LightStep:INFO] " + msg, payload);
+    this.printLogToConsole(InternalLogLevel.INFO, msg, payload);
   }
 
   /**
@@ -501,7 +512,7 @@ public abstract class AbstractTracer implements Tracer {
     if (this.verbosity < 3) {
         return;
     }
-    this.printLogToConsole("[LightStep:WARN] " + msg, payload);
+    this.printLogToConsole(InternalLogLevel.WARN, msg, payload);
   }
 
   /**
@@ -522,12 +533,10 @@ public abstract class AbstractTracer implements Tracer {
       return;
     }
     this.visibleErrorCount++;
-    this.printLogToConsole("[LightStep:ERROR] " + msg, payload);
+    this.printLogToConsole(InternalLogLevel.ERROR, msg, payload);
   }
 
-  protected void printLogToConsole(String msg, Object payload) {
-    // TODO: make this abstract and implement in JRE & Android
-  }
+  protected abstract void printLogToConsole(InternalLogLevel level, String msg, Object payload);
 
   /**
    * Internal class used primarily for unit testing and debugging. This is not

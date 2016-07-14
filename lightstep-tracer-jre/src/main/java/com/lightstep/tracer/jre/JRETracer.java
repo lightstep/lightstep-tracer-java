@@ -31,8 +31,26 @@ public class JRETracer extends AbstractTracer {
         sendReport(true);
     }
 
-    protected void printLogToConsole(String msg, Object payload) {
-        String s = msg;
+    protected void printLogToConsole(InternalLogLevel level, String msg, Object payload) {
+        String s;
+        switch (level) {
+        case DEBUG:
+            s = "[Lightstep:DEBUG] ";
+            break;
+        case INFO:
+            s = "[Lightstep:INFO] ";
+            break;
+        case WARN:
+            s = "[Lightstep:WARN] ";
+            break;
+        case ERROR:
+            s = "[Lightstep:ERROR] ";
+            break;
+        default:
+            s = "[Lightstep:???] ";
+            break;
+        }
+        s += msg;
         if (payload != null) {
             s += " " + payload.toString();
         }
