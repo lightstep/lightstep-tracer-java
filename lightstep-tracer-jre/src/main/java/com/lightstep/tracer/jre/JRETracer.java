@@ -60,30 +60,4 @@ public class JRETracer extends AbstractTracer {
         } catch (Throwable t) {
         }
     }
-
-    /**
-     * Internal class used primarily for unit testing and debugging. This is not
-     * part of the OpenTracing API and is not a supported API.
-     */
-    public class Status {
-        public Map<String, String> tags;
-
-        public Status() {
-            this.tags = new HashMap<String, String>();
-        }
-    }
-
-    /**
-     * Internal method used primarily for unit testing and debugging. This is not
-     * part of the OpenTracing API and is not a supported API.
-     */
-    public Status status() {
-        Status status = new Status();
-
-        for (KeyValue pair : this.runtime.getAttrs()) {
-            status.tags.put(pair.getKey(), pair.getValue());
-        }
-
-        return status;
-    }
 }

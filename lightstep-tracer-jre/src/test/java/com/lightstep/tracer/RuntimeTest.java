@@ -1,5 +1,7 @@
 package com.lightstep.tracer.jre;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.Map;
 
@@ -71,6 +73,28 @@ public class RuntimeTest {
         span.finish();
 
         this.assertSpanHasTag(span, "my_key", "my_value");
+    }
+
+    @Test
+    public void spansDroppedCounterTest() {
+        JRETracer tracer = new JRETracer(
+            new com.lightstep.tracer.shared.Options("{your_access_token}")
+                .withMaxBufferedSpans(10));
+
+        JRETracer.Status status = tracer.status();
+        assertEquals(status.clientMetrics.spansDropped, 0);
+        for (int i = 0; i < 10; i++) {
+            Span span = tracer.buildSpan("test_span").start();
+            span.finish();
+        }
+        status = tracer.status();
+        assertEquals(status.clientMetrics.spansDropped, 0);
+        for (int i = 0; i < 10; i++) {
+            Span span = tracer.buildSpan("test_span").start();
+            span.finish();
+        }
+        status = tracer.status();
+        assertEquals(status.clientMetrics.spansDropped, 10);
     }
 
     protected void assertSpanHasTag(Span span, String key, String value) {

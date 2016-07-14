@@ -53,9 +53,12 @@ public class Options {
   public Map<String, Object> tags = new HashMap<String, Object>();
 
   /**
-   * @deprecated will be replaced by a throughput-based limit on resource use
+   * UNSUPPORTED API: intended for unit testing purposes only and should
+   * not be used in production code.
+   *
+   * Production control of limits will be via a throughput-based limit on
+   * resource use.
    */
-  @Deprecated
   public int maxBufferedSpans;
 
   /**
@@ -112,6 +115,14 @@ public class Options {
 
   public Options withVerbosity(int verbosity) {
     this.verbosity = verbosity;
+    return this;
+  }
+
+  /**
+   * UNSUPPORTED API: intended for unit testing purposes only.
+   */
+  public Options withMaxBufferedSpans(int max) {
+    this.maxBufferedSpans = max;
     return this;
   }
 }

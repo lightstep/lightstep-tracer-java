@@ -70,6 +70,7 @@ public abstract class AbstractTracer implements Tracer {
 
   protected ArrayList<SpanRecord> spans;
   protected ClockState clockState;
+  protected ClientMetrics clientMetrics;
 
   // Should *NOT* attempt to take a span's lock while holding this lock.
   protected final Object mutex = new Object();
@@ -89,6 +90,7 @@ public abstract class AbstractTracer implements Tracer {
     this.spans = new ArrayList<SpanRecord>(maxBufferedSpans);
 
     this.clockState = new ClockState();
+    this.clientMetrics = new ClientMetrics();
     this.verbosity = options.verbosity;
 
     this.auth = new Auth();
@@ -182,7 +184,10 @@ public abstract class AbstractTracer implements Tracer {
       }
 
       this.isDisabled = true;
-      this.spans = null;
+
+      // The code makes various assumptions about this field never being
+      // null, so replace it with an empty list rather than nulling it out.
+      this.spans = new ArrayList<SpanRecord>(0);
     }
   }
 
@@ -233,7 +238,11 @@ public abstract class AbstractTracer implements Tracer {
    *                          not ready).
    */
   protected void sendReport(boolean explicitRequest) {
+    // Data to be sent. Maybe be merged back into the local buffers if the
+    // report fails.
     ArrayList<SpanRecord> spans;
+    ClientMetrics clientMetrics = null;
+
     synchronized (this.mutex) {
       if (this.reportInProgress) {
         return;
@@ -246,10 +255,11 @@ public abstract class AbstractTracer implements Tracer {
       this.reportInProgress = true;
 
       if (this.clockState.isReady() || explicitRequest) {
-        // Copy the reference to the spans...
+        // Copy the reference to the spans and make a new array for other spans.
         spans = this.spans;
-        // ... and make a new array for other spans.
+        clientMetrics = this.clientMetrics;
         this.spans = new ArrayList<SpanRecord>(this.maxBufferedSpans);
+        this.clientMetrics = new ClientMetrics();
       } else {
         // Otherwise, if the clock state is not ready, we'll send an empty
         // report.
@@ -276,6 +286,10 @@ public abstract class AbstractTracer implements Tracer {
     req.setSpan_records(spans);
     req.setTimestamp_offset_micros(this.clockState.offsetMicros());
 
+    if (clientMetrics != null) {
+      req.setInternal_metrics(clientMetrics.toThrift());
+    }
+
     try {
       long originMicros = System.currentTimeMillis() * 1000;
       ReportResponse resp = this.client.Report(this.auth, req);
@@ -289,7 +303,7 @@ public abstract class AbstractTracer implements Tracer {
       if (resp.isSetCommands()) {
         for (Command command : resp.commands) {
           if (command.disable) {
-            disable();
+            this.disable();
           }
         }
       }
@@ -297,9 +311,12 @@ public abstract class AbstractTracer implements Tracer {
       // TODO log something as this probably indicates malformed spans
       //System.err.println("Received error from collector: " + e.toString());
     } catch (TException x) {
-      // Return spans to the buffer.
+      // The request failed, add any data that was supposed to be sent back to the
+      // client local buffers.
+      this.clientMetrics.merge(clientMetrics);
+
+      // TODO should probably prepend and do it in bulk
       for (SpanRecord span : req.span_records) {
-        // TODO should probably prepend and do it in bulk
         addSpan(span);
       }
     }
@@ -317,10 +334,7 @@ public abstract class AbstractTracer implements Tracer {
   void addSpan(SpanRecord span) {
     synchronized (this.mutex) {
       if (this.spans.size() >= this.maxBufferedSpans) {
-        // TODO is deleting a random element the right thing to do?
-        int deleteIndex = ThreadLocalRandom.current().nextInt(0, this.spans.size());
-        this.spans.set(deleteIndex, span);
-        // TODO increment counter for dropped spans
+        this.clientMetrics.spansDropped++;
       } else {
         this.spans.add(span);
       }
@@ -415,4 +429,36 @@ public abstract class AbstractTracer implements Tracer {
       return this.withStartTimestamp(microseconds).start();
     }
   }
+
+  /**
+   * Internal class used primarily for unit testing and debugging. This is not
+   * part of the OpenTracing API and is not a supported API.
+   */
+  public class Status {
+      public Map<String, String> tags;
+      public ClientMetrics clientMetrics;
+
+      public Status() {
+          this.tags = new HashMap<String, String>();
+      }
+  }
+
+  /**
+   * Internal method used primarily for unit testing and debugging. This is not
+   * part of the OpenTracing API and is not a supported API.
+   *
+   * Copies the internal state/status into an object that's easier to check
+   * against in unit tests.
+   */
+  public Status status() {
+    Status status = new Status();
+    synchronized (this.mutex) {
+      for (KeyValue pair : this.runtime.getAttrs()) {
+        status.tags.put(pair.getKey(), pair.getValue());
+      }
+      status.clientMetrics = new ClientMetrics(this.clientMetrics);
+    }
+    return status;
+  }
+
 }
