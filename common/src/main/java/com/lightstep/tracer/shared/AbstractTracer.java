@@ -435,11 +435,21 @@ public abstract class AbstractTracer implements Tracer {
   /**
    * Internal logging.
    */
-  protected void infoV(int level, String msg, Object payload) {
-    if (level < this.verbosity) {
+  protected void debug(String msg, Object payload) {
+    if (this.verbosity < 4) {
         return;
     }
-    this.printLogToConsole("[LightStep:INFOV" + level + "] " + msg, payload);
+    this.printLogToConsole("[LightStep:DEBUG] " + msg, payload);
+  }
+
+  /**
+   * Internal logging.
+   */
+  protected void info(String msg, Object payload) {
+    if (this.verbosity < 3) {
+        return;
+    }
+    this.printLogToConsole("[LightStep:INFO] " + msg, payload);
   }
 
   /**
