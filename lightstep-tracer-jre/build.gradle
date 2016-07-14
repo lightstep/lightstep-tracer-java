@@ -39,12 +39,6 @@ sourceSets {
     }
 }
 
-test {
-    testLogging {
-        showStandardStreams = true
-    }
-}
-
 // Defines the repositories need for dependencies below
 repositories {
     jcenter()
@@ -65,7 +59,11 @@ dependencies {
 }
 
 tasks.matching {it instanceof Test}.all {
-    testLogging.events = ["failed", "passed", "skipped"]
+    testLogging {
+        events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+        outputs.upToDateWhen { false }
+        showStandardStreams = true
+    }
 }
 
 publishing {
