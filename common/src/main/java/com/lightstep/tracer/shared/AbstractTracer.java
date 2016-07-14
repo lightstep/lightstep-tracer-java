@@ -63,6 +63,7 @@ public abstract class AbstractTracer implements Tracer {
   // copied from options
   private final int maxBufferedSpans;
   protected final int verbosity;
+  protected int visibleErrorCount;
 
   private final Auth auth;
   protected final Runtime runtime;
@@ -92,6 +93,7 @@ public abstract class AbstractTracer implements Tracer {
     this.clockState = new ClockState();
     this.clientMetrics = new ClientMetrics();
     this.verbosity = options.verbosity;
+    this.visibleErrorCount = 0;
 
     this.auth = new Auth();
     auth.setAccess_token(options.accessToken);
@@ -308,8 +310,8 @@ public abstract class AbstractTracer implements Tracer {
         }
       }
     } catch (TApplicationException e) {
-      // TODO log something as this probably indicates malformed spans
-      //System.err.println("Received error from collector: " + e.toString());
+      // Log as this probably indicates malformed spans
+      this.error("Received error from collector: " + e.toString(), e);
     } catch (TException x) {
       // The request failed, add any data that was supposed to be sent back to the
       // client local buffers.
@@ -428,6 +430,44 @@ public abstract class AbstractTracer implements Tracer {
     public io.opentracing.Span start(long microseconds) {
       return this.withStartTimestamp(microseconds).start();
     }
+  }
+
+  /**
+   * Internal logging.
+   */
+  protected void infoV(int level, String msg, Object payload) {
+    if (level < this.verbosity) {
+        return;
+    }
+    this.printLogToConsole("[LightStep:INFOV" + level + "] " + msg, payload);
+  }
+
+  /**
+   * Internal warning.
+   */
+  protected void warn(String msg, Object payload) {
+    if (this.verbosity < 3) {
+        return;
+    }
+    this.printLogToConsole("[LightStep:WARN] " + msg, payload);
+  }
+
+  /**
+   * Internal error.
+   */
+  protected void error(String msg, Object payload) {
+    if (this.verbosity < 1) {
+      return;
+    }
+    if (this.verbosity == 1 && this.visibleErrorCount > 0) {
+      return;
+    }
+    this.visibleErrorCount++;
+    this.printLogToConsole("[LightStep:ERROR] " + msg, payload);
+  }
+
+  protected void printLogToConsole(String msg, Object payload) {
+    // TODO: make this abstract and implement in JRE & Android
   }
 
   /**
