@@ -110,6 +110,7 @@ public abstract class AbstractTracer implements Tracer {
         }
       }
     }
+
     if (options.tags.get(GUID_KEY) == null) {
       String guid = generateGUID();
       options.tags.put(GUID_KEY, guid);
@@ -133,21 +134,14 @@ public abstract class AbstractTracer implements Tracer {
     try {
       this.collectorURL = new URL(scheme, host, port, COLLECTOR_PATH);
     } catch (MalformedURLException e) {
-      // TODO log this
+      this.error("Collector URL malformed. Disabling tracer.", e);
       // Preemptively disable this tracer.
       this.disable();
       return;
     }
 
-    // Automatic cleanup upon program exit.  Note that (according to the docs)
-    // this doesn't do anything on Android.
-    java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
-        public void run() {
-          shutdown();
-        }
-      });
-
     // Schedule a fixed-delay task.
+    this.debug("Starting reporting timer.");
     long interval = options.maxReportingIntervalSeconds > 0 ?
       options.maxReportingIntervalSeconds * 1000 : DEFAULT_REPORTING_INTERVAL_MILLIS;
     timer.schedule(new Flush(), REPORTING_DELAY_MILLIS, interval);
@@ -176,6 +170,7 @@ public abstract class AbstractTracer implements Tracer {
    * subsequent method invocations into no-ops.
    */
   public void disable() {
+    this.warn("Disabling client library");
     synchronized (this.mutex) {
       this.timer.cancel();
       this.timer.purge();
@@ -240,22 +235,41 @@ public abstract class AbstractTracer implements Tracer {
    *                          not ready).
    */
   protected void sendReport(boolean explicitRequest) {
+
+    synchronized (this.mutex) {
+      if (this.reportInProgress) {
+        this.debug("Report in progress. Skipping.");
+        return;
+      }
+      if (this.spans.size() == 0 && this.clockState.isReady()) {
+        this.debug("Skipping report. No new data.");
+        return;
+      }
+
+      // Make sure other threads don't try to start sending a report.
+      this.reportInProgress = true;
+    }
+
+    try {
+      sendReportWorker(explicitRequest);
+    } finally {
+      synchronized (this.mutex) {
+        this.reportInProgress = false;
+      }
+    }
+  }
+
+  /**
+   * Private worker function for sendReport() to make the locking and guard
+   * variable bracketing a little more straightforward.
+   */
+  private void sendReportWorker(boolean explicitRequest) {
     // Data to be sent. Maybe be merged back into the local buffers if the
     // report fails.
     ArrayList<SpanRecord> spans;
     ClientMetrics clientMetrics = null;
 
     synchronized (this.mutex) {
-      if (this.reportInProgress) {
-        return;
-      }
-      if (this.spans.size() == 0 && this.clockState.isReady()) {
-        return;
-      }
-
-      // Make sure other threads don't try to start sending a report.
-      this.reportInProgress = true;
-
       if (this.clockState.isReady() || explicitRequest) {
         // Copy the reference to the spans and make a new array for other spans.
         spans = this.spans;
@@ -267,19 +281,20 @@ public abstract class AbstractTracer implements Tracer {
         // report.
         spans = new ArrayList<SpanRecord>();
       }
-    }
 
-    if (this.transport == null) {
-      try {
-        // TODO add support for cookies (for load balancer sessions)
-        this.transport = new THttpClient(this.collectorURL.toString());
-        this.transport.open();
-        TBinaryProtocol protocol = new TBinaryProtocol(this.transport);
-        this.client = new ReportingService.Client(protocol);
-      } catch (TException e) {
-        // TODO log this exception
-        this.disable();
-        return;
+      if (this.transport == null) {
+        this.debug("Creating transport");
+        try {
+          // TODO add support for cookies (for load balancer sessions)
+          this.transport = new THttpClient(this.collectorURL.toString());
+          this.transport.open();
+          TBinaryProtocol protocol = new TBinaryProtocol(this.transport);
+          this.client = new ReportingService.Client(protocol);
+        } catch (TException e) {
+          this.error("Exception creating Thrift client. Disabling tracer.", e);
+          this.disable();
+          return;
+        }
       }
     }
 
@@ -295,6 +310,7 @@ public abstract class AbstractTracer implements Tracer {
     try {
       long originMicros = System.currentTimeMillis() * 1000;
       ReportResponse resp = this.client.Report(this.auth, req);
+
       if (resp.isSetTiming()) {
         this.clockState.addSample(originMicros,
                                   resp.getTiming().getReceive_micros(),
@@ -309,22 +325,26 @@ public abstract class AbstractTracer implements Tracer {
           }
         }
       }
+
+      this.debug("Report sent successfully");
+
     } catch (TApplicationException e) {
       // Log as this probably indicates malformed spans
-      this.error("Received error from collector: " + e.toString(), e);
+      this.error("TApplicationException: error from collector", e);
     } catch (TException x) {
+
+      this.debug("Report failed with exception", x);
+
       // The request failed, add any data that was supposed to be sent back to the
       // client local buffers.
-      this.clientMetrics.merge(clientMetrics);
+      synchronized(this.mutex) {
+        this.clientMetrics.merge(clientMetrics);
+      }
 
       // TODO should probably prepend and do it in bulk
       for (SpanRecord span : req.span_records) {
         addSpan(span);
       }
-    }
-
-    synchronized (this.mutex) {
-      this.reportInProgress = false;
     }
   }
 
@@ -350,6 +370,7 @@ public abstract class AbstractTracer implements Tracer {
   }
 
   protected void addTracerTag(String key, String value) {
+    this.debug("Adding tracer tag: " + key + " => " + value);
     this.runtime.addToAttrs(new KeyValue(key, value));
   }
 
@@ -435,11 +456,25 @@ public abstract class AbstractTracer implements Tracer {
   /**
    * Internal logging.
    */
+  protected void debug(String s) {
+    this.debug(s, null);
+  }
+
+  /**
+   * Internal logging.
+   */
   protected void debug(String msg, Object payload) {
     if (this.verbosity < 4) {
         return;
     }
     this.printLogToConsole("[LightStep:DEBUG] " + msg, payload);
+  }
+
+  /**
+   * Internal logging.
+   */
+  protected void info(String s) {
+    this.info(s, null);
   }
 
   /**
@@ -453,6 +488,13 @@ public abstract class AbstractTracer implements Tracer {
   }
 
   /**
+   * Internal logging.
+   */
+  protected void warn(String s) {
+    this.warn(s, null);
+  }
+
+  /**
    * Internal warning.
    */
   protected void warn(String msg, Object payload) {
@@ -460,6 +502,13 @@ public abstract class AbstractTracer implements Tracer {
         return;
     }
     this.printLogToConsole("[LightStep:WARN] " + msg, payload);
+  }
+
+  /**
+   * Internal logging.
+   */
+  protected void error(String s) {
+    this.error(s, null);
   }
 
   /**

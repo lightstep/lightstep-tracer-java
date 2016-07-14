@@ -14,6 +14,7 @@ public class Simple {
 
         final Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
             new com.lightstep.tracer.shared.Options("{your_access_token}")
+                .withVerbosity(4)
         );
 
         // Create an outer span to capture all activity

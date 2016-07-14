@@ -81,6 +81,7 @@ public class Options {
 
   public Options(String accessToken) {
     this.accessToken = accessToken;
+    this.verbosity = 1;
   }
 
   public Options withAccessToken(String accessToken) {

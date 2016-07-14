@@ -31,6 +31,14 @@ public class JRETracer extends AbstractTracer {
         sendReport(true);
     }
 
+    protected void printLogToConsole(String msg, Object payload) {
+        String s = msg;
+        if (payload != null) {
+            s += " " + payload.toString();
+        }
+        System.err.println(s);
+    }
+
     protected HashMap<String, String> retrieveDeviceInfo() {
         // TODO: Implement for Java Desktop Applications
         return null;
@@ -53,6 +61,7 @@ public class JRETracer extends AbstractTracer {
             Runtime.getRuntime().addShutdownHook(
                 new Thread() {
                     public void run() {
+                        self.debug("Sending final report at shutdown");
                         self.sendReport(true);
                     }
                 }
