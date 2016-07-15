@@ -233,9 +233,7 @@ public abstract class AbstractTracer implements Tracer {
   class FlushRunnable implements Runnable {
     @Override
     public void run() {
-      AbstractTracer.this.debug("Flush runnable start.");
       AbstractTracer.this.flush();
-      AbstractTracer.this.debug("Flush runnable end.");
     }
   }
 
