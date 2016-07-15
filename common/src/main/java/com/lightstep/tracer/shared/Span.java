@@ -124,7 +124,7 @@ public class Span implements io.opentracing.Span {
           log.setPayload_json(payloadString);
         } catch (JsonProcessingException e) {
           // Just use a string.
-          // TODO and/or log this somewhere?
+          this.tracer.debug("Payload not serializable to JSON. Setting as String. (Span GUID=" + this.getGUID() + ")");
           log.setPayload_json(payload.toString());
         }
       }

@@ -19,6 +19,7 @@ public class ClockState {
     }
   }
 
+  private final Object mutex = new Object();
   private LinkedList<Sample> samples;
   private long currentOffsetMicros;
   private int currentOffsetAge;
@@ -55,17 +56,21 @@ public class ClockState {
                             (transmitMicros - destinationMicros)) / 2;
     }
 
-    // Discard the oldest sample and push the new one.
-    if (this.samples.size() == maxOffsetAge+1) {
-      this.samples.removeFirst();
+    synchronized(this.mutex) {
+      // Discard the oldest sample and push the new one.
+      if (this.samples.size() == maxOffsetAge+1) {
+        this.samples.removeFirst();
+      }
+      this.samples.push(new Sample(latestDelayMicros, latestOffsetMicros));
+      this.currentOffsetAge++;
+      this.update();
     }
-    this.samples.push(new Sample(latestDelayMicros, latestOffsetMicros));
-    this.currentOffsetAge++;
-    this.update();
   }
 
   /**
    * Updates the time offset based on the current samples.
+   *
+   * NOTE: this method assumes the caller already have locked the clock state.
    */
   private void update() {
     // This is simplified version of the clock filtering in Simple NTP. It
@@ -128,7 +133,9 @@ public class ClockState {
    * ahead of the server's.
    */
   long offsetMicros () {
-    return this.currentOffsetMicros;
+    synchronized(this.mutex) {
+      return this.currentOffsetMicros;
+    }
   }
 
   /**
@@ -136,10 +143,14 @@ public class ClockState {
    * in the current offset.
    */
   boolean isReady () {
-    return this.samples.size() > 3;
+    synchronized(this.mutex) {
+      return this.samples.size() > 3;
+    }
   }
 
   int activeSampleCount () {
-    return this.samples.size();
+    synchronized(this.mutex) {
+      return this.samples.size();
+    }
   }
 }

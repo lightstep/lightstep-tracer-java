@@ -23,12 +23,37 @@ public class JRETracer extends AbstractTracer {
     public JRETracer(Options options) {
         super(options);
         this.addStandardTracerTags();
-        this.addShutdownHook();
     }
 
     // Flush any data stored in the log and span buffers
     public void flush() {
         sendReport(true);
+    }
+
+    protected void printLogToConsole(InternalLogLevel level, String msg, Object payload) {
+        String s;
+        switch (level) {
+        case DEBUG:
+            s = "[Lightstep:DEBUG] ";
+            break;
+        case INFO:
+            s = "[Lightstep:INFO] ";
+            break;
+        case WARN:
+            s = "[Lightstep:WARN] ";
+            break;
+        case ERROR:
+            s = "[Lightstep:ERROR] ";
+            break;
+        default:
+            s = "[Lightstep:???] ";
+            break;
+        }
+        s += msg;
+        if (payload != null) {
+            s += " " + payload.toString();
+        }
+        System.err.println(s);
     }
 
     protected HashMap<String, String> retrieveDeviceInfo() {
@@ -45,19 +70,5 @@ public class JRETracer extends AbstractTracer {
         this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_KEY, "jre");
         this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY, System.getProperty("java.version"));
         this.addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, Version.LIGHTSTEP_TRACER_VERSION);
-    }
-
-    protected void addShutdownHook() {
-        final JRETracer self = this;
-        try {
-            Runtime.getRuntime().addShutdownHook(
-                new Thread() {
-                    public void run() {
-                        self.sendReport(true);
-                    }
-                }
-            );
-        } catch (Throwable t) {
-        }
     }
 }

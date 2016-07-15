@@ -1,5 +1,7 @@
 package com.lightstep.tracer.shared;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -12,6 +14,10 @@ import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.thrift.TException;
 import org.apache.thrift.TApplicationException;
@@ -34,7 +40,7 @@ import io.opentracing.Tracer;
 
 public abstract class AbstractTracer implements Tracer {
   // Delay before sending the initial report
-  private static final long REPORTING_DELAY_MILLIS = 0;
+  private static final long REPORTING_DELAY_MILLIS = 20;
   // Maximum interval between reports
   private static final long DEFAULT_REPORTING_INTERVAL_MILLIS = 2500;
   private static final int DEFAULT_MAX_BUFFERED_SPANS = 1000;
@@ -51,6 +57,17 @@ public abstract class AbstractTracer implements Tracer {
   public static final String GUID_KEY = "lightstep.guid";
 
   /**
+   * For mapping internal logs to Android log levels without importing Android
+   * pacakges.
+   */
+  protected enum InternalLogLevel {
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR
+  }
+
+  /**
    * The tag key used to define traces which are joined based on a GUID.
    */
 	public static final String TRACE_GUID_KEY = "join:trace_guid";
@@ -63,10 +80,12 @@ public abstract class AbstractTracer implements Tracer {
   // copied from options
   private final int maxBufferedSpans;
   protected final int verbosity;
+  protected int visibleErrorCount;
 
   private final Auth auth;
   protected final Runtime runtime;
   private URL collectorURL;
+
 
   protected ArrayList<SpanRecord> spans;
   protected ClockState clockState;
@@ -74,24 +93,68 @@ public abstract class AbstractTracer implements Tracer {
 
   // Should *NOT* attempt to take a span's lock while holding this lock.
   protected final Object mutex = new Object();
-  private final Timer timer;
   private boolean reportInProgress;
+  private AtomicBoolean hasUnreportSpans;
+  private final Timer timer;
+  private final ThreadPoolExecutor executor;
   protected boolean isDisabled;
 
   protected TTransport transport;
   protected ReportingService.Client client;
 
   public AbstractTracer(Options options) {
+
+    // A description of the background flush / threading setup:
+    //
+    // First off, the current background flush setup can likely be simplified.
+    // There are three interacting parts, which seems overly complicated for what
+    // needs to be done (especially given that Android has specific API for background
+    // network calls). Regardless, on to the details...
+    //
+    // TIMER: the AbstractTracer creates a *daemon* timer which fires at a regular
+    // interval to trigger background flush. This is good because the daemon timer
+    // does not prevent the JVM from shutting down (otherwise, the client library
+    // would require an explicit shutdown() call from the consumer of the library).
+    // The downside, is the daemon threads are killed with no chance to clean-up
+    // which means if the sendReport implementation is invoked from the daemon
+    // thread it may be killed and leave the Tracer in a bad state - which prevents
+    // the Tracer from doing a final, at-shutdown flush.
+    //
+    // EXECUTOR: to resolve this, the timer, instead of doing the work itself,
+    // runs the flush in a ThreadPoolExecutor that won't get killed arbitrarily.
+    // The thread pool itself will keep the JVM from shutting down (thus the
+    // point of a daemon timer in the first place), so the thread pool is given
+    // a keep-alive time where the thread is released if there's no work for the
+    // pool.  Thus the JVM is held up for a max of the keep-alive time. (Also,
+    // if the time out happens in normal operation, the pool automatically will
+    // recreate the thread if new tasks come in.)
+    //
+    // ATOMIC BOOLEAN: lastly there's an AtomicBoolean that gets set every time
+    // the Tracer gets a new span. This allows the timer to avoid putting new
+    // tasks into the executor when there's no work to be done (and thus
+    // constantly refreshing the keep-alive, preventing a clean shutdown). It's
+    // an atomic bool so the daemon thread doesn't have to touch the Tracer's
+    // mutex and potentially leave that in a bad state if killed.
+    //
+    // This executor setup comes from:
+    // http://stackoverflow.com/questions/13883293/turning-an-executorservice-to-daemon-in-java
+    //
+    // TODO: the timer should have some jitter in the interval
     this.timer = new Timer(true);
+    this.executor = new ThreadPoolExecutor(1, 1, 2 * DEFAULT_REPORTING_INTERVAL_MILLIS, MILLISECONDS,
+      new java.util.concurrent.LinkedBlockingQueue<Runnable>());
+    this.executor.allowCoreThreadTimeOut(true);
 
     // TODO sanity check options
     this.maxBufferedSpans = options.maxBufferedSpans > 0 ?
       options.maxBufferedSpans : DEFAULT_MAX_BUFFERED_SPANS;
+    this.hasUnreportSpans = new AtomicBoolean(false);
     this.spans = new ArrayList<SpanRecord>(maxBufferedSpans);
 
     this.clockState = new ClockState();
     this.clientMetrics = new ClientMetrics();
     this.verbosity = options.verbosity;
+    this.visibleErrorCount = 0;
 
     this.auth = new Auth();
     auth.setAccess_token(options.accessToken);
@@ -108,12 +171,17 @@ public abstract class AbstractTracer implements Tracer {
         }
       }
     }
+
+    String guid;
     if (options.tags.get(GUID_KEY) == null) {
-      String guid = generateGUID();
+      guid = generateGUID();
       options.tags.put(GUID_KEY, guid);
+    } else {
+      guid = options.tags.get(GUID_KEY).toString();
     }
 
     this.runtime = new Runtime();
+    this.runtime.setGuid(guid);
     this.runtime.setStart_micros(System.currentTimeMillis() * 1000);
     for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
       this.addTracerTag(entry.getKey(), entry.getValue().toString());
@@ -131,24 +199,24 @@ public abstract class AbstractTracer implements Tracer {
     try {
       this.collectorURL = new URL(scheme, host, port, COLLECTOR_PATH);
     } catch (MalformedURLException e) {
-      // TODO log this
+      this.error("Collector URL malformed. Disabling tracer.", e);
       // Preemptively disable this tracer.
       this.disable();
       return;
     }
 
-    // Automatic cleanup upon program exit.  Note that (according to the docs)
-    // this doesn't do anything on Android.
-    java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
-        public void run() {
-          shutdown();
-        }
-      });
-
     // Schedule a fixed-delay task.
+    this.debug("Starting reporting timer.");
     long interval = options.maxReportingIntervalSeconds > 0 ?
       options.maxReportingIntervalSeconds * 1000 : DEFAULT_REPORTING_INTERVAL_MILLIS;
-    timer.schedule(new Flush(), REPORTING_DELAY_MILLIS, interval);
+    timer.schedule(new FlushTimer(), REPORTING_DELAY_MILLIS, interval);
+
+    java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
+       public void run() {
+         AbstractTracer.this.debug("Running shutdown hook");
+         AbstractTracer.this.shutdown();
+       }
+    });
   }
 
   public String getAccessToken() {
@@ -158,13 +226,44 @@ public abstract class AbstractTracer implements Tracer {
   }
 
   /**
+   * Extends TimerTask to call flush().
+   */
+  class FlushRunnable implements Runnable {
+    @Override
+    public void run() {
+      AbstractTracer.this.debug("Flush runnable start.");
+      AbstractTracer.this.flush();
+      AbstractTracer.this.debug("Flush runnable end.");
+    }
+  }
+
+  /**
+   * Extends TimerTask to call flush().
+   */
+  class FlushTimer extends TimerTask {
+    @Override
+    public void run() {
+      if (!AbstractTracer.this.hasUnreportSpans.get()) {
+        return;
+      }
+      AbstractTracer.this.executor.execute(new FlushRunnable());
+    }
+  }
+
+  /**
    * Gracefully stops the tracer.
+   *
+   * NOTE: this can optionally be called by the consumer of the library and,
+   * if the consumer has not alreayd called it, *must* be called internally by
+   * the library to cancel the timer.
    */
   public void shutdown() {
     if (isDisabled) {
       return;
     }
 
+    this.debug("shutdown() called");
+    this.timer.cancel();
     flush();
     disable();
   }
@@ -174,6 +273,7 @@ public abstract class AbstractTracer implements Tracer {
    * subsequent method invocations into no-ops.
    */
   public void disable() {
+    this.info("Disabling client library");
     synchronized (this.mutex) {
       this.timer.cancel();
       this.timer.purge();
@@ -219,16 +319,6 @@ public abstract class AbstractTracer implements Tracer {
   public abstract void flush();
 
   /**
-   * Extends TimerTask to call flush().
-   */
-  class Flush extends TimerTask {
-    @Override
-    public void run() {
-      AbstractTracer.this.flush();
-    }
-  }
-
-  /**
    * Does the work of a flush by sending spans to the collector.
    *
    * @param explicitRequest   if true, the report request was made explicitly
@@ -238,22 +328,41 @@ public abstract class AbstractTracer implements Tracer {
    *                          not ready).
    */
   protected void sendReport(boolean explicitRequest) {
+
+    synchronized (this.mutex) {
+      if (this.reportInProgress) {
+        this.debug("Report in progress. Skipping.");
+        return;
+      }
+      if (this.spans.size() == 0 && this.clockState.isReady()) {
+        this.debug("Skipping report. No new data.");
+        return;
+      }
+
+      // Make sure other threads don't try to start sending a report.
+      this.reportInProgress = true;
+    }
+
+    try {
+      sendReportWorker(explicitRequest);
+    } finally {
+      synchronized (this.mutex) {
+        this.reportInProgress = false;
+      }
+    }
+  }
+
+  /**
+   * Private worker function for sendReport() to make the locking and guard
+   * variable bracketing a little more straightforward.
+   */
+  private void sendReportWorker(boolean explicitRequest) {
     // Data to be sent. Maybe be merged back into the local buffers if the
     // report fails.
     ArrayList<SpanRecord> spans;
     ClientMetrics clientMetrics = null;
 
     synchronized (this.mutex) {
-      if (this.reportInProgress) {
-        return;
-      }
-      if (this.spans.size() == 0 && this.clockState.isReady()) {
-        return;
-      }
-
-      // Make sure other threads don't try to start sending a report.
-      this.reportInProgress = true;
-
       if (this.clockState.isReady() || explicitRequest) {
         // Copy the reference to the spans and make a new array for other spans.
         spans = this.spans;
@@ -265,19 +374,20 @@ public abstract class AbstractTracer implements Tracer {
         // report.
         spans = new ArrayList<SpanRecord>();
       }
-    }
 
-    if (this.transport == null) {
-      try {
-        // TODO add support for cookies (for load balancer sessions)
-        this.transport = new THttpClient(this.collectorURL.toString());
-        this.transport.open();
-        TBinaryProtocol protocol = new TBinaryProtocol(this.transport);
-        this.client = new ReportingService.Client(protocol);
-      } catch (TException e) {
-        // TODO log this exception
-        this.disable();
-        return;
+      if (this.transport == null) {
+        this.debug("Creating transport");
+        try {
+          // TODO add support for cookies (for load balancer sessions)
+          this.transport = new THttpClient(this.collectorURL.toString());
+          this.transport.open();
+          TBinaryProtocol protocol = new TBinaryProtocol(this.transport);
+          this.client = new ReportingService.Client(protocol);
+        } catch (TException e) {
+          this.error("Exception creating Thrift client. Disabling tracer.", e);
+          this.disable();
+          return;
+        }
       }
     }
 
@@ -291,8 +401,12 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     try {
+      this.debug("Sending report");
       long originMicros = System.currentTimeMillis() * 1000;
       ReportResponse resp = this.client.Report(this.auth, req);
+      this.hasUnreportSpans.set(false);
+      this.debug("Report sent");
+
       if (resp.isSetTiming()) {
         this.clockState.addSample(originMicros,
                                   resp.getTiming().getReceive_micros(),
@@ -307,22 +421,26 @@ public abstract class AbstractTracer implements Tracer {
           }
         }
       }
+
+      this.debug("Report sent successfully");
+
     } catch (TApplicationException e) {
-      // TODO log something as this probably indicates malformed spans
-      //System.err.println("Received error from collector: " + e.toString());
+      // Log as this probably indicates malformed spans
+      this.error("TApplicationException: error from collector", e);
     } catch (TException x) {
+
+      this.debug("Report failed with exception", x);
+
       // The request failed, add any data that was supposed to be sent back to the
       // client local buffers.
-      this.clientMetrics.merge(clientMetrics);
+      synchronized(this.mutex) {
+        this.clientMetrics.merge(clientMetrics);
+      }
 
       // TODO should probably prepend and do it in bulk
       for (SpanRecord span : req.span_records) {
         addSpan(span);
       }
-    }
-
-    synchronized (this.mutex) {
-      this.reportInProgress = false;
     }
   }
 
@@ -336,6 +454,7 @@ public abstract class AbstractTracer implements Tracer {
       if (this.spans.size() >= this.maxBufferedSpans) {
         this.clientMetrics.spansDropped++;
       } else {
+        this.hasUnreportSpans.set(true);
         this.spans.add(span);
       }
     }
@@ -348,6 +467,7 @@ public abstract class AbstractTracer implements Tracer {
   }
 
   protected void addTracerTag(String key, String value) {
+    this.debug("Adding tracer tag: " + key + " => " + value);
     this.runtime.addToAttrs(new KeyValue(key, value));
   }
 
@@ -429,6 +549,80 @@ public abstract class AbstractTracer implements Tracer {
       return this.withStartTimestamp(microseconds).start();
     }
   }
+
+  /**
+   * Internal logging.
+   */
+  protected void debug(String s) {
+    this.debug(s, null);
+  }
+
+  /**
+   * Internal logging.
+   */
+  protected void debug(String msg, Object payload) {
+    if (this.verbosity < 4) {
+        return;
+    }
+    this.printLogToConsole(InternalLogLevel.DEBUG, msg, payload);
+  }
+
+  /**
+   * Internal logging.
+   */
+  protected void info(String s) {
+    this.info(s, null);
+  }
+
+  /**
+   * Internal logging.
+   */
+  protected void info(String msg, Object payload) {
+    if (this.verbosity < 3) {
+        return;
+    }
+    this.printLogToConsole(InternalLogLevel.INFO, msg, payload);
+  }
+
+  /**
+   * Internal logging.
+   */
+  protected void warn(String s) {
+    this.warn(s, null);
+  }
+
+  /**
+   * Internal warning.
+   */
+  protected void warn(String msg, Object payload) {
+    if (this.verbosity < 3) {
+        return;
+    }
+    this.printLogToConsole(InternalLogLevel.WARN, msg, payload);
+  }
+
+  /**
+   * Internal logging.
+   */
+  protected void error(String s) {
+    this.error(s, null);
+  }
+
+  /**
+   * Internal error.
+   */
+  protected void error(String msg, Object payload) {
+    if (this.verbosity < 1) {
+      return;
+    }
+    if (this.verbosity == 1 && this.visibleErrorCount > 0) {
+      return;
+    }
+    this.visibleErrorCount++;
+    this.printLogToConsole(InternalLogLevel.ERROR, msg, payload);
+  }
+
+  protected abstract void printLogToConsole(InternalLogLevel level, String msg, Object payload);
 
   /**
    * Internal class used primarily for unit testing and debugging. This is not

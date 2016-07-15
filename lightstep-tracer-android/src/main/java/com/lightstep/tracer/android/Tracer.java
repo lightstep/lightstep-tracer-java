@@ -13,6 +13,8 @@ import com.lightstep.tracer.thrift.KeyValue;
 public class Tracer extends AbstractTracer {
   private final Context ctx;
 
+  private static final String TAG = "Tracer";
+
   /**
    * Create a new tracer that will send spans to a LightStep collector.
    *
@@ -65,6 +67,30 @@ public class Tracer extends AbstractTracer {
     protected Void doInBackground(Void ...voids) {
       sendReport(false);
       return null;
+    }
+  }
+
+  protected void printLogToConsole(InternalLogLevel level, String msg, Object payload) {
+    String s = msg;
+    if (payload != null) {
+        s += " " + payload.toString();
+    }
+    switch (level) {
+    case DEBUG:
+        Log.d(TAG, s);
+        break;
+    case INFO:
+        Log.i(TAG, s);
+        break;
+    case WARN:
+        Log.w(TAG, s);
+        break;
+    case ERROR:
+        Log.e(TAG, s);
+        break;
+    default:
+        Log.e(TAG, s);
+        break;
     }
   }
 
