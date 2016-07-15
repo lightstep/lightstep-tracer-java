@@ -1,4 +1,4 @@
-def current_version = new File(project.projectDir, '../common/VERSION').text
+def current_version = new File(project.projectDir, '../common/VERSION').text.trim()
 
 apply plugin: 'java'
 
