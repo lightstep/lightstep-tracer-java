@@ -172,12 +172,16 @@ public abstract class AbstractTracer implements Tracer {
       }
     }
 
+    String guid;
     if (options.tags.get(GUID_KEY) == null) {
-      String guid = generateGUID();
+      guid = generateGUID();
       options.tags.put(GUID_KEY, guid);
+    } else {
+      guid = options.tags.get(GUID_KEY).toString();
     }
 
     this.runtime = new Runtime();
+    this.runtime.setGuid(guid);
     this.runtime.setStart_micros(System.currentTimeMillis() * 1000);
     for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
       this.addTracerTag(entry.getKey(), entry.getValue().toString());
