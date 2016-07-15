@@ -53,6 +53,7 @@ public abstract class AbstractTracer implements Tracer {
   public static final String LIGHTSTEP_TRACER_PLATFORM_KEY = "lightstep.tracer_platform";
   public static final String LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY = "lightstep.tracer_platform_version";
   public static final String LIGHTSTEP_TRACER_VERSION_KEY = "lightstep.tracer_version";
+  public static final String LEGACY_COMPONENT_NAME_KEY = "component_name";
   public static final String COMPONENT_NAME_KEY = "lightstep.component_name";
   public static final String GUID_KEY = "lightstep.guid";
 
@@ -168,6 +169,7 @@ public abstract class AbstractTracer implements Tracer {
         if (st.hasMoreTokens()) {
           String name = st.nextToken();
           options.tags.put(COMPONENT_NAME_KEY, name);
+          options.tags.put(LEGACY_COMPONENT_NAME_KEY, name);
         }
       }
     }
