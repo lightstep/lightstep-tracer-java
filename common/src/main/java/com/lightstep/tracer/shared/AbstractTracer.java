@@ -547,7 +547,6 @@ public abstract class AbstractTracer implements Tracer {
       SpanRecord record = new SpanRecord();
       record.setSpan_name(this.operationName);
       record.setOldest_micros(this.startTimestampMicros);
-      record.setSpan_guid(generateGUID());
 
       String traceId = null;
       if (this.parent != null && this.parent instanceof SpanContext) {
@@ -557,8 +556,9 @@ public abstract class AbstractTracer implements Tracer {
               this.parent.getSpanId()));
       }
       SpanContext newSpanContext = new SpanContext(traceId); // traceId may be null
-      // Record the eventual TraceId in the SpanRecord.
+      // Record the eventual TraceId and SpanId in the SpanRecord.
       record.setTrace_guid(newSpanContext.getTraceId());
+      record.setSpan_guid(newSpanContext.getSpanId());
 
       Span span = new Span(AbstractTracer.this, newSpanContext, record);
       for (Map.Entry<String, String> pair : this.tags.entrySet()) {

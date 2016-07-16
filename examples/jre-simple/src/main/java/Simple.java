@@ -1,7 +1,13 @@
 
 import io.opentracing.Span;
+import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
+import io.opentracing.propagation.TextMapReader;
+import io.opentracing.propagation.TextMapWriter;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +33,15 @@ public class Simple {
             .withTag("hello", "world")
             .start();
         Thread.sleep(100);
+      	// Note that the returned SpanContext is still valid post-finish().
+        SpanContext childCtx = childSpan.context();
         childSpan.finish();
+
+	// Throw inject and extract into the mix, even though we aren't making
+	// an RPC.
+        Span grandchild = createChildViaInjectExtract(tracer, "grandchild", childCtx);
+        grandchild.log("grandchild created", null);
+        grandchild.finish();
 
         // Spawn some concurrent threads - which in turn will spawn their
         // own worker threads
@@ -49,6 +63,28 @@ public class Simple {
 
         parentSpan.finish();
         System.out.println("Done!");
+    }
+
+    // An ultra-hacky demonstration of inject() and extract() in-process.
+    public static Span createChildViaInjectExtract(Tracer tracer, String opName, SpanContext parentCtx) {
+      final Map<String,String> textMap = new HashMap<String,String>();
+      tracer.inject(parentCtx, new TextMapWriter() {
+        public void put(String key, String value) {
+          textMap.put(key, value);
+        }
+      });
+      System.out.println("Carrier contents:");
+        for (Map.Entry<String,String> entry : textMap.entrySet()) {
+          System.out.println(
+              "    key='" + entry.getKey() +
+              "', value='" + entry.getValue() + "'");
+        }
+      SpanContext extracted = tracer.extract(new TextMapReader() {
+        public Iterator<Map.Entry<String,String>> getEntries() {
+          return textMap.entrySet().iterator();
+        }
+      });
+      return tracer.buildSpan(opName).asChildOf(extracted).start();
     }
 
     public static void spawnWorkers(final Tracer tracer, Span outerSpan) throws InterruptedException  {
