@@ -8,13 +8,14 @@ public class SpanContext implements io.opentracing.SpanContext {
   private final String spanId;
   private Map<String, String> baggage;
 
-  public SpanContext(String traceId) {
-    if (traceId == null) {
-      this.traceId = AbstractTracer.generateGUID();
-    } else {
-      this.traceId = traceId;
-    }
-    this.spanId = AbstractTracer.generateGUID();
+  SpanContext(String traceId, String spanId, Map<String, String> baggage) {
+    this.traceId = traceId == null ? AbstractTracer.generateGUID() : traceId;
+    this.spanId = spanId == null ? AbstractTracer.generateGUID() : spanId;
+    this.baggage = baggage;
+  }
+
+  SpanContext(String traceId) {
+    this(traceId, null, null);
   }
 
   public String getSpanId() {
@@ -39,5 +40,16 @@ public class SpanContext implements io.opentracing.SpanContext {
     }
     this.baggage.put(key, value);
     return this;
+  }
+
+  public interface BaggageItemReader {
+    public void readBaggageItem(String key, String value);
+  }
+  public synchronized void forEachBaggageItem(BaggageItemReader reader) {
+    if (this.baggage == null)
+      return;
+    for (Map.Entry<String, String> entry : this.baggage.entrySet()) {
+      reader.readBaggageItem(entry.getKey(), entry.getValue());
+    }
   }
 }

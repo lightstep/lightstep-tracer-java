@@ -4,6 +4,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -36,8 +37,8 @@ import com.lightstep.tracer.thrift.ReportResponse;
 import com.lightstep.tracer.thrift.TraceJoinId;
 import com.lightstep.tracer.shared.Span;
 
-import io.opentracing.Tracer;
 import io.opentracing.References;
+import io.opentracing.Tracer;
 
 public abstract class AbstractTracer implements Tracer {
   // Delay before sending the initial report
@@ -70,10 +71,6 @@ public abstract class AbstractTracer implements Tracer {
   }
 
   /**
-   * The tag key used to define traces which are joined based on a GUID.
-   */
-  public static final String TRACE_GUID_KEY = "join:trace_guid";
-  /**
    * The tag key used to record the relationship between child and parent
    * spans.
    */
@@ -87,7 +84,6 @@ public abstract class AbstractTracer implements Tracer {
   private final Auth auth;
   protected final Runtime runtime;
   private URL collectorURL;
-
 
   protected ArrayList<SpanRecord> spans;
   protected ClockState clockState;
@@ -297,13 +293,32 @@ public abstract class AbstractTracer implements Tracer {
   }
 
   public void inject(io.opentracing.SpanContext spanContext, Object carrier) {
-    // TODO implement
-    throw new RuntimeException("inject: unimplemented");
+    SpanContext lightstepSpanContext = (SpanContext)spanContext;
+    if (Propagator.TEXT_MAP.matchesInjectCarrier(carrier)) {
+      Propagator.TEXT_MAP.inject(lightstepSpanContext, carrier);
+    } else if (Propagator.HTTP_HEADER.matchesInjectCarrier(carrier)) {
+      Propagator.HTTP_HEADER.inject(lightstepSpanContext, carrier);
+    } else if (Propagator.BINARY.matchesInjectCarrier(carrier)) {
+      this.warn("LightStep-java does not yet support binary carriers. " +
+          "SpanContext: " + spanContext.toString());
+      Propagator.BINARY.inject(lightstepSpanContext, carrier);
+    } else {
+      this.info("Unsupported carrier type: " + carrier.getClass());
+    }
   }
 
   public io.opentracing.SpanContext extract(Object carrier) {
-    // TODO implement
-    throw new RuntimeException("join: unimplemented");
+    if (Propagator.TEXT_MAP.matchesExtractCarrier(carrier)) {
+      return Propagator.TEXT_MAP.extract(carrier);
+    } else if (Propagator.HTTP_HEADER.matchesExtractCarrier(carrier)) {
+      return Propagator.HTTP_HEADER.extract(carrier);
+    } else if (Propagator.BINARY.matchesExtractCarrier(carrier)) {
+      this.warn("LightStep-java does not yet support binary carriers.");
+      return Propagator.BINARY.extract(carrier);
+    } else {
+      this.info("Unsupported carrier type: " + carrier.getClass());
+      return null;
+    }
   }
 
   /**
@@ -636,12 +651,12 @@ public abstract class AbstractTracer implements Tracer {
    * part of the OpenTracing API and is not a supported API.
    */
   public class Status {
-      public Map<String, String> tags;
-      public ClientMetrics clientMetrics;
+    public Map<String, String> tags;
+    public ClientMetrics clientMetrics;
 
-      public Status() {
-          this.tags = new HashMap<String, String>();
-      }
+    public Status() {
+      this.tags = new HashMap<String, String>();
+    }
   }
 
   /**
