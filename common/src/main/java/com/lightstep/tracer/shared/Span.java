@@ -87,14 +87,6 @@ public class Span implements io.opentracing.Span {
     return key.startsWith("join:");
   }
 
-  public String getTraceId() {
-    return this.context.getTraceId();
-  }
-
-  public String getSpanId() {
-    return this.context.getSpanId();
-  }
-
   public AbstractTracer getTracer() {
     return this.tracer;
   }
@@ -119,7 +111,8 @@ public class Span implements io.opentracing.Span {
           log.setPayload_json(payloadString);
         } catch (JsonProcessingException e) {
           // Just use a string.
-          this.tracer.debug("Payload not serializable to JSON. Setting as String. (SpanId=" + this.getSpanId() + ")");
+          this.tracer.debug("Payload not serializable to JSON. Setting as String. (SpanId=" +
+              ((SpanContext)this.context()).getSpanId() + ")");
           log.setPayload_json(payload.toString());
         }
       }
