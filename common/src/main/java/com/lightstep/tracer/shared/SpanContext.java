@@ -10,11 +10,11 @@ public class SpanContext implements io.opentracing.SpanContext {
 
   public SpanContext(String traceId) {
     if (traceId == null) {
-      this.traceId = "XXX";
+      this.traceId = AbstractTracer.generateGUID();
     } else {
       this.traceId = traceId;
     }
-    this.spanId = "YYY";
+    this.spanId = AbstractTracer.generateGUID();
   }
 
   public String getSpanId() {
