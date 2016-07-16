@@ -23,7 +23,7 @@ public class Simple {
 
         // Create a simple child span
         Span childSpan = tracer.buildSpan("hello_world")
-            .withParent(parentSpan)
+            .asChildOf(parentSpan.context())
             .withTag("hello", "world")
             .start();
         Thread.sleep(100);
@@ -53,7 +53,7 @@ public class Simple {
 
     public static void spawnWorkers(final Tracer tracer, Span outerSpan) throws InterruptedException  {
         final Span parentSpan = tracer.buildSpan("spawn_workers")
-            .withParent(outerSpan)
+            .asChildOf(outerSpan.context())
             .start();
 
         System.out.println("Launching worker threads.");
@@ -62,11 +62,11 @@ public class Simple {
         workers[0] = new Thread() {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker0")
-                    .withParent(parentSpan)
+                    .asChildOf(parentSpan.context())
                     .start();
                 for (int i = 0; i < 20; i++) {
                     Span innerSpan = tracer.buildSpan("worker0/microspan")
-                        .withParent(childSpan)
+                        .asChildOf(childSpan.context())
                         .start();
                     try {
                         Thread.sleep(10);
@@ -82,7 +82,7 @@ public class Simple {
         workers[1] = new Thread() {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker1")
-                    .withParent(parentSpan)
+                    .asChildOf(parentSpan.context())
                     .start();
                 for (int i = 0; i < 20; i++) {
                     childSpan.log("Beginning inner loop", i);
@@ -101,7 +101,7 @@ public class Simple {
         workers[2] = new Thread() {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker2")
-                    .withParent(parentSpan)
+                    .asChildOf(parentSpan.context())
                     .start();
                 try {
                     Thread.sleep(200);
@@ -115,7 +115,7 @@ public class Simple {
         workers[3] = new Thread() {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker3")
-                    .withParent(parentSpan)
+                    .asChildOf(parentSpan.context())
                     .start();
                 for (int i = 0; i < 20; i++) {
                     try {
