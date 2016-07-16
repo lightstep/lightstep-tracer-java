@@ -37,6 +37,7 @@ import com.lightstep.tracer.thrift.TraceJoinId;
 import com.lightstep.tracer.shared.Span;
 
 import io.opentracing.Tracer;
+import io.opentracing.References;
 
 public abstract class AbstractTracer implements Tracer {
   // Delay before sending the initial report
@@ -71,12 +72,12 @@ public abstract class AbstractTracer implements Tracer {
   /**
    * The tag key used to define traces which are joined based on a GUID.
    */
-	public static final String TRACE_GUID_KEY = "join:trace_guid";
+  public static final String TRACE_GUID_KEY = "join:trace_guid";
   /**
    * The tag key used to record the relationship between child and parent
    * spans.
    */
-	public static final String PARENT_SPAN_GUID_KEY = "parent_span_guid";
+  public static final String PARENT_SPAN_GUID_KEY = "parent_span_guid";
 
   // copied from options
   private final int maxBufferedSpans;
@@ -295,12 +296,12 @@ public abstract class AbstractTracer implements Tracer {
     return this.new SpanBuilder(operationName);
   }
 
-  public <T> void inject(io.opentracing.Span span, T carrier) {
+  public void inject(io.opentracing.SpanContext spanContext, Object carrier) {
     // TODO implement
     throw new RuntimeException("inject: unimplemented");
   }
 
-  public <T> Tracer.SpanBuilder join(T carrier) {
+  public io.opentracing.SpanContext extract(Object carrier) {
     // TODO implement
     throw new RuntimeException("join: unimplemented");
   }
@@ -460,7 +461,7 @@ public abstract class AbstractTracer implements Tracer {
     }
   }
 
-  private static final String generateGUID() {
+  static final String generateGUID() {
     // Note that ThreadLocalRandom is a singleton, thread safe Random Generator
     long guid = ThreadLocalRandom.current().nextLong(Long.MAX_VALUE);
     return Long.toHexString(guid);
@@ -473,7 +474,7 @@ public abstract class AbstractTracer implements Tracer {
 
   class SpanBuilder implements Tracer.SpanBuilder{
     private String operationName;
-    private io.opentracing.Span parent;
+    private SpanContext parent;
     private Map<String, String> tags;
     private long startTimestampMicros;
 
@@ -482,13 +483,18 @@ public abstract class AbstractTracer implements Tracer {
       this.tags = new HashMap<String, String>();
     }
 
-    public Tracer.SpanBuilder withOperationName(String operationName) {
-      this.operationName = operationName;
-      return this;
+    public Tracer.SpanBuilder asChildOf(Span parent) {
+      return this.asChildOf(parent.context());
     }
 
-    public Tracer.SpanBuilder withParent(io.opentracing.Span parent) {
-      this.parent = parent;
+    public Tracer.SpanBuilder asChildOf(io.opentracing.SpanContext parent) {
+      return this.addReference(References.CHILD_OF, parent);
+    }
+
+    public Tracer.SpanBuilder addReference(String type, io.opentracing.SpanContext referredTo) {
+      if (type == References.CHILD_OF || type == References.FOLLOWS_FROM) {
+        this.parent = (SpanContext)referredTo;
+      }
       return this;
     }
 
@@ -528,17 +534,18 @@ public abstract class AbstractTracer implements Tracer {
       record.setOldest_micros(this.startTimestampMicros);
       record.setSpan_guid(generateGUID());
 
-      String traceID;
-      if (this.parent instanceof io.opentracing.Span) {
-        Span parentSpan = (Span)parent;
-        traceID = parentSpan.getTraceID();
-        record.addToAttributes(new KeyValue(PARENT_SPAN_GUID_KEY, parentSpan.getGUID()));
-      } else {
-        traceID = generateGUID();
+      String traceId = null;
+      if (this.parent != null && this.parent instanceof SpanContext) {
+        traceId = this.parent.getTraceId();
+        record.addToAttributes(new KeyValue(
+              PARENT_SPAN_GUID_KEY,
+              this.parent.getSpanId()));
       }
-      record.addToJoin_ids(new TraceJoinId(TRACE_GUID_KEY, traceID));
+      SpanContext newSpanContext = new SpanContext(traceId); // traceId may be null
+      // Record the eventual TraceId in the SpanRecord.
+      record.setTrace_guid(newSpanContext.getTraceId());
 
-      Span span = new Span(AbstractTracer.this, record, traceID);
+      Span span = new Span(AbstractTracer.this, newSpanContext, record);
       for (Map.Entry<String, String> pair : this.tags.entrySet()) {
            span.setTag(pair.getKey(), pair.getValue());
       }
