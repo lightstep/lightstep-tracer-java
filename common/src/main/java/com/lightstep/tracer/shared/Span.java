@@ -20,7 +20,7 @@ public class Span implements io.opentracing.Span {
   private final SpanRecord record;
   private final ObjectMapper objectToJsonMapper;
 
-  Span (AbstractTracer tracer, SpanContext context, SpanRecord record) {
+  Span(AbstractTracer tracer, SpanContext context, SpanRecord record) {
     this.context = context;
     this.tracer = tracer;
     this.record = record;

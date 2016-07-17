@@ -5,17 +5,12 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.HashMap;
-import java.util.IllegalFormatException;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,11 +28,10 @@ import com.lightstep.tracer.thrift.SpanRecord;
 import com.lightstep.tracer.thrift.ReportingService;
 import com.lightstep.tracer.thrift.ReportRequest;
 import com.lightstep.tracer.thrift.ReportResponse;
-import com.lightstep.tracer.thrift.TraceJoinId;
 import com.lightstep.tracer.shared.Span;
 
-import io.opentracing.Tracer;
 import io.opentracing.References;
+import io.opentracing.Tracer;
 
 public abstract class AbstractTracer implements Tracer {
   // Delay before sending the initial report
@@ -70,10 +64,6 @@ public abstract class AbstractTracer implements Tracer {
   }
 
   /**
-   * The tag key used to define traces which are joined based on a GUID.
-   */
-  public static final String TRACE_GUID_KEY = "join:trace_guid";
-  /**
    * The tag key used to record the relationship between child and parent
    * spans.
    */
@@ -87,7 +77,6 @@ public abstract class AbstractTracer implements Tracer {
   private final Auth auth;
   protected final Runtime runtime;
   private URL collectorURL;
-
 
   protected ArrayList<SpanRecord> spans;
   protected ClockState clockState;
@@ -297,13 +286,32 @@ public abstract class AbstractTracer implements Tracer {
   }
 
   public void inject(io.opentracing.SpanContext spanContext, Object carrier) {
-    // TODO implement
-    throw new RuntimeException("inject: unimplemented");
+    SpanContext lightstepSpanContext = (SpanContext)spanContext;
+    if (Propagator.TEXT_MAP.matchesInjectCarrier(carrier)) {
+      Propagator.TEXT_MAP.inject(lightstepSpanContext, carrier);
+    } else if (Propagator.HTTP_HEADER.matchesInjectCarrier(carrier)) {
+      Propagator.HTTP_HEADER.inject(lightstepSpanContext, carrier);
+    } else if (Propagator.BINARY.matchesInjectCarrier(carrier)) {
+      this.warn("LightStep-java does not yet support binary carriers. " +
+          "SpanContext: " + spanContext.toString());
+      Propagator.BINARY.inject(lightstepSpanContext, carrier);
+    } else {
+      this.info("Unsupported carrier type: " + carrier.getClass());
+    }
   }
 
   public io.opentracing.SpanContext extract(Object carrier) {
-    // TODO implement
-    throw new RuntimeException("join: unimplemented");
+    if (Propagator.TEXT_MAP.matchesExtractCarrier(carrier)) {
+      return Propagator.TEXT_MAP.extract(carrier);
+    } else if (Propagator.HTTP_HEADER.matchesExtractCarrier(carrier)) {
+      return Propagator.HTTP_HEADER.extract(carrier);
+    } else if (Propagator.BINARY.matchesExtractCarrier(carrier)) {
+      this.warn("LightStep-java does not yet support binary carriers.");
+      return Propagator.BINARY.extract(carrier);
+    } else {
+      this.info("Unsupported carrier type: " + carrier.getClass());
+      return null;
+    }
   }
 
   /**
@@ -532,7 +540,6 @@ public abstract class AbstractTracer implements Tracer {
       SpanRecord record = new SpanRecord();
       record.setSpan_name(this.operationName);
       record.setOldest_micros(this.startTimestampMicros);
-      record.setSpan_guid(generateGUID());
 
       String traceId = null;
       if (this.parent != null && this.parent instanceof SpanContext) {
@@ -542,8 +549,9 @@ public abstract class AbstractTracer implements Tracer {
               this.parent.getSpanId()));
       }
       SpanContext newSpanContext = new SpanContext(traceId); // traceId may be null
-      // Record the eventual TraceId in the SpanRecord.
+      // Record the eventual TraceId and SpanId in the SpanRecord.
       record.setTrace_guid(newSpanContext.getTraceId());
+      record.setSpan_guid(newSpanContext.getSpanId());
 
       Span span = new Span(AbstractTracer.this, newSpanContext, record);
       for (Map.Entry<String, String> pair : this.tags.entrySet()) {
@@ -636,12 +644,12 @@ public abstract class AbstractTracer implements Tracer {
    * part of the OpenTracing API and is not a supported API.
    */
   public class Status {
-      public Map<String, String> tags;
-      public ClientMetrics clientMetrics;
+    public Map<String, String> tags;
+    public ClientMetrics clientMetrics;
 
-      public Status() {
-          this.tags = new HashMap<String, String>();
-      }
+    public Status() {
+      this.tags = new HashMap<String, String>();
+    }
   }
 
   /**
