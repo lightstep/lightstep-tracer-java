@@ -4,19 +4,13 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.HashMap;
-import java.util.IllegalFormatException;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -34,7 +28,6 @@ import com.lightstep.tracer.thrift.SpanRecord;
 import com.lightstep.tracer.thrift.ReportingService;
 import com.lightstep.tracer.thrift.ReportRequest;
 import com.lightstep.tracer.thrift.ReportResponse;
-import com.lightstep.tracer.thrift.TraceJoinId;
 import com.lightstep.tracer.shared.Span;
 
 import io.opentracing.References;
