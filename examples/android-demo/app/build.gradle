@@ -14,6 +14,17 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    sourceSets {
+        main.java.srcDirs = [
+                // vvv INCLUDE FOR BUILDS FROM LOCAL SOURCE
+                '../../../common/src/main/java',
+                '../../../lightstep-tracer-android/src/main/java',
+                // ^^^ INCLUDE FOR BUILDS FROM LOCAL SOURCE
+                'src/main/java'
+        ]
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -34,11 +45,10 @@ android {
 repositories {
     jcenter()
     maven {
-        url  "http://dl.bintray.com/lightstep/maven"
-        url  "http://oss.jfrog.org/oss-snapshot-local/"
+        url "http://dl.bintray.com/lightstep/maven"
     }
-    flatDir {
-        dirs '../../../lightstep-tracer-android/build/outputs/aar'
+    maven {
+        url  "http://oss.jfrog.org/oss-snapshot-local/"
     }
 }
 
@@ -49,8 +59,16 @@ dependencies {
     compile 'com.android.volley:volley:1.0.0'
     compile 'io.opentracing:opentracing-api:0.9.1'
 
-    // Toggle the below to use the code in the source tree rather than the
-    // published version
-    compile 'com.lightstep.tracer:lightstep-tracer-android:' + current_version
-    //compile(name:'lightstep-tracer-android-release', ext:'aar')
+    // vvv INCLUDE FOR BUILDS FROM LOCAL SOURCE
+    compile('org.apache.thrift:libthrift:0.9.2') {
+        // Not needed on Android
+        exclude module: 'httpclient'
+    }
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
+    compile 'javax.annotation:jsr250-api:1.0'
+    // ^^^ INCLUDE FOR BUILDS FROM LOCAL SOURCE
+
+    // vvv INCLUDE FOR BUILDS AGAINST PUBLISHED AAR
+    //compile 'com.lightstep.tracer:lightstep-tracer-android:' + current_version
+    // ^^^ INCLUDE FOR BUILDS AGAINST PUBLISHED AAR
 }
