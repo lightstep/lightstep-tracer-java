@@ -54,7 +54,7 @@ public class MainActivityFragment extends Fragment {
     // Initialize tracer
     this.tracer = new com.lightstep.tracer.android.Tracer(
             getContext(),
-            new Options("{your_access_token}"));
+            new Options("{your_access_token}").withVerbosity(4));
     Log.d(TAG, "Tracer successfully initialized!");
 
     View fragmentView = (View) inflater.inflate(R.layout.fragment_main, container, false);

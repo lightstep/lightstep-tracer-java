@@ -85,7 +85,7 @@ public abstract class AbstractTracer implements Tracer {
   // Should *NOT* attempt to take a span's lock while holding this lock.
   protected final Object mutex = new Object();
   private boolean reportInProgress;
-  private AtomicBoolean hasUnreportSpans;
+  private AtomicBoolean hasUnreportedSpans;
   private final Timer timer;
   private final ThreadPoolExecutor executor;
   protected boolean isDisabled;
@@ -139,7 +139,7 @@ public abstract class AbstractTracer implements Tracer {
     // TODO sanity check options
     this.maxBufferedSpans = options.maxBufferedSpans > 0 ?
       options.maxBufferedSpans : DEFAULT_MAX_BUFFERED_SPANS;
-    this.hasUnreportSpans = new AtomicBoolean(false);
+    this.hasUnreportedSpans = new AtomicBoolean(false);
     this.spans = new ArrayList<SpanRecord>(maxBufferedSpans);
 
     this.clockState = new ClockState();
@@ -233,7 +233,8 @@ public abstract class AbstractTracer implements Tracer {
   class FlushTimer extends TimerTask {
     @Override
     public void run() {
-      if (!AbstractTracer.this.hasUnreportSpans.get()) {
+      if (!AbstractTracer.this.hasUnreportedSpans.get() &&
+              AbstractTracer.this.clockState.isReady()) {
         return;
       }
       AbstractTracer.this.executor.execute(new FlushRunnable());
@@ -378,9 +379,11 @@ public abstract class AbstractTracer implements Tracer {
         clientMetrics = this.clientMetrics;
         this.spans = new ArrayList<SpanRecord>(this.maxBufferedSpans);
         this.clientMetrics = new ClientMetrics();
+        this.hasUnreportedSpans.set(false);
       } else {
         // Otherwise, if the clock state is not ready, we'll send an empty
         // report.
+        this.debug("Sending empty report to prime clock state");
         spans = new ArrayList<SpanRecord>();
       }
 
@@ -413,8 +416,6 @@ public abstract class AbstractTracer implements Tracer {
       this.debug("Sending report");
       long originMicros = System.currentTimeMillis() * 1000;
       ReportResponse resp = this.client.Report(this.auth, req);
-      this.hasUnreportSpans.set(false);
-      this.debug("Report sent");
 
       if (resp.isSetTiming()) {
         this.clockState.addSample(originMicros,
@@ -431,7 +432,7 @@ public abstract class AbstractTracer implements Tracer {
         }
       }
 
-      this.debug("Report sent successfully");
+      this.debug(String.format("Report sent successfully (%d spans)", spans.size()));
 
     } catch (TApplicationException e) {
       // Log as this probably indicates malformed spans
@@ -463,7 +464,7 @@ public abstract class AbstractTracer implements Tracer {
       if (this.spans.size() >= this.maxBufferedSpans) {
         this.clientMetrics.spansDropped++;
       } else {
-        this.hasUnreportSpans.set(true);
+        this.hasUnreportedSpans.set(true);
         this.spans.add(span);
       }
     }
