@@ -169,7 +169,7 @@ public class MainActivityFragment extends Fragment {
       if (PROXY != null) {
         url = url.replace("https://api.github.com/", PROXY);
       }
-      Span childSpan = tracer.buildSpan("http_get").withParent(span).start();
+      Span childSpan = tracer.buildSpan("http_get").asChildOf(span).start();
       childSpan.log("HTTP request", url);
       WrappedRequest req = new WrappedRequest(childSpan, url, listener, errorListener);
       queue.add(req);
@@ -271,9 +271,10 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public Map<String, String> getHeaders() {
+      com.lightstep.tracer.shared.SpanContext ctxImp = (com.lightstep.tracer.shared.SpanContext)span.context();
       Map<String, String> map = new HashMap<>();
-      map.put("LightStep-Trace-GUID", span.getTraceID());
-      map.put("LightStep-Parent-GUID", span.getGUID());
+      map.put("LightStep-Trace-GUID", ctxImp.getTraceId());
+      map.put("LightStep-Parent-GUID", ctxImp.getSpanId());
       map.put("LightStep-Access-Token", span.getTracer().getAccessToken());
       return map;
     }
