@@ -83,6 +83,18 @@ dependencies {
 }
 ```
 
+## Options
+
+### Setting a custom component name
+
+To set the ame used in the LightStep UI for this instance of the Tracer, set the `"lightstep.component_name"` tag as part of the initialization options:
+
+```
+options = new com.lightstep.tracer.shared.Options("{your_access_token}")
+    .withTag("lightstep.component_name", "your_custom_name");
+```
+
+
 ## Development info
 
 See [DEV.md](DEV.md) for information on contributing to this instrumentation library.
