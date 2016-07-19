@@ -58,12 +58,12 @@ class BenchmarkClient {
     static class Result {
 	double runTime;
 	double flushTime;
-	ArrayList<Long> sleepNanos;
+	long sleepNanos;
 	long answer;
     };
 
     static class OneThreadResult {
-	ArrayList<Long> sleepNanos;
+	long sleepNanos;
 	long answer;
     };
 
@@ -99,13 +99,10 @@ class BenchmarkClient {
 	rurl.append(r.runTime);
 	rurl.append("&flush=");
 	rurl.append(r.flushTime);
+	rurl.append("&s=");
+	rurl.append(r.sleepNanos / 1e9);
 	rurl.append("&a=");
 	rurl.append(r.answer);
-	rurl.append("&s=");
-	for (Long sleep : r.sleepNanos) {
-	    rurl.append(sleep.toString());
-	    rurl.append(",");
-	}
 	try (BufferedReader br = new BufferedReader(new InputStreamReader(getUrlReader(rurl.toString())))) {
 	} catch(IOException e) {
 	    throw new RuntimeException(e);
@@ -124,7 +121,7 @@ class BenchmarkClient {
 
     OneThreadResult testBody(Control c, Tracer t) {
 	OneThreadResult r = new OneThreadResult();
-	r.sleepNanos = new ArrayList<Long>();
+	r.sleepNanos = 0;
 
 	long sleepDebt = 0;
 
@@ -153,7 +150,7 @@ class BenchmarkClient {
 	    long endSleep = System.nanoTime();
 	    long slept = endSleep - beginSleep;
 	    sleepDebt -= slept;
-	    r.sleepNanos.add(slept);
+	    r.sleepNanos += slept;
  	}
 
 	return r;
@@ -205,9 +202,9 @@ class BenchmarkClient {
  	}
 
 	res.runTime = (endTest - beginTest) / 1e9;
-	res.sleepNanos = new ArrayList<Long>();
+	res.sleepNanos = 0;
 	for (OneThreadResult r1 : results) {
-	    res.sleepNanos.addAll(r1.sleepNanos);
+	    res.sleepNanos += r1.sleepNanos;
 	    res.answer += r1.answer;
 	}
 	return res;
@@ -229,7 +226,8 @@ class BenchmarkClient {
 	Options opts = new Options("notUsed").
 	    withCollectorHost("localhost").
 	    withCollectorPort(8000).
-	    withCollectorEncryption(Options.Encryption.NONE);
+	    withCollectorEncryption(Options.Encryption.NONE).
+	    withVerbosity(3);
 	BenchmarkClient bc = new BenchmarkClient(new JRETracer(opts),
 						 "http://" + opts.collectorHost + ":" + opts.collectorPort + "/");
 	bc.loop();
