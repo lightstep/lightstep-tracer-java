@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.shared.Options;
+import com.lightstep.tracer.shared.Version;
 import com.lightstep.tracer.thrift.KeyValue;
 
 public class Tracer extends AbstractTracer {
@@ -25,21 +26,7 @@ public class Tracer extends AbstractTracer {
     super(options);
 
     this.ctx = ctx;
-
-    // Check to see if component name is set and, if not, use the app process
-    // or package name.
-    boolean found = false;
-    for (KeyValue keyValue : super.runtime.attrs) {
-      if (keyValue.getKey() == super.COMPONENT_NAME_KEY) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      super.runtime.addToAttrs(
-        new KeyValue(super.COMPONENT_NAME_KEY,
-                     ctx.getApplicationInfo().processName));
-    }
+    this.addStandardTracerTags();
   }
 
   /**
@@ -67,6 +54,32 @@ public class Tracer extends AbstractTracer {
     protected Void doInBackground(Void ...voids) {
       sendReport(false);
       return null;
+    }
+  }
+
+  /**
+   * Adds standard tags set by all LightStep client libraries.
+   */
+  protected void addStandardTracerTags() {
+    // The platform is called "jre" rather than "Java" to clearly
+    // differentiate this library from the Android version
+    this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_KEY, "android");
+    this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY, String.valueOf(android.os.Build.VERSION.SDK_INT));
+    this.addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, Version.LIGHTSTEP_TRACER_VERSION);
+
+    // Check to see if component name is set and, if not, use the app process
+    // or package name.
+    boolean found = false;
+    for (KeyValue keyValue : super.runtime.attrs) {
+      if (keyValue.getKey() == super.COMPONENT_NAME_KEY) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      super.runtime.addToAttrs(
+              new KeyValue(super.COMPONENT_NAME_KEY,
+                      ctx.getApplicationInfo().processName));
     }
   }
 
