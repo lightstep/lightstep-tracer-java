@@ -48,14 +48,14 @@ import io.opentracing.Tracer;
 
 protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
+
     // Initialize LightStep tracer implementation in the main activity
     // (or anywhere with a valid android.content.Context).
     this.tracer = new com.lightstep.tracer.android.Tracer(
          this,
          new com.lightstep.tracer.shared.Options("{your_access_token}"));
     ...
-    
+
     // Start and finish a Span
     Span span = this.tracer.buildSpan("hello_span").start();
     this.doSomeWorkHere();
@@ -87,11 +87,11 @@ dependencies {
 
 ### Setting a custom component name
 
-To set the ame used in the LightStep UI for this instance of the Tracer, set the `"lightstep.component_name"` tag as part of the initialization options:
+To set the name used in the LightStep UI for this instance of the Tracer, call `withComponentName()` on the `Options` object:
 
 ```
 options = new com.lightstep.tracer.shared.Options("{your_access_token}")
-    .withTag("lightstep.component_name", "your_custom_name");
+    .withComponentName("your_custom_name");
 ```
 
 

@@ -104,6 +104,10 @@ public class Options {
     return this;
   }
 
+  public Options withComponentName(String name) {
+    return this.withTag(AbstractTracer.COMPONENT_NAME_KEY, name);
+  }
+
   public Options withTag(String key, Object value) {
     this.tags.put(key, value);
     return this;

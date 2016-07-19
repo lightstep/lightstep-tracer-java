@@ -34,6 +34,16 @@ public class RuntimeTest {
     }
 
     @Test
+    public void tracerSupportsWithComponentName() throws Exception {
+        JRETracer tracer = new JRETracer(
+            new com.lightstep.tracer.shared.Options("{your_access_token}")
+                .withComponentName("my_component"));
+
+        JRETracer.Status status = tracer.status();
+        assertEquals(status.tags.get("lightstep.component_name"), "my_component");
+    }
+
+    @Test
     public void tracerOptionsAreSupported() {
         // Ensure all the expected option methods are there and support
         // chaining.
