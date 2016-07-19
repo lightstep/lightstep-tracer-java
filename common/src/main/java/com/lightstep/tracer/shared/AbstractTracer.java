@@ -52,6 +52,12 @@ public abstract class AbstractTracer implements Tracer {
   public static final String COMPONENT_NAME_KEY = "lightstep.component_name";
   public static final String GUID_KEY = "lightstep.guid";
 
+  protected static final int VERBOSITY_DEBUG = 4;
+  protected static final int VERBOSITY_INFO = 3;
+  protected static final int VERBOSITY_ERRORS_ONLY = 2;
+  protected static final int VERBOSITY_FIRST_ERROR_ONLY = 1;
+  protected static final int VERBOSITY_NONE = 0;
+
   /**
    * For mapping internal logs to Android log levels without importing Android
    * pacakges.
@@ -94,6 +100,8 @@ public abstract class AbstractTracer implements Tracer {
   protected ReportingService.Client client;
 
   public AbstractTracer(Options options) {
+    // Set verbosity first so debug logs from the constructor take effect
+    this.verbosity = options.verbosity;
 
     // A description of the background flush / threading setup:
     //
@@ -144,7 +152,6 @@ public abstract class AbstractTracer implements Tracer {
 
     this.clockState = new ClockState();
     this.clientMetrics = new ClientMetrics();
-    this.verbosity = options.verbosity;
     this.visibleErrorCount = 0;
 
     this.auth = new Auth();
@@ -577,7 +584,7 @@ public abstract class AbstractTracer implements Tracer {
    * Internal logging.
    */
   protected void debug(String msg, Object payload) {
-    if (this.verbosity < 4) {
+    if (this.verbosity < VERBOSITY_DEBUG) {
         return;
     }
     this.printLogToConsole(InternalLogLevel.DEBUG, msg, payload);
@@ -594,7 +601,7 @@ public abstract class AbstractTracer implements Tracer {
    * Internal logging.
    */
   protected void info(String msg, Object payload) {
-    if (this.verbosity < 3) {
+    if (this.verbosity < VERBOSITY_INFO) {
         return;
     }
     this.printLogToConsole(InternalLogLevel.INFO, msg, payload);
@@ -611,7 +618,7 @@ public abstract class AbstractTracer implements Tracer {
    * Internal warning.
    */
   protected void warn(String msg, Object payload) {
-    if (this.verbosity < 3) {
+    if (this.verbosity < VERBOSITY_INFO) {
         return;
     }
     this.printLogToConsole(InternalLogLevel.WARN, msg, payload);
@@ -628,10 +635,10 @@ public abstract class AbstractTracer implements Tracer {
    * Internal error.
    */
   protected void error(String msg, Object payload) {
-    if (this.verbosity < 1) {
+    if (this.verbosity < VERBOSITY_FIRST_ERROR_ONLY) {
       return;
     }
-    if (this.verbosity == 1 && this.visibleErrorCount > 0) {
+    if (this.verbosity == VERBOSITY_FIRST_ERROR_ONLY && this.visibleErrorCount > 0) {
       return;
     }
     this.visibleErrorCount++;
