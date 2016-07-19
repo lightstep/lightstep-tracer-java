@@ -491,7 +491,7 @@ public abstract class AbstractTracer implements Tracer {
       this.tags = new HashMap<String, String>();
     }
 
-    public Tracer.SpanBuilder asChildOf(Span parent) {
+    public Tracer.SpanBuilder asChildOf(io.opentracing.Span parent) {
       return this.asChildOf(parent.context());
     }
 
