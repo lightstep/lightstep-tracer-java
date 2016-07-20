@@ -97,17 +97,14 @@ publishing {
 
 install {
     repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
         pom {
             project {
                 packaging 'jar'
 
-                // Add your description here
-                name 'LightStep Tracer'
+                name 'lightstep-tracer-jre'
                 description = 'The LightStep OpenTracing Tracer implementation for Java'
                 url 'https://github.com/lightstep/lightstep-tracer-java'
 
-                // Set your license
                 licenses {
                     license {
                         name 'MIT'
