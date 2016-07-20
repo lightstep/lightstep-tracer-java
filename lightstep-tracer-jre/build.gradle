@@ -133,7 +133,7 @@ if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload'
         println 'lightstep-tracer-jre'
         taskGraph.getAllTasks().find {
             println it.path
-            it.path == ":lightstep-tracer-jre:generatePomFileForMavenPublication"
+            it.path == ":generatePomFileForMavenPublication"
         }.doLast {
             file("build/publications/maven/pom-default.xml").delete()
             println 'Overriding pom-file to make sure we can sync to maven central!'
