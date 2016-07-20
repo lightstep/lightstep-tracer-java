@@ -130,15 +130,17 @@ install {
 
 if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}) {
     gradle.taskGraph.whenReady { taskGraph ->
+        println 'lightstep-tracer-jre'
         taskGraph.getAllTasks().find {
-            it.path == ":$project.name:generatePomFileForMavenPublication"
+            println it.path
+            it.path == ":lightstep-tracer-jre:generatePomFileForMavenPublication"
         }.doLast {
             file("build/publications/maven/pom-default.xml").delete()
             println 'Overriding pom-file to make sure we can sync to maven central!'
             pom {
                 //noinspection GroovyAssignabilityCheck
                 project {
-                    name "$project.name"
+                    name 'lightstep-tracer-jre'
                     artifactId 'lightstep-tracer-jre'
                     packaging 'jar'
                     description 'The LightStep OpenTracing Tracer implementation for Java'
