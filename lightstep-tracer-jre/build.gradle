@@ -130,7 +130,6 @@ install {
 
 if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}) {
     gradle.taskGraph.whenReady { taskGraph ->
-        println 'lightstep-tracer-jre'
         taskGraph.getAllTasks().find {
             println it.path
             it.path == ":generatePomFileForMavenPublication"
