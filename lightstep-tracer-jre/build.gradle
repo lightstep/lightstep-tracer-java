@@ -140,6 +140,7 @@ if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload'
                 //noinspection GroovyAssignabilityCheck
                 project {
                     name 'lightstep-tracer-jre'
+                    groupId 'com.lightstep.tracer'
                     artifactId 'lightstep-tracer-jre'
                     packaging 'jar'
                     description 'The LightStep OpenTracing Tracer implementation for Java'
