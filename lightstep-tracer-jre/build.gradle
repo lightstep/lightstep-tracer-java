@@ -113,6 +113,14 @@ bintray {
         version {
             name = current_version
             released  = new Date()
+
+            // See https://github.com/bintray/bintray-examples/blob/master/gradle-example/build.gradle
+            mavenCentralSync {
+                sync = true
+                user = System.getenv('MAVEN_CENTRAL_USER_TOKEN')
+                password = System.getenv('MAVEN_CENTRAL_TOKEN_PASSWORD')
+                close = '1'
+            }
         }
     }
 }
