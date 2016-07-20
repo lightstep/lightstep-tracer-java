@@ -72,7 +72,7 @@ protected void onCreate(Bundle savedInstanceState) {
 
 ## Getting Started: JRE
 
-The JRE library is hosted on Bintray, jcenter, and Maven Central. The Bintray [lightstep-tracer-android](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view) project contains additional installation and setup information for using the library with various build systems such as Ivy and Maven.
+The JRE library is hosted on Bintray, jcenter, and Maven Central. The Bintray [lightstep-tracer-jre](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view) project contains additional installation and setup information for using the library with various build systems such as Ivy and Maven.
 
 ### Maven
 
@@ -133,8 +133,8 @@ Tracing instrumentation should use the OpenTracing APIs to stay portable and in 
 
 For reference, the generated LightStep documentation is also available:
 
-* [lightstep-tracer-android](http://javadoc.io/doc/com.lightstep.tracer/lightstep-tracer-android)
-* [lightstep-tracer-jre](http://javadoc.io/doc/com.lightstep.tracer/lightstep-tracer-jre)
+* [lightstep-tracer-android (javadoc)](http://javadoc.io/doc/com.lightstep.tracer/lightstep-tracer-android)
+* [lightstep-tracer-jre (javadoc)](http://javadoc.io/doc/com.lightstep.tracer/lightstep-tracer-jre)
 
 ## Options
 
