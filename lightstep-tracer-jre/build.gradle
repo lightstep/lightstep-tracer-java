@@ -128,6 +128,47 @@ install {
     }
 }
 
+if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}) {
+    gradle.taskGraph.whenReady { taskGraph ->
+        taskGraph.getAllTasks().find {
+            it.path == ":$project.name:generatePomFileForMavenPublication"
+        }.doLast {
+            file("build/publications/maven/pom-default.xml").delete()
+            println 'Overriding pom-file to make sure we can sync to maven central!'
+            pom {
+                //noinspection GroovyAssignabilityCheck
+                project {
+                    name "$project.name"
+                    artifactId 'lightstep-tracer-jre'
+                    packaging 'jar'
+                    description 'The LightStep OpenTracing Tracer implementation for Java'
+                    url 'https://github.com/lightstep/lightstep-tracer-java'
+                    version = current_version
+
+                    licenses {
+                        license {
+                            name 'MIT'
+                            url 'https://opensource.org/licenses/MIT'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'lightstep'
+                            name 'LightStep'
+                            email 'hello@lightstep.com'
+                        }
+                    }
+                    scm {
+                        connection 'https://github.com/lightstep/lightstep-tracer-java'
+                        developerConnection 'https://github.com/lightstep/lightstep-tracer-java'
+                        url 'https://github.com/lightstep/lightstep-tracer-java'
+                    }
+                }
+            }.writeTo("build/publications/maven/pom-default.xml")
+        }
+    }
+}
+
 
 // Bintray configuration so we can publish publically.  Requires the environment
 // variables below be set.
