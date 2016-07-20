@@ -13,17 +13,12 @@ The published Android AAR library is available on Bintray at [lightstep/maven/li
 
 **Gradle**
 
-*Replace `<VERSION>` below with the current version of the library.*
+* *Replace `<VERSION>` below with the current version of the library.*
+* The artifact is published to both `jcenter()` and `mavenCentral()`. Use whichever you prefer.
 
 ```
 repositories {
-    jcenter()
-    maven {
-        url  "http://dl.bintray.com/lightstep/maven"
-    }
-    maven {
-        url  "http://oss.jfrog.org/oss-snapshot-local/"
-    }
+    jcenter() // OR mavenCentral()
 }
 dependencies {
     compile 'com.lightstep.tracer:lightstep-tracer-android:<VERSION>'
@@ -68,15 +63,13 @@ The published JRE library is available on Bintray at [lightstep/maven/lightstep-
 
 **Gradle**
 
-*Replace `<VERSION>` below with the current version of the library.*
+* *Replace `<VERSION>` below with the current version of the library.*
+* The artifact is published to both `jcenter()` and `mavenCentral()`. Use whichever you prefer.
 
 build.gradle
 ```
 repositories {
-    jcenter()
-    maven {
-      url  "http://oss.jfrog.org/oss-snapshot-local/"
-    }
+  mavenCentral() // OR jcenter()
 }
 dependencies {
   compile 'com.lightstep.tracer:lightstep-tracer-jre:<VERSION>'
@@ -93,7 +86,6 @@ To set the name used in the LightStep UI for this instance of the Tracer, call `
 options = new com.lightstep.tracer.shared.Options("{your_access_token}")
     .withComponentName("your_custom_name");
 ```
-
 
 ## Development info
 
