@@ -83,7 +83,7 @@ tasks.matching {it instanceof Test}.all {
 
 publishing {
     publications {
-        MyPublication(MavenPublication) {
+        maven(MavenPublication) {
             from components.java
             groupId 'com.lightstep.tracer'
             artifactId 'lightstep-tracer-jre'
@@ -128,13 +128,14 @@ install {
     }
 }
 
+
 // Bintray configuration so we can publish publically.  Requires the environment
 // variables below be set.
 // https://github.com/bintray/gradle-bintray-plugin
 bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_API_KEY')
-    publications = ['MyPublication']
+    publications = ['maven']
     pkg {
         repo = 'maven'
         name = 'lightstep-tracer-jre'
