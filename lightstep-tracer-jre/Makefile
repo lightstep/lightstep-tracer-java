@@ -22,4 +22,5 @@ publish:
 	@test -n "$$BINTRAY_USER" || echo "BINTRAY_USER must be defined to publish"
 	@test -n "$$BINTRAY_API_KEY" || echo "BINTRAY_API_KEY must be defined to publish"
 	@echo "Publishing with bintray credentials for: $(BINTRAY_USER)"
+	@echo "Using Nexus Repository user token: $(MAVEN_CENTRAL_USER_TOKEN)"
 	./gradlew bintrayUpload

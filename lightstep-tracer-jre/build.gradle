@@ -131,7 +131,6 @@ install {
 if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}) {
     gradle.taskGraph.whenReady { taskGraph ->
         taskGraph.getAllTasks().find {
-            println it.path
             it.path == ":generatePomFileForMavenPublication"
         }.doLast {
             file("build/publications/maven/pom-default.xml").delete()
