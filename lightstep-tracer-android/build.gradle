@@ -32,8 +32,6 @@ group = "com.lightstep.tracer"
 def siteUrl = 'https://github.com/lightstep/lightstep-tracer-java'
 def gitUrl = 'https://github.com/lightstep/lightstep-tracer-java.git'
 
-
-
 android {
     compileSdkVersion 21
     buildToolsVersion "22.0.1"
@@ -86,6 +84,19 @@ bintray {
         version {
             name = current_version
             released = new Date()
+
+            gpg {
+                sign = true
+                passphrase = System.getenv('BINTRAY_GPG_PASSPHRASE')
+            }
+
+            // See https://github.com/bintray/bintray-examples/blob/master/gradle-example/build.gradle
+            mavenCentralSync {
+                sync = true
+                user = System.getenv('MAVEN_CENTRAL_USER_TOKEN')
+                password = System.getenv('MAVEN_CENTRAL_TOKEN_PASSWORD')
+                close = '1'
+            }
         }
     }
 }
@@ -95,14 +106,28 @@ install {
         pom {
             project {
                 packaging 'aar'
+
                 name 'The LightStep OpenTracing Implementation for Android'
+                description = 'The LightStep OpenTracing Tracer implementation for Java'
                 url siteUrl
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'https://opensource.org/licenses/MIT'
+                    }
+                }
                 developers {
+                    developer {
+                        id 'lightstep'
+                        name 'LightStep'
+                        email 'hello@lightstep.com'
+                    }
                 }
                 scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
+                    connection 'https://github.com/lightstep/lightstep-tracer-java'
+                    developerConnection 'https://github.com/lightstep/lightstep-tracer-java'
+                    url 'https://github.com/lightstep/lightstep-tracer-java'
                 }
             }
         }
