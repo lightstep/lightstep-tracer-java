@@ -95,6 +95,42 @@ publishing {
     }
 }
 
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'jar'
+
+                // Add your description here
+                name 'LightStep Tracer'
+                description = 'The LightStep OpenTracing Tracer implementation for Java'
+                url 'https://github.com/lightstep/lightstep-tracer-java'
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'lightstep'
+                        name 'LightStep'
+                        email 'hello@lightstep.com'
+                    }
+                }
+                scm {
+                    connection 'https://github.com/lightstep/lightstep-tracer-java'
+                    developerConnection 'https://github.com/lightstep/lightstep-tracer-java'
+                    url 'https://github.com/lightstep/lightstep-tracer-java'
+                }
+            }
+        }
+    }
+}
+
 // Bintray configuration so we can publish publically.  Requires the environment
 // variables below be set.
 // https://github.com/bintray/gradle-bintray-plugin
