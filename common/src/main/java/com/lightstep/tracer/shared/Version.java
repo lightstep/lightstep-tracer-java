@@ -2,7 +2,7 @@
 package com.lightstep.tracer.shared;
 
 public class Version {
-  public static final String LIGHTSTEP_TRACER_VERSION = "0.8.19";
+  public static final String LIGHTSTEP_TRACER_VERSION = "0.8.20";
 }
 
 
