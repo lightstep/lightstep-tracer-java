@@ -88,6 +88,9 @@ publishing {
             groupId 'com.lightstep.tracer'
             artifactId 'lightstep-tracer-jre'
             version = current_version
+
+            artifact sourcesJar
+            artifact javadocJar
         }
     }
 }
