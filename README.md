@@ -96,7 +96,7 @@ repositories {
     mavenCentral() // OR jcenter()
 }
 dependencies {
-    compile 'com.lightstep.tracer:lightstep-tracer-android:VERSION'
+    compile 'com.lightstep.tracer:lightstep-tracer-jre:VERSION'
 }
 ```
 
