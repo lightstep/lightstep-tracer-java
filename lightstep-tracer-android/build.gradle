@@ -148,7 +148,7 @@ dependencies {
         // Not needed on Android
         exclude module: 'httpclient'
     }
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
     compile 'javax.annotation:jsr250-api:1.0'
 }
 
