@@ -12,7 +12,11 @@ sourceSets {
 }
 
 repositories {
-    mavenCentral()
+    // NOTE: mavenCentral updates rather slowly. The sample won't be able to
+    // find the published artifact right after a new publication. jcenter()
+    // updates far more quickly.
+    //mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -24,7 +28,6 @@ dependencies {
     // explicitly included here.
     //compile files("../../lightstep-tracer-jre/build/libs/lightstep-tracer-jre-" + current_version + ".jar")
 }
-
 
 task runSample(type: JavaExec, dependsOn: 'classes') {
     main = 'Simple'
