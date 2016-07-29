@@ -5,19 +5,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import io.opentracing.propagation.HttpHeaderReader;
-import io.opentracing.propagation.HttpHeaderWriter;
-import io.opentracing.propagation.TextMapReader;
-import io.opentracing.propagation.TextMapWriter;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMap;
 
-public interface Propagator {
-  boolean matchesInjectCarrier(Object carrier);
-  boolean matchesExtractCarrier(Object carrier);
-  void inject(SpanContext spanContext, Object carrier);
-  SpanContext extract(Object carrier);
+public interface Propagator<C> {
+  void inject(SpanContext spanContext, C carrier);
+  SpanContext extract(C carrier);
+
+  
 
   // The three supported Propagators.
-  static final Propagator TEXT_MAP = new Propagator() {
+  static final Propagator<TextMap> TEXT_MAP = new Propagator<TextMap>() {
     private static final String PREFIX_TRACER_STATE = "ot-tracer-";
     private static final String PREFIX_BAGGAGE      = "ot-baggage-";
 
@@ -26,30 +24,22 @@ public interface Propagator {
     private static final String FIELD_NAME_SPAN_ID    = PREFIX_TRACER_STATE + "spanid";
     private static final String FIELD_NAME_SAMPLED    = PREFIX_TRACER_STATE + "sampled";
 
-    public boolean matchesInjectCarrier(Object carrier) {
-      return carrier instanceof TextMapWriter;
-    }
-    public boolean matchesExtractCarrier(Object carrier) {
-      return carrier instanceof TextMapReader;
-    }
-
-    public void inject(SpanContext spanContext, Object carrier) {
-      final TextMapWriter textMapWriter = (TextMapWriter)carrier;
-      textMapWriter.put(FIELD_NAME_TRACE_ID, spanContext.getTraceId());
-      textMapWriter.put(FIELD_NAME_SPAN_ID, spanContext.getSpanId());
-      textMapWriter.put(FIELD_NAME_SAMPLED, "true");
+    public void inject(SpanContext spanContext, final TextMap carrier) {
+      carrier.put(FIELD_NAME_TRACE_ID, spanContext.getTraceId());
+      carrier.put(FIELD_NAME_SPAN_ID, spanContext.getSpanId());
+      carrier.put(FIELD_NAME_SAMPLED, "true");
       spanContext.forEachBaggageItem(new SpanContext.BaggageItemReader() {
         public void readBaggageItem(String key, String value) {
-          textMapWriter.put(PREFIX_BAGGAGE + key, value);
+          carrier.put(PREFIX_BAGGAGE + key, value);
         }
       });
     }
 
-    public SpanContext extract(Object carrier) {
+    public SpanContext extract(TextMap carrier) {
       int requiredFieldCount = 0;
       String traceId = null, spanId = null;
       Map<String,String> decodedBaggage = null;
-      Iterator<Map.Entry<String,String>> entries = ((TextMapReader)carrier).getEntries();
+      Iterator<Map.Entry<String,String>> entries = carrier.getEntries();
       while (entries.hasNext()) {
         Map.Entry<String,String> entry = entries.next();
         switch (entry.getKey()) {
@@ -86,46 +76,24 @@ public interface Propagator {
     }
   };
 
-  // TODO: HTTP_HEADER presently blindly delegates to
+  // TODO: HTTP_HEADERS presently blindly delegates to
   // TEXT_MAP; adopt BasicTracer's HTTP carrier encoding once it's
   // been defined.
-  static final Propagator HTTP_HEADER = new Propagator() {
-    public boolean matchesInjectCarrier(Object carrier) {
-      return carrier instanceof HttpHeaderWriter;
+  static final Propagator<TextMap> HTTP_HEADERS = new Propagator<TextMap>() {
+    public void inject(SpanContext spanContext, TextMap carrier) {
+      TEXT_MAP.inject(spanContext, carrier);
     }
-    public boolean matchesExtractCarrier(Object carrier) {
-      return carrier instanceof HttpHeaderReader;
-    }
-    public void inject(SpanContext spanContext, Object carrier) {
-      final HttpHeaderWriter headerWriter = (HttpHeaderWriter)carrier;
-      TEXT_MAP.inject(spanContext, new TextMapWriter() {
-        public void put(String key, String value) {
-          headerWriter.put(key, value);
-        };
-      });
-    }
-    public SpanContext extract(Object carrier) {
-      final HttpHeaderReader headerReader = (HttpHeaderReader)carrier;
-      return TEXT_MAP.extract(new TextMapReader() {
-        public Iterator<Map.Entry<String,String>> getEntries() {
-          return headerReader.getEntries();
-        };
-      });
+    public SpanContext extract(TextMap carrier) {
+      return TEXT_MAP.extract(carrier);
     }
   };
 
-  static final Propagator BINARY = new Propagator() {
-    public boolean matchesInjectCarrier(Object carrier) {
-      return carrier instanceof ByteBuffer;
+  static final Propagator<ByteBuffer> BINARY = new Propagator<ByteBuffer>() {
+    public void inject(SpanContext spanContext, ByteBuffer carrier) {
+      // TODO: implement
     }
-    public boolean matchesExtractCarrier(Object carrier) {
-      return carrier instanceof ByteBuffer;
-    }
-    public void inject(SpanContext spanContext, Object carrier) {
-      // XXX: implement
-    }
-    public SpanContext extract(Object carrier) {
-      // XXX: implement
+    public SpanContext extract(ByteBuffer carrier) {
+      // TODO: implement
       return null;
     }
   };

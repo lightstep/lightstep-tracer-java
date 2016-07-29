@@ -2,8 +2,7 @@
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
-import io.opentracing.propagation.TextMapReader;
-import io.opentracing.propagation.TextMapWriter;
+import io.opentracing.propagation.TextMap;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -68,22 +67,23 @@ public class Simple {
     // An ultra-hacky demonstration of inject() and extract() in-process.
     public static Span createChildViaInjectExtract(Tracer tracer, String opName, SpanContext parentCtx) {
       final Map<String,String> textMap = new HashMap<String,String>();
-      tracer.inject(parentCtx, new TextMapWriter() {
+      final TextMap demoCarrier = new TextMap() {
         public void put(String key, String value) {
           textMap.put(key, value);
         }
-      });
+        public Iterator<Map.Entry<String,String>> getEntries() {
+          return textMap.entrySet().iterator();
+        }
+      };
+
+      tracer.inject(parentCtx, Format.Builtin.TEXT_MAP, demoCarrier);
       System.out.println("Carrier contents:");
         for (Map.Entry<String,String> entry : textMap.entrySet()) {
           System.out.println(
               "    key='" + entry.getKey() +
               "', value='" + entry.getValue() + "'");
         }
-      SpanContext extracted = tracer.extract(new TextMapReader() {
-        public Iterator<Map.Entry<String,String>> getEntries() {
-          return textMap.entrySet().iterator();
-        }
-      });
+      SpanContext extracted = tracer.extract(Format.Builtin.TEXT_MAP, demoCarrier);
       return tracer.buildSpan(opName).asChildOf(extracted).start();
     }
 
