@@ -4,6 +4,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,11 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.THttpClient;
 import org.apache.thrift.transport.TTransport;
 
+import io.opentracing.References;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMap;
+
 import com.lightstep.tracer.thrift.Auth;
 import com.lightstep.tracer.thrift.Command;
 import com.lightstep.tracer.thrift.KeyValue;
@@ -29,9 +35,6 @@ import com.lightstep.tracer.thrift.ReportingService;
 import com.lightstep.tracer.thrift.ReportRequest;
 import com.lightstep.tracer.thrift.ReportResponse;
 import com.lightstep.tracer.shared.Span;
-
-import io.opentracing.References;
-import io.opentracing.Tracer;
 
 public abstract class AbstractTracer implements Tracer {
   // Delay before sending the initial report
@@ -293,29 +296,29 @@ public abstract class AbstractTracer implements Tracer {
     return this.new SpanBuilder(operationName);
   }
 
-  public void inject(io.opentracing.SpanContext spanContext, Object carrier) {
+  public <C> void inject(io.opentracing.SpanContext spanContext, Format<C> format, C carrier) {
     SpanContext lightstepSpanContext = (SpanContext)spanContext;
-    if (Propagator.TEXT_MAP.matchesInjectCarrier(carrier)) {
-      Propagator.TEXT_MAP.inject(lightstepSpanContext, carrier);
-    } else if (Propagator.HTTP_HEADER.matchesInjectCarrier(carrier)) {
-      Propagator.HTTP_HEADER.inject(lightstepSpanContext, carrier);
-    } else if (Propagator.BINARY.matchesInjectCarrier(carrier)) {
+    if (format == Format.Builtin.TEXT_MAP) {
+      Propagator.TEXT_MAP.inject(lightstepSpanContext, (TextMap)carrier);
+    } else if (format == Format.Builtin.HTTP_HEADERS) {
+      Propagator.HTTP_HEADERS.inject(lightstepSpanContext, (TextMap)carrier);
+    } else if (format == Format.Builtin.BINARY) {
       this.warn("LightStep-java does not yet support binary carriers. " +
           "SpanContext: " + spanContext.toString());
-      Propagator.BINARY.inject(lightstepSpanContext, carrier);
+      Propagator.BINARY.inject(lightstepSpanContext, (ByteBuffer)carrier);
     } else {
       this.info("Unsupported carrier type: " + carrier.getClass());
     }
   }
 
-  public io.opentracing.SpanContext extract(Object carrier) {
-    if (Propagator.TEXT_MAP.matchesExtractCarrier(carrier)) {
-      return Propagator.TEXT_MAP.extract(carrier);
-    } else if (Propagator.HTTP_HEADER.matchesExtractCarrier(carrier)) {
-      return Propagator.HTTP_HEADER.extract(carrier);
-    } else if (Propagator.BINARY.matchesExtractCarrier(carrier)) {
+  public <C> io.opentracing.SpanContext extract(Format<C> format, C carrier) {
+    if (format == Format.Builtin.TEXT_MAP) {
+      return Propagator.TEXT_MAP.extract((TextMap)carrier);
+    } else if (format == Format.Builtin.HTTP_HEADERS) {
+      return Propagator.HTTP_HEADERS.extract((TextMap)carrier);
+    } else if (format == Format.Builtin.BINARY) {
       this.warn("LightStep-java does not yet support binary carriers.");
-      return Propagator.BINARY.extract(carrier);
+      return Propagator.BINARY.extract((ByteBuffer)carrier);
     } else {
       this.info("Unsupported carrier type: " + carrier.getClass());
       return null;
