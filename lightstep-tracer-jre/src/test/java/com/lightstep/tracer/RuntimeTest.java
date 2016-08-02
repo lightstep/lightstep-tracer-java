@@ -4,9 +4,14 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import io.opentracing.Tracer;
 import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMapExtractAdapter;
 import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.thrift.SpanRecord;
 import com.lightstep.tracer.thrift.KeyValue;
@@ -105,6 +110,20 @@ public class RuntimeTest {
         }
         status = tracer.status();
         assertEquals(status.clientMetrics.spansDropped, 10);
+    }
+
+    @Test
+    public void extractOnOpenTracingTracer() {
+        final io.opentracing.Tracer tracer = new JRETracer(
+            new com.lightstep.tracer.shared.Options("{your_access_token}"));
+
+        Map<String, String> headerMap = new HashMap<String, String>();
+        SpanContext parentCtx = tracer.extract(Format.Builtin.HTTP_HEADERS, new TextMapExtractAdapter(headerMap));
+
+        Span span = tracer.buildSpan("test_span")
+            .asChildOf(parentCtx)
+            .start();
+        span.finish();
     }
 
     protected void assertSpanHasTag(Span span, String key, String value) {
