@@ -6,9 +6,12 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.util.concurrent.Future;
+
 import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.shared.Version;
+import com.lightstep.tracer.shared.SimpleFuture;
 import com.lightstep.tracer.thrift.KeyValue;
 
 public class Tracer extends AbstractTracer {
@@ -33,26 +36,39 @@ public class Tracer extends AbstractTracer {
    * Flush any buffered data.
    */
   @Override
-  public void flush() {
+  protected SimpleFuture<Boolean> flushInternal() {
     synchronized(this.mutex) {
       if (this.isDisabled || this.ctx == null) {
-        return;
+        return new SimpleFuture<Boolean>(false);
       }
+
+      SimpleFuture<Boolean> future = new SimpleFuture<Boolean>();
 
       ConnectivityManager connMgr = (ConnectivityManager)
         this.ctx.getApplicationContext()
         .getSystemService(Context.CONNECTIVITY_SERVICE);
       NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
       if (networkInfo != null && networkInfo.isConnected()) {
-        new AsyncFlush().execute();
+        AsyncFlush asyncFlush = new AsyncFlush(future);
+        asyncFlush.execute();
+      } else {
+        future.set(false);
       }
+      return future;
     }
   }
 
   private class AsyncFlush extends AsyncTask<Void, Void, Void> {
+    private SimpleFuture<Boolean> future;
+
+    AsyncFlush(SimpleFuture<Boolean> future) {
+      this.future = future;
+    }
+
     @Override
     protected Void doInBackground(Void ...voids) {
       sendReport(false);
+      this.future.set(false);
       return null;
     }
   }

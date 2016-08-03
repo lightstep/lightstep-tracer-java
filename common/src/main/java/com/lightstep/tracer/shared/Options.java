@@ -79,9 +79,22 @@ public class Options {
    */
   public int verbosity;
 
+  /**
+   * If true, the background reporting loop will be disabled. Reports will
+   * only occur on explicit calls to Flush();
+   */
+  public boolean disableReportingLoop;
+
+  /**
+   * If true, the library will *not* attempt an automatic report at process exit.
+   */
+  public boolean disableReportOnExit;
+
   public Options(String accessToken) {
     this.accessToken = accessToken;
     this.verbosity = 1;
+    this.disableReportingLoop = false;
+    this.disableReportOnExit = false;
   }
 
   public Options withAccessToken(String accessToken) {
@@ -120,6 +133,16 @@ public class Options {
 
   public Options withVerbosity(int verbosity) {
     this.verbosity = verbosity;
+    return this;
+  }
+
+  public Options withDisableReportingLoop(boolean disable) {
+    this.disableReportingLoop = true;
+    return this;
+  }
+
+  public Options withDisableReportOnExit(boolean disable) {
+    this.disableReportOnExit = true;
     return this;
   }
 

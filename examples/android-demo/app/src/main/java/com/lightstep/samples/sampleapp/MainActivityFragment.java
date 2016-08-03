@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -266,6 +267,7 @@ public class MainActivityFragment extends Fragment {
                   errorListener.onErrorResponse(error);
                 }
               });
+      this.setRetryPolicy(new DefaultRetryPolicy(3000, 2, 1.0f));
       this.span = (com.lightstep.tracer.shared.Span)span;
     }
 

@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -34,14 +35,16 @@ import com.lightstep.tracer.thrift.SpanRecord;
 import com.lightstep.tracer.thrift.ReportingService;
 import com.lightstep.tracer.thrift.ReportRequest;
 import com.lightstep.tracer.thrift.ReportResponse;
-import com.lightstep.tracer.shared.Span;
+import com.lightstep.tracer.shared.SimpleFuture;
 
 public abstract class AbstractTracer implements Tracer {
   // Delay before sending the initial report
   private static final long REPORTING_DELAY_MILLIS = 20;
   // Maximum interval between reports
+  private static final long DEFAULT_CLOCK_STATE_INTERVAL_MILLIS = 500;
   private static final long DEFAULT_REPORTING_INTERVAL_MILLIS = 2500;
   private static final int DEFAULT_MAX_BUFFERED_SPANS = 1000;
+  private static final int DEFAULT_REPORT_TIMEOUT_MILLIS = 10 * 1000;
 
   private static final String DEFAULT_HOST = "collector.lightstep.com";
   private static final int DEFAULT_SECURE_PORT = 443;
@@ -63,7 +66,7 @@ public abstract class AbstractTracer implements Tracer {
 
   /**
    * For mapping internal logs to Android log levels without importing Android
-   * pacakges.
+   * packages.
    */
   protected enum InternalLogLevel {
     DEBUG,
@@ -94,9 +97,7 @@ public abstract class AbstractTracer implements Tracer {
   // Should *NOT* attempt to take a span's lock while holding this lock.
   protected final Object mutex = new Object();
   private boolean reportInProgress;
-  private AtomicBoolean hasUnreportedSpans;
-  private final Timer timer;
-  private final ThreadPoolExecutor executor;
+  private ReportingLoop reportingLoop;
   protected boolean isDisabled;
 
   protected TTransport transport;
@@ -106,51 +107,9 @@ public abstract class AbstractTracer implements Tracer {
     // Set verbosity first so debug logs from the constructor take effect
     this.verbosity = options.verbosity;
 
-    // A description of the background flush / threading setup:
-    //
-    // First off, the current background flush setup can likely be simplified.
-    // There are three interacting parts, which seems overly complicated for what
-    // needs to be done (especially given that Android has specific API for background
-    // network calls). Regardless, on to the details...
-    //
-    // TIMER: the AbstractTracer creates a *daemon* timer which fires at a regular
-    // interval to trigger background flush. This is good because the daemon timer
-    // does not prevent the JVM from shutting down (otherwise, the client library
-    // would require an explicit shutdown() call from the consumer of the library).
-    // The downside, is the daemon threads are killed with no chance to clean-up
-    // which means if the sendReport implementation is invoked from the daemon
-    // thread it may be killed and leave the Tracer in a bad state - which prevents
-    // the Tracer from doing a final, at-shutdown flush.
-    //
-    // EXECUTOR: to resolve this, the timer, instead of doing the work itself,
-    // runs the flush in a ThreadPoolExecutor that won't get killed arbitrarily.
-    // The thread pool itself will keep the JVM from shutting down (thus the
-    // point of a daemon timer in the first place), so the thread pool is given
-    // a keep-alive time where the thread is released if there's no work for the
-    // pool.  Thus the JVM is held up for a max of the keep-alive time. (Also,
-    // if the time out happens in normal operation, the pool automatically will
-    // recreate the thread if new tasks come in.)
-    //
-    // ATOMIC BOOLEAN: lastly there's an AtomicBoolean that gets set every time
-    // the Tracer gets a new span. This allows the timer to avoid putting new
-    // tasks into the executor when there's no work to be done (and thus
-    // constantly refreshing the keep-alive, preventing a clean shutdown). It's
-    // an atomic bool so the daemon thread doesn't have to touch the Tracer's
-    // mutex and potentially leave that in a bad state if killed.
-    //
-    // This executor setup comes from:
-    // http://stackoverflow.com/questions/13883293/turning-an-executorservice-to-daemon-in-java
-    //
-    // TODO: the timer should have some jitter in the interval
-    this.timer = new Timer(true);
-    this.executor = new ThreadPoolExecutor(1, 1, 2 * DEFAULT_REPORTING_INTERVAL_MILLIS, MILLISECONDS,
-      new java.util.concurrent.LinkedBlockingQueue<Runnable>());
-    this.executor.allowCoreThreadTimeOut(true);
-
     // TODO sanity check options
     this.maxBufferedSpans = options.maxBufferedSpans > 0 ?
       options.maxBufferedSpans : DEFAULT_MAX_BUFFERED_SPANS;
-    this.hasUnreportedSpans = new AtomicBoolean(false);
     this.spans = new ArrayList<SpanRecord>(maxBufferedSpans);
 
     this.clockState = new ClockState();
@@ -207,11 +166,9 @@ public abstract class AbstractTracer implements Tracer {
       return;
     }
 
-    // Schedule a fixed-delay task.
-    this.debug("Starting reporting timer.");
-    long interval = options.maxReportingIntervalSeconds > 0 ?
-      options.maxReportingIntervalSeconds * 1000 : DEFAULT_REPORTING_INTERVAL_MILLIS;
-    timer.schedule(new FlushTimer(), REPORTING_DELAY_MILLIS, interval);
+    this.debug("Starting reporting loop.");
+    this.reportingLoop = new ReportingLoop(options);
+    (new Thread(this.reportingLoop)).start();
 
     java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
        public void run() {
@@ -227,27 +184,76 @@ public abstract class AbstractTracer implements Tracer {
     }
   }
 
-  /**
-   * Extends TimerTask to call flush().
-   */
-  class FlushRunnable implements Runnable {
-    @Override
-    public void run() {
-      AbstractTracer.this.flush();
-    }
-  }
+  class ReportingLoop implements Runnable {
+    // Controls how often the reporting loop itself checks if there's any work to do: this is
+    // *not* the reporting interval itself! This should be kept relatively short as
+    // this defines the gap between process exit and the start of the final at-exit
+    // report.
+    private static final int POLL_INTERVAL_MILLIS = 40;
 
-  /**
-   * Extends TimerTask to call flush().
-   */
-  class FlushTimer extends TimerTask {
+    private AtomicBoolean active = new AtomicBoolean(false);
+    private Random rng = new Random(System.currentTimeMillis());
+    private long reportingIntervalMillis = 0;
+
+    ReportingLoop(Options options) {
+      this.reportingIntervalMillis = options.maxReportingIntervalSeconds > 0 ?
+              options.maxReportingIntervalSeconds * 1000 :
+              AbstractTracer.this.DEFAULT_REPORTING_INTERVAL_MILLIS;
+    }
+
     @Override
     public void run() {
-      if (!AbstractTracer.this.hasUnreportedSpans.get() &&
-              AbstractTracer.this.clockState.isReady()) {
-        return;
+        this.active.set(true);
+        long nextReportMillis = this.computeNextReportMillis();
+
+        // Run until the reporting loop has been stopped
+        while (this.active.get()) {
+          // Check if it's time for the next report
+          long nowMillis = System.currentTimeMillis();
+          if (nowMillis >= nextReportMillis) {
+            // TODO: nextReportMillis should be computed once the flush has succeeded or
+            // failed. flush() is currently an async call that has no signal as to when
+            // it completes.
+            SimpleFuture<Boolean> result = AbstractTracer.this.flushInternal();
+            try {
+              result.get();
+            } catch (InterruptedException e) {
+              AbstractTracer.this.warn("Future timed out");
+            }
+
+            nextReportMillis = this.computeNextReportMillis();
+          }
+
+          try {
+            Thread.sleep(POLL_INTERVAL_MILLIS);
+          } catch (InterruptedException e) {
+            AbstractTracer.this.warn("Exception trying to sleep in reporting thread");
+          }
+        }
+    }
+
+    /**
+     * Stops the reporting loop as soon any currently executing task finishes.
+     */
+    public void stop() {
+      this.active.set(false);
+    }
+
+    // TODO: hook to account for Android radio status
+    // TODO: incorporate back-off when there are reporting errors
+    protected long computeNextReportMillis() {
+      double base;
+      if (!AbstractTracer.this.clockState.isReady()) {
+        base = (double)AbstractTracer.this.DEFAULT_CLOCK_STATE_INTERVAL_MILLIS;
+      } else {
+        base = (double)this.reportingIntervalMillis;
       }
-      AbstractTracer.this.executor.execute(new FlushRunnable());
+
+      // Add +/- 10% jitter to the regular reporting interval
+      final double delta = base * (0.9 + 0.2 * this.rng.nextDouble());
+      final long nextMillis = System.currentTimeMillis() + (long)Math.ceil(delta);
+      AbstractTracer.this.debug(String.format("Next report: %d (%f) [%d]", nextMillis, delta, AbstractTracer.this.clockState.activeSampleCount()));
+      return nextMillis;
     }
   }
 
@@ -264,7 +270,7 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     this.debug("shutdown() called");
-    this.timer.cancel();
+    this.reportingLoop.stop();
     flush();
     disable();
   }
@@ -276,8 +282,7 @@ public abstract class AbstractTracer implements Tracer {
   public void disable() {
     this.info("Disabling client library");
     synchronized (this.mutex) {
-      this.timer.cancel();
-      this.timer.purge();
+      this.reportingLoop.stop();
 
       if (this.transport != null) {
         this.transport.close();
@@ -325,18 +330,16 @@ public abstract class AbstractTracer implements Tracer {
     }
   }
 
-  /**
-   * Sends buffered data to the collector.
-   *
-   * TODO: calls to flush() should likely be reversed to explicit, client calls
-   * to flush the buffered data ASAP/synchronously -- the internal reporting loop likely
-   * should use a different mechanism.  Otherwise there is no way to differentiate
-   * the two (which require slightly different implementations).
-   *
-   * This method should invoke sendReport() on a thread appropriate for making
-   * network calls.
-   */
-  public abstract void flush();
+  public void flush() {
+    // TODO: does OpenTracing specify if this is a synchronous or asynchronous method?
+    // It seems like it would have to be synchronous (i.e. this method should wait for
+    // the promise retunred by flushInternal() to complete), but the current LightStep
+    // implementation code calls this in several places and *may* be relying on the
+    // current async behavior.
+    this.flushInternal();
+  }
+
+  protected abstract SimpleFuture<Boolean> flushInternal();
 
   /**
    * Does the work of a flush by sending spans to the collector.
@@ -389,7 +392,7 @@ public abstract class AbstractTracer implements Tracer {
         clientMetrics = this.clientMetrics;
         this.spans = new ArrayList<SpanRecord>(this.maxBufferedSpans);
         this.clientMetrics = new ClientMetrics();
-        this.hasUnreportedSpans.set(false);
+        this.debug(String.format("Sending report, %d spans", spans.size()));
       } else {
         // Otherwise, if the clock state is not ready, we'll send an empty
         // report.
@@ -401,7 +404,9 @@ public abstract class AbstractTracer implements Tracer {
         this.debug("Creating transport");
         try {
           // TODO add support for cookies (for load balancer sessions)
-          this.transport = new THttpClient(this.collectorURL.toString());
+          THttpClient client = new THttpClient(this.collectorURL.toString());
+          client.setConnectTimeout(this.DEFAULT_REPORT_TIMEOUT_MILLIS);
+          this.transport = client;
           this.transport.open();
           TBinaryProtocol protocol = new TBinaryProtocol(this.transport);
           this.client = new ReportingService.Client(protocol);
@@ -423,7 +428,6 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     try {
-      this.debug("Sending report");
       long originMicros = System.currentTimeMillis() * 1000;
       ReportResponse resp = this.client.Report(this.auth, req);
 
@@ -432,7 +436,11 @@ public abstract class AbstractTracer implements Tracer {
                                   resp.getTiming().getReceive_micros(),
                                   resp.getTiming().getTransmit_micros(),
                                   System.currentTimeMillis() * 1000);
+      } else {
+        this.warn("Collector response did not include timing info");
       }
+
+
       // Check whether or not to disable the tracer
       if (resp.isSetCommands()) {
         for (Command command : resp.commands) {
@@ -448,7 +456,8 @@ public abstract class AbstractTracer implements Tracer {
       // Log as this probably indicates malformed spans
       this.error("TApplicationException: error from collector", e);
     } catch (TException x) {
-
+      // This may include exceptions like connection timeouts, which are expected during
+      // normal operation.
       this.debug("Report failed with exception", x);
 
       // The request failed, add any data that was supposed to be sent back to the
@@ -474,7 +483,6 @@ public abstract class AbstractTracer implements Tracer {
       if (this.spans.size() >= this.maxBufferedSpans) {
         this.clientMetrics.spansDropped++;
       } else {
-        this.hasUnreportedSpans.set(true);
         this.spans.add(span);
       }
     }
