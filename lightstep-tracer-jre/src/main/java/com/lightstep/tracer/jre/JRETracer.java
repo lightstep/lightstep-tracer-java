@@ -26,8 +26,8 @@ public class JRETracer extends AbstractTracer {
     }
 
     // Flush any data stored in the log and span buffers
-    public void flush() {
-        sendReport(true);
+    public SimpleFuture<Boolean> flushInternal() {
+        return new SimpleFuture<Boolean>(sendReport(true));
     }
 
     protected void printLogToConsole(InternalLogLevel level, String msg, Object payload) {
