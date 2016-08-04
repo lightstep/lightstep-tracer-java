@@ -193,11 +193,20 @@ public abstract class AbstractTracer implements Tracer {
 
   protected abstract long getDefaultReportingIntervalMillis();
 
+  /**
+   * Runs a relatively frequent loop in a separate thread to check if the
+   * library should flush its current buffer or if the loop should stop.
+   *
+   * In the JRE case, the actual flush will be run in this thread. In the
+   * case of Android, this thread will block and wait until the Android
+   * AsyncTask finishes.
+   */
   class ReportingLoop implements Runnable {
-    // Controls how often the reporting loop itself checks if there's any work to do: this is
-    // *not* the reporting interval itself! This should be kept relatively short as
-    // this defines the gap between process exit and the start of the final at-exit
-    // report.
+    // Controls how often the reporting loop itself checks if the status.
+    // This is relatively short as it defines the gap between the signal
+    // that process is exiting and the thread should stop. (The process
+    // exit does not directly abort this thread, as a final flush should
+    // be allowed to first complete.)
     private static final int POLL_INTERVAL_MILLIS = 40;
 
     private AtomicBoolean active = new AtomicBoolean(false);
@@ -216,9 +225,12 @@ public abstract class AbstractTracer implements Tracer {
         this.active.set(true);
         long nextReportMillis = this.computeNextReportMillis();
 
-        // Run until the reporting loop has been stopped
+        // Run until the reporting loop has been explicitly told to stop.
         while (this.active.get()) {
-          // Check if it's time for the next report
+          // Check if it's time to attempt the next report. At this point, the
+          // report may not actually result in network traffic if the there's
+          // no new data to report or, for example, the Android device does
+          // not have a wireless connection.
           long nowMillis = System.currentTimeMillis();
           if (nowMillis >= nextReportMillis) {
             SimpleFuture<Boolean> result = AbstractTracer.this.flushInternal();
@@ -229,12 +241,12 @@ public abstract class AbstractTracer implements Tracer {
               AbstractTracer.this.warn("Future timed out");
             }
 
+            // Check consecutive failures for back off purposes
             if (!reportSucceeded) {
               this.consecutiveFailures++;
             } else {
               this.consecutiveFailures = 0;
             }
-
             nextReportMillis = this.computeNextReportMillis();
           }
 
@@ -253,6 +265,11 @@ public abstract class AbstractTracer implements Tracer {
       this.active.set(false);
     }
 
+    /**
+     * Compute the next time, as compared to System.currentTimeMillis(), that
+     * a report should be attempted.  Accounts for clock state, error back off,
+     * and random jitter.
+     */
     protected long computeNextReportMillis() {
       double base;
       if (!AbstractTracer.this.clockState.isReady()) {
