@@ -19,6 +19,8 @@ public class Tracer extends AbstractTracer {
 
   private static final String TAG = "Tracer";
 
+  private static final long DEFAULT_REPORTING_INTERVAL_MILLIS = 30 * 1000;
+
   /**
    * Create a new tracer that will send spans to a LightStep collector.
    *
@@ -30,6 +32,10 @@ public class Tracer extends AbstractTracer {
 
     this.ctx = ctx;
     this.addStandardTracerTags();
+  }
+
+  protected long getDefaultReportingIntervalMillis() {
+      return this.DEFAULT_REPORTING_INTERVAL_MILLIS;
   }
 
   /**

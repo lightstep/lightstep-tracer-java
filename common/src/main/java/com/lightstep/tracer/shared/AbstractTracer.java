@@ -42,7 +42,6 @@ public abstract class AbstractTracer implements Tracer {
   private static final long REPORTING_DELAY_MILLIS = 20;
   // Maximum interval between reports
   private static final long DEFAULT_CLOCK_STATE_INTERVAL_MILLIS = 500;
-  private static final long DEFAULT_REPORTING_INTERVAL_MILLIS = 2500;
   private static final int DEFAULT_MAX_BUFFERED_SPANS = 1000;
   private static final int DEFAULT_REPORT_TIMEOUT_MILLIS = 10 * 1000;
 
@@ -192,6 +191,8 @@ public abstract class AbstractTracer implements Tracer {
     }
   }
 
+  protected abstract long getDefaultReportingIntervalMillis();
+
   class ReportingLoop implements Runnable {
     // Controls how often the reporting loop itself checks if there's any work to do: this is
     // *not* the reporting interval itself! This should be kept relatively short as
@@ -207,7 +208,7 @@ public abstract class AbstractTracer implements Tracer {
     ReportingLoop(Options options) {
       this.reportingIntervalMillis = options.maxReportingIntervalSeconds > 0 ?
               options.maxReportingIntervalSeconds * 1000 :
-              AbstractTracer.this.DEFAULT_REPORTING_INTERVAL_MILLIS;
+              AbstractTracer.this.getDefaultReportingIntervalMillis();
     }
 
     @Override
