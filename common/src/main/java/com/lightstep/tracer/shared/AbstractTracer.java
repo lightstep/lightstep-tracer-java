@@ -290,7 +290,9 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     this.debug("shutdown() called");
-    this.reportingLoop.stop();
+    if (this.reportingLoop != null) {
+      this.reportingLoop.stop();
+    }
     flush();
     disable();
   }
@@ -302,7 +304,9 @@ public abstract class AbstractTracer implements Tracer {
   public void disable() {
     this.info("Disabling client library");
     synchronized (this.mutex) {
-      this.reportingLoop.stop();
+      if (this.reportingLoop != null) {
+        this.reportingLoop.stop();
+      }
 
       if (this.transport != null) {
         this.transport.close();
