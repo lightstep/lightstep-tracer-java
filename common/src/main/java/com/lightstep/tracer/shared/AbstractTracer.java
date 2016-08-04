@@ -166,16 +166,24 @@ public abstract class AbstractTracer implements Tracer {
       return;
     }
 
-    this.debug("Starting reporting loop.");
-    this.reportingLoop = new ReportingLoop(options);
-    (new Thread(this.reportingLoop)).start();
+    if (!options.disableReportingLoop) {
+      this.debug("Starting reporting loop.");
+      this.reportingLoop = new ReportingLoop(options);
+      (new Thread(this.reportingLoop)).start();
+    } else {
+      this.debug("Reporting loop is disabled");
+    }
 
-    java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
-       public void run() {
-         AbstractTracer.this.debug("Running shutdown hook");
-         AbstractTracer.this.shutdown();
-       }
-    });
+    if (!options.disableReportOnExit) {
+      java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
+        public void run() {
+            AbstractTracer.this.debug("Running shutdown hook");
+            AbstractTracer.this.shutdown();
+        }
+      });
+    } else {
+      this.debug("Report at exit is disabled");
+    }
   }
 
   public String getAccessToken() {
@@ -194,6 +202,7 @@ public abstract class AbstractTracer implements Tracer {
     private AtomicBoolean active = new AtomicBoolean(false);
     private Random rng = new Random(System.currentTimeMillis());
     private long reportingIntervalMillis = 0;
+    private int consecutiveFailures = 0;
 
     ReportingLoop(Options options) {
       this.reportingIntervalMillis = options.maxReportingIntervalSeconds > 0 ?
@@ -215,10 +224,17 @@ public abstract class AbstractTracer implements Tracer {
             // failed. flush() is currently an async call that has no signal as to when
             // it completes.
             SimpleFuture<Boolean> result = AbstractTracer.this.flushInternal();
+            boolean reportSucceeded = false;
             try {
-              result.get();
+              reportSucceeded = result.get();
             } catch (InterruptedException e) {
               AbstractTracer.this.warn("Future timed out");
+            }
+
+            if (!reportSucceeded) {
+              this.consecutiveFailures++;
+            } else {
+              this.consecutiveFailures = 0;
             }
 
             nextReportMillis = this.computeNextReportMillis();
@@ -239,8 +255,6 @@ public abstract class AbstractTracer implements Tracer {
       this.active.set(false);
     }
 
-    // TODO: hook to account for Android radio status
-    // TODO: incorporate back-off when there are reporting errors
     protected long computeNextReportMillis() {
       double base;
       if (!AbstractTracer.this.clockState.isReady()) {
@@ -248,6 +262,11 @@ public abstract class AbstractTracer implements Tracer {
       } else {
         base = (double)this.reportingIntervalMillis;
       }
+
+      // Exponential back off based on number of consecutive errors, up to 8x the normal
+      // interval
+      int backOff = 1 + Math.min(7, this.consecutiveFailures);
+      base *= (double)backOff;
 
       // Add +/- 10% jitter to the regular reporting interval
       final double delta = base * (0.9 + 0.2 * this.rng.nextDouble());
@@ -349,17 +368,18 @@ public abstract class AbstractTracer implements Tracer {
    *                          therefore the code should make a 'best effort' to
    *                          truly report (i.e. send even if the clock state is
    *                          not ready).
+   * @return true if the report was sent successfully
    */
-  protected void sendReport(boolean explicitRequest) {
+  protected boolean sendReport(boolean explicitRequest) {
 
     synchronized (this.mutex) {
       if (this.reportInProgress) {
         this.debug("Report in progress. Skipping.");
-        return;
+        return true;
       }
       if (this.spans.size() == 0 && this.clockState.isReady()) {
         this.debug("Skipping report. No new data.");
-        return;
+        return true;
       }
 
       // Make sure other threads don't try to start sending a report.
@@ -367,7 +387,7 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     try {
-      sendReportWorker(explicitRequest);
+      return sendReportWorker(explicitRequest);
     } finally {
       synchronized (this.mutex) {
         this.reportInProgress = false;
@@ -378,8 +398,10 @@ public abstract class AbstractTracer implements Tracer {
   /**
    * Private worker function for sendReport() to make the locking and guard
    * variable bracketing a little more straightforward.
+   *
+   * Returns false in the case of an error. True if the report was successful.
    */
-  private void sendReportWorker(boolean explicitRequest) {
+  private boolean sendReportWorker(boolean explicitRequest) {
     // Data to be sent. Maybe be merged back into the local buffers if the
     // report fails.
     ArrayList<SpanRecord> spans;
@@ -413,7 +435,7 @@ public abstract class AbstractTracer implements Tracer {
         } catch (TException e) {
           this.error("Exception creating Thrift client. Disabling tracer.", e);
           this.disable();
-          return;
+          return false;
         }
       }
     }
@@ -440,7 +462,6 @@ public abstract class AbstractTracer implements Tracer {
         this.warn("Collector response did not include timing info");
       }
 
-
       // Check whether or not to disable the tracer
       if (resp.isSetCommands()) {
         for (Command command : resp.commands) {
@@ -451,10 +472,12 @@ public abstract class AbstractTracer implements Tracer {
       }
 
       this.debug(String.format("Report sent successfully (%d spans)", spans.size()));
+      return true;
 
     } catch (TApplicationException e) {
       // Log as this probably indicates malformed spans
       this.error("TApplicationException: error from collector", e);
+      return false;
     } catch (TException x) {
       // This may include exceptions like connection timeouts, which are expected during
       // normal operation.
@@ -470,6 +493,7 @@ public abstract class AbstractTracer implements Tracer {
       for (SpanRecord span : req.span_records) {
         addSpan(span);
       }
+      return true;
     }
   }
 

@@ -67,8 +67,8 @@ public class Tracer extends AbstractTracer {
 
     @Override
     protected Void doInBackground(Void ...voids) {
-      sendReport(false);
-      this.future.set(false);
+      boolean ok = sendReport(false);
+      this.future.set(ok);
       return null;
     }
   }
