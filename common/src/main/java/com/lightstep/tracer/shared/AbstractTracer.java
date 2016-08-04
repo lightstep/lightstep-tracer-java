@@ -221,9 +221,6 @@ public abstract class AbstractTracer implements Tracer {
           // Check if it's time for the next report
           long nowMillis = System.currentTimeMillis();
           if (nowMillis >= nextReportMillis) {
-            // TODO: nextReportMillis should be computed once the flush has succeeded or
-            // failed. flush() is currently an async call that has no signal as to when
-            // it completes.
             SimpleFuture<Boolean> result = AbstractTracer.this.flushInternal();
             boolean reportSucceeded = false;
             try {
