@@ -147,6 +147,24 @@ options = new com.lightstep.tracer.shared.Options("{your_access_token}")
     .withComponentName("your_custom_name");
 ```
 
+### Disabling the reporting loop
+
+By default, the Java library does a report of any buffered data on a fairly regular interval. To disable this behavior and rely only on explicit calls to `flush()` to report data, initialize with:
+
+```
+options = new com.lightstep.tracer.shared.Options("{your_access_token}")
+    .withDisableReportingLoop(true);
+```
+
+### Disabling the report at exit
+
+By default, the library will send a final report of any remaining buffered data at process exit. To disable this behavior, set the following option:
+
+```
+options = new com.lightstep.tracer.shared.Options("{your_access_token}")
+    .withDisableReportAtExit(true);
+```
+
 ## Development info
 
 See [DEV.md](DEV.md) for information on contributing to this instrumentation library.

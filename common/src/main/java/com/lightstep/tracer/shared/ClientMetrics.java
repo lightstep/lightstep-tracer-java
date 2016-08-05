@@ -21,6 +21,9 @@ public class ClientMetrics {
     }
 
     public void merge(ClientMetrics that) {
+        if (that == null) {
+            return;
+        }
         this.spansDropped += that.spansDropped;
     }
 
