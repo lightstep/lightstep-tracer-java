@@ -512,7 +512,7 @@ public abstract class AbstractTracer implements Tracer {
       for (SpanRecord span : req.span_records) {
         addSpan(span);
       }
-      return true;
+      return false;
     }
   }
 
