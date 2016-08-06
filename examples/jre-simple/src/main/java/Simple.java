@@ -23,6 +23,12 @@ public class Simple {
                 .withVerbosity(4)
         );
 
+        // Create a simple span and delay for a while to ensure the reporting
+        // loop works as expected
+        final Span mySpan = tracer.buildSpan("my_span").start();
+        mySpan.finish();
+        Thread.sleep(4000);
+
         // Create an outer span to capture all activity
         final Span parentSpan = tracer.buildSpan("outer_span").start();
         parentSpan.log("Starting outer span", null);

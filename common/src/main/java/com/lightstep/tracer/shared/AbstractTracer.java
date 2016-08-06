@@ -15,6 +15,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.thrift.TException;
 import org.apache.thrift.TApplicationException;
@@ -89,15 +90,21 @@ public abstract class AbstractTracer implements Tracer {
   protected final Runtime runtime;
   private URL collectorURL;
 
+  // Timestamp of the last recorded span. Used to terminate the reporting
+  // loop thread if no new data has come in (which is necessary for clean
+  // shutdown).
+  protected AtomicLong lastNewSpanMicros;
   protected ArrayList<SpanRecord> spans;
   protected ClockState clockState;
   protected ClientMetrics clientMetrics;
 
   // Should *NOT* attempt to take a span's lock while holding this lock.
   protected final Object mutex = new Object();
+  protected long maxReportingIntervalSeconds;
   private boolean reportInProgress;
   private ReportingLoop reportingLoop;
   protected boolean isDisabled;
+  protected boolean disableReportingLoop;
 
   protected TTransport transport;
   protected ReportingService.Client client;
@@ -109,11 +116,13 @@ public abstract class AbstractTracer implements Tracer {
     // TODO sanity check options
     this.maxBufferedSpans = options.maxBufferedSpans > 0 ?
       options.maxBufferedSpans : DEFAULT_MAX_BUFFERED_SPANS;
+    this.lastNewSpanMicros = new AtomicLong(this.nowMicros());
     this.spans = new ArrayList<SpanRecord>(maxBufferedSpans);
 
     this.clockState = new ClockState();
     this.clientMetrics = new ClientMetrics();
     this.visibleErrorCount = 0;
+    this.maxReportingIntervalSeconds = options.maxReportingIntervalSeconds;
 
     this.auth = new Auth();
     auth.setAccess_token(options.accessToken);
@@ -142,7 +151,7 @@ public abstract class AbstractTracer implements Tracer {
 
     this.runtime = new Runtime();
     this.runtime.setGuid(guid);
-    this.runtime.setStart_micros(System.currentTimeMillis() * 1000);
+    this.runtime.setStart_micros(this.nowMicros());
     for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
       this.addTracerTag(entry.getKey(), entry.getValue().toString());
     }
@@ -165,13 +174,7 @@ public abstract class AbstractTracer implements Tracer {
       return;
     }
 
-    if (!options.disableReportingLoop) {
-      this.debug("Starting reporting loop.");
-      this.reportingLoop = new ReportingLoop(options);
-      (new Thread(this.reportingLoop)).start();
-    } else {
-      this.debug("Reporting loop is disabled");
-    }
+    this.disableReportingLoop = options.disableReportingLoop;
 
     if (!options.disableReportOnExit) {
       java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -203,26 +206,24 @@ public abstract class AbstractTracer implements Tracer {
    */
   class ReportingLoop implements Runnable {
     // Controls how often the reporting loop itself checks if the status.
-    // This is relatively short as it defines the gap between the signal
-    // that process is exiting and the thread should stop. (The process
-    // exit does not directly abort this thread, as a final flush should
-    // be allowed to first complete.)
     private static final int POLL_INTERVAL_MILLIS = 40;
+
+    private static final int THREAD_TIMEOUT_MILLIS = 2000;
 
     private AtomicBoolean active = new AtomicBoolean(false);
     private Random rng = new Random(System.currentTimeMillis());
     private long reportingIntervalMillis = 0;
     private int consecutiveFailures = 0;
 
-    ReportingLoop(Options options) {
-      this.reportingIntervalMillis = options.maxReportingIntervalSeconds > 0 ?
-              options.maxReportingIntervalSeconds * 1000 :
-              AbstractTracer.this.getDefaultReportingIntervalMillis();
+    ReportingLoop(long interval) {
+      this.reportingIntervalMillis = interval;
     }
 
     @Override
     public void run() {
         this.active.set(true);
+        AbstractTracer.this.debug("Reporting thread started");
+
         long nextReportMillis = this.computeNextReportMillis();
 
         // Run until the reporting loop has been explicitly told to stop.
@@ -250,12 +251,24 @@ public abstract class AbstractTracer implements Tracer {
             nextReportMillis = this.computeNextReportMillis();
           }
 
-          try {
-            Thread.sleep(POLL_INTERVAL_MILLIS);
-          } catch (InterruptedException e) {
-            AbstractTracer.this.warn("Exception trying to sleep in reporting thread");
+          // If the tracer hasn't received new data in a while, stop the
+          // reporting loop. It will be restarted if needed.
+          long lastSpanMicros = AbstractTracer.this.nowMicros() - lastNewSpanMicros.get();
+          if (lastSpanMicros > this.THREAD_TIMEOUT_MILLIS * 1000) {
+            this.active.set(false);
+          } else {
+            try {
+              Thread.sleep(POLL_INTERVAL_MILLIS);
+            } catch (InterruptedException e) {
+              AbstractTracer.this.warn("Exception trying to sleep in reporting thread");
+            }
           }
         }
+        AbstractTracer.this.debug("Reporting thread stopped");
+    }
+
+    public boolean isActive() {
+      return this.active.get();
     }
 
     /**
@@ -469,14 +482,14 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     try {
-      long originMicros = System.currentTimeMillis() * 1000;
+      long originMicros = this.nowMicros();
       ReportResponse resp = this.client.Report(this.auth, req);
 
       if (resp.isSetTiming()) {
         this.clockState.addSample(originMicros,
                                   resp.getTiming().getReceive_micros(),
                                   resp.getTiming().getTransmit_micros(),
-                                  System.currentTimeMillis() * 1000);
+                                  this.nowMicros());
       } else {
         this.warn("Collector response did not include timing info");
       }
@@ -522,11 +535,26 @@ public abstract class AbstractTracer implements Tracer {
    * @param span the span to be added
    */
   void addSpan(SpanRecord span) {
+    this.lastNewSpanMicros.set(this.nowMicros());
+
     synchronized (this.mutex) {
       if (this.spans.size() >= this.maxBufferedSpans) {
         this.clientMetrics.spansDropped++;
       } else {
         this.spans.add(span);
+      }
+    }
+
+    // Start or restart the reporting loop as necessary (it may timeout and
+    // stop if no data has been received in a while).
+    if (!this.disableReportingLoop) {
+      if (this.reportingLoop == null || !this.reportingLoop.isActive()) {
+        long interval = this.maxReportingIntervalSeconds > 0 ?
+                this.maxReportingIntervalSeconds * 1000 :
+                this.getDefaultReportingIntervalMillis();
+
+        this.reportingLoop = new ReportingLoop(interval);
+        (new Thread(this.reportingLoop)).start();
       }
     }
   }
@@ -596,7 +624,7 @@ public abstract class AbstractTracer implements Tracer {
       }
 
       if (this.startTimestampMicros == 0) {
-        this.startTimestampMicros = System.currentTimeMillis() * 1000;
+        this.startTimestampMicros = AbstractTracer.this.nowMicros();
       }
 
       SpanRecord record = new SpanRecord();
@@ -732,4 +760,7 @@ public abstract class AbstractTracer implements Tracer {
     return status;
   }
 
+  protected long nowMicros() {
+     return System.currentTimeMillis() * 1000;
+  }
 }
