@@ -39,8 +39,7 @@ public interface Propagator<C> {
       int requiredFieldCount = 0;
       String traceId = null, spanId = null;
       Map<String,String> decodedBaggage = null;
-      Iterator<Map.Entry<String,String>> entries = carrier.getEntries();
-      while (entries.hasNext()) {
+      for (Map.Entry<String,String> entry : carrier) {
         Map.Entry<String,String> entry = entries.next();
         switch (entry.getKey()) {
           case FIELD_NAME_TRACE_ID: {
