@@ -78,7 +78,7 @@ public class Simple {
         public void put(String key, String value) {
           textMap.put(key, value);
         }
-        public Iterator<Map.Entry<String,String>> getEntries() {
+        public Iterator<Map.Entry<String,String>> iterator() {
           return textMap.entrySet().iterator();
         }
       };
