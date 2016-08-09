@@ -37,8 +37,12 @@ public class Span implements io.opentracing.Span {
 
   @Override
   public void finish() {
+    this.finish(System.currentTimeMillis() * 1000);
+  }
+
+  public void finish(long finishTimeMicros) {
     synchronized (this.mutex) {
-      this.record.setYoungest_micros(System.currentTimeMillis() * 1000);
+      this.record.setYoungest_micros(finishTimeMicros);
       this.tracer.addSpan(record);
     }
   }

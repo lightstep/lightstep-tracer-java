@@ -16,6 +16,7 @@ class NoopSpan implements Span {
 
     @Override
     public void finish() {}
+    public void finish(long timestamp) {}
 
     @Override
     public void close() {}
