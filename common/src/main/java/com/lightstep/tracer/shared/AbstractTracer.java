@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -570,7 +571,7 @@ public abstract class AbstractTracer implements Tracer {
     this.runtime.addToAttrs(new KeyValue(key, value));
   }
 
-  class SpanBuilder implements Tracer.SpanBuilder{
+  class SpanBuilder implements Tracer.SpanBuilder {
     private String operationName;
     private SpanContext parent;
     private Map<String, String> tags;
@@ -614,6 +615,14 @@ public abstract class AbstractTracer implements Tracer {
     public Tracer.SpanBuilder withStartTimestamp(long microseconds) {
       this.startTimestampMicros = microseconds;
       return this;
+    }
+
+    public Iterable<Map.Entry<String, String>> baggageItems() {
+      if (parent == null) {
+        return Collections.EMPTY_SET;
+      } else {
+        return parent.baggageItems();
+      }
     }
 
     public io.opentracing.Span start() {

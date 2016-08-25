@@ -28,11 +28,9 @@ public interface Propagator<C> {
       carrier.put(FIELD_NAME_TRACE_ID, spanContext.getTraceId());
       carrier.put(FIELD_NAME_SPAN_ID, spanContext.getSpanId());
       carrier.put(FIELD_NAME_SAMPLED, "true");
-      spanContext.forEachBaggageItem(new SpanContext.BaggageItemReader() {
-        public void readBaggageItem(String key, String value) {
-          carrier.put(PREFIX_BAGGAGE + key, value);
-        }
-      });
+      for (Map.Entry<String, String> e : spanContext.baggageItems()) {
+        carrier.put(PREFIX_BAGGAGE + e.getKey(), e.getValue());
+      }
     }
 
     public SpanContext extract(TextMap carrier) {

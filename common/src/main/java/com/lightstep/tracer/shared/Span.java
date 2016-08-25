@@ -16,7 +16,7 @@ public class Span implements io.opentracing.Span {
 
   private final Object mutex = new Object();
   private final AbstractTracer tracer;
-  private final SpanContext context;
+  private SpanContext context;
   private final SpanRecord record;
   private final ObjectMapper objectToJsonMapper;
 
@@ -40,6 +40,7 @@ public class Span implements io.opentracing.Span {
     this.finish(System.currentTimeMillis() * 1000);
   }
 
+  @Override
   public void finish(long finishTimeMicros) {
     synchronized (this.mutex) {
       this.record.setYoungest_micros(finishTimeMicros);
@@ -80,6 +81,17 @@ public class Span implements io.opentracing.Span {
         this.record.addToAttributes(new KeyValue(key, value.toString()));
       }
     }
+    return this;
+  }
+
+  @Override
+  public synchronized String getBaggageItem(String key) {
+    return this.context.getBaggageItem(key);
+  }
+
+  @Override
+  public synchronized Span setBaggageItem(String key, String value) {
+    this.context = this.context.withBaggageItem(key, value);
     return this;
   }
 
