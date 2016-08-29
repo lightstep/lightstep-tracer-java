@@ -142,7 +142,7 @@ For reference, the generated LightStep documentation is also available:
 
 To set the name used in the LightStep UI for this instance of the Tracer, call `withComponentName()` on the `Options` object:
 
-```
+```java
 options = new com.lightstep.tracer.shared.Options("{your_access_token}")
     .withComponentName("your_custom_name");
 ```
@@ -151,16 +151,23 @@ options = new com.lightstep.tracer.shared.Options("{your_access_token}")
 
 By default, the Java library does a report of any buffered data on a fairly regular interval. To disable this behavior and rely only on explicit calls to `flush()` to report data, initialize with:
 
-```
+```java
 options = new com.lightstep.tracer.shared.Options("{your_access_token}")
     .withDisableReportingLoop(true);
+```
+
+To then manually flush by using the LightStep tracer object directly:
+
+```java
+// Flush any buffered tracing data
+((com.lightstep.tracer.android.Tracer)tracer).flush();
 ```
 
 ### Disabling the report at exit
 
 By default, the library will send a final report of any remaining buffered data at process exit. To disable this behavior, set the following option:
 
-```
+```java
 options = new com.lightstep.tracer.shared.Options("{your_access_token}")
     .withDisableReportAtExit(true);
 ```

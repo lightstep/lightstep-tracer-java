@@ -235,7 +235,7 @@ public abstract class AbstractTracer implements Tracer {
           // not have a wireless connection.
           long nowMillis = System.currentTimeMillis();
           if (nowMillis >= nextReportMillis) {
-            SimpleFuture<Boolean> result = AbstractTracer.this.flushInternal();
+            SimpleFuture<Boolean> result = AbstractTracer.this.flushInternal(false);
             boolean reportSucceeded = false;
             try {
               reportSucceeded = result.get();
@@ -383,15 +383,12 @@ public abstract class AbstractTracer implements Tracer {
   }
 
   public void flush() {
-    // TODO: does OpenTracing specify if this is a synchronous or asynchronous method?
-    // It seems like it would have to be synchronous (i.e. this method should wait for
-    // the promise retunred by flushInternal() to complete), but the current LightStep
-    // implementation code calls this in several places and *may* be relying on the
-    // current async behavior.
-    this.flushInternal();
+    // TODO: flush() likely needs some form of synchronization mechanism to notify the caller
+    // when the flush is complete. For example, a promise, a callback, etc.
+    this.flushInternal(true);
   }
 
-  protected abstract SimpleFuture<Boolean> flushInternal();
+  protected abstract SimpleFuture<Boolean> flushInternal(boolean explicitRequest);
 
   /**
    * Does the work of a flush by sending spans to the collector.

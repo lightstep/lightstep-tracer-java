@@ -42,7 +42,7 @@ public class Tracer extends AbstractTracer {
    * Flush any buffered data.
    */
   @Override
-  protected SimpleFuture<Boolean> flushInternal() {
+  protected SimpleFuture<Boolean> flushInternal(boolean explicitRequest) {
     synchronized(this.mutex) {
       if (this.isDisabled || this.ctx == null) {
         return new SimpleFuture<Boolean>(false);
@@ -55,7 +55,7 @@ public class Tracer extends AbstractTracer {
         .getSystemService(Context.CONNECTIVITY_SERVICE);
       NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
       if (networkInfo != null && networkInfo.isConnected()) {
-        AsyncFlush asyncFlush = new AsyncFlush(future);
+        AsyncFlush asyncFlush = new AsyncFlush(future, explicitRequest);
         asyncFlush.execute();
       } else {
         future.set(false);
@@ -66,14 +66,16 @@ public class Tracer extends AbstractTracer {
 
   private class AsyncFlush extends AsyncTask<Void, Void, Void> {
     private SimpleFuture<Boolean> future;
+    private boolean explicitRequest;
 
-    AsyncFlush(SimpleFuture<Boolean> future) {
+    AsyncFlush(SimpleFuture<Boolean> future, boolean explicitRequest) {
       this.future = future;
+      this.explicitRequest = explicitRequest;
     }
 
     @Override
     protected Void doInBackground(Void ...voids) {
-      boolean ok = sendReport(false);
+      boolean ok = sendReport(this.explicitRequest);
       this.future.set(ok);
       return null;
     }
@@ -100,8 +102,7 @@ public class Tracer extends AbstractTracer {
     }
     if (!found) {
       super.runtime.addToAttrs(
-              new KeyValue(super.COMPONENT_NAME_KEY,
-                      ctx.getApplicationInfo().processName));
+        new KeyValue(super.COMPONENT_NAME_KEY, ctx.getApplicationInfo().processName));
     }
   }
 
