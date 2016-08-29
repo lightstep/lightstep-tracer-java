@@ -156,7 +156,7 @@ options = new com.lightstep.tracer.shared.Options("{your_access_token}")
     .withDisableReportingLoop(true);
 ```
 
-To then explicitly control reporting, manually flush by using the LightStep tracer object directly:
+To then manually flush by using the LightStep tracer object directly:
 
 ```java
 // Flush any buffered tracing data
