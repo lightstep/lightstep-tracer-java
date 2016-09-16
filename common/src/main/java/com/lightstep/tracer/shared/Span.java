@@ -18,12 +18,14 @@ public class Span implements io.opentracing.Span {
   private final AbstractTracer tracer;
   private SpanContext context;
   private final SpanRecord record;
+  private final long startTimestampRelativeNanos;
   private final ObjectMapper objectToJsonMapper;
 
-  Span(AbstractTracer tracer, SpanContext context, SpanRecord record) {
+  Span(AbstractTracer tracer, SpanContext context, SpanRecord record, long startTimestampRelativeNanos) {
     this.context = context;
     this.tracer = tracer;
     this.record = record;
+    this.startTimestampRelativeNanos = startTimestampRelativeNanos;
 
     this.objectToJsonMapper = new ObjectMapper();
     this.objectToJsonMapper.setSerializationInclusion(
@@ -37,7 +39,14 @@ public class Span implements io.opentracing.Span {
 
   @Override
   public void finish() {
-    this.finish(System.currentTimeMillis() * 1000);
+    // Note that this.startTimestampRelativeNanos will be -1 if the user
+    // provide an explicit start timestamp in the SpanBuilder.
+    if (this.startTimestampRelativeNanos > 0) {
+      long durationMicros = (System.nanoTime() - this.startTimestampRelativeNanos) / 1000;
+      this.finish(this.record.getOldest_micros() + durationMicros);
+    } else {
+      this.finish(System.currentTimeMillis() * 1000);
+    }
   }
 
   @Override

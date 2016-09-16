@@ -94,7 +94,7 @@ public abstract class AbstractTracer implements Tracer {
   // Timestamp of the last recorded span. Used to terminate the reporting
   // loop thread if no new data has come in (which is necessary for clean
   // shutdown).
-  protected AtomicLong lastNewSpanMicros;
+  protected AtomicLong lastNewSpanMillis;
   protected ArrayList<SpanRecord> spans;
   protected ClockState clockState;
   protected ClientMetrics clientMetrics;
@@ -117,7 +117,7 @@ public abstract class AbstractTracer implements Tracer {
     // TODO sanity check options
     this.maxBufferedSpans = options.maxBufferedSpans > 0 ?
       options.maxBufferedSpans : DEFAULT_MAX_BUFFERED_SPANS;
-    this.lastNewSpanMicros = new AtomicLong(this.nowMicros());
+    this.lastNewSpanMillis = new AtomicLong(System.currentTimeMillis());
     this.spans = new ArrayList<SpanRecord>(maxBufferedSpans);
 
     this.clockState = new ClockState();
@@ -152,7 +152,12 @@ public abstract class AbstractTracer implements Tracer {
 
     this.runtime = new Runtime();
     this.runtime.setGuid(guid);
-    this.runtime.setStart_micros(this.nowMicros());
+    // Unfortunately Java7 has no way to generate a timestamp that's both
+    // precise (a la System.nanoTime()) and absolute (a la
+    // System.currentTimeMillis()). We store an absolute start timestamp but at
+    // least get a precise duration at Span.finish() time via
+    // startTimestampRelativeNanos (search for it below).
+    this.runtime.setStart_micros(this.nowMicrosApproximate());
     for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
       this.addTracerTag(entry.getKey(), entry.getValue().toString());
     }
@@ -254,8 +259,8 @@ public abstract class AbstractTracer implements Tracer {
 
           // If the tracer hasn't received new data in a while, stop the
           // reporting loop. It will be restarted if needed.
-          long lastSpanMicros = AbstractTracer.this.nowMicros() - lastNewSpanMicros.get();
-          if (lastSpanMicros > this.THREAD_TIMEOUT_MILLIS * 1000) {
+          long lastSpanAgeMillis = System.currentTimeMillis() - lastNewSpanMillis.get();
+          if (lastSpanAgeMillis > this.THREAD_TIMEOUT_MILLIS) {
             this.active.set(false);
           } else {
             try {
@@ -480,14 +485,17 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     try {
-      long originMicros = this.nowMicros();
+      long originMicros = this.nowMicrosApproximate();
+      long originRelativeNanos = System.nanoTime();
       ReportResponse resp = this.client.Report(this.auth, req);
 
       if (resp.isSetTiming()) {
+	long deltaMicros = (System.nanoTime() - originRelativeNanos) / 1000;
+	long destinationMicros = originMicros + deltaMicros;
         this.clockState.addSample(originMicros,
                                   resp.getTiming().getReceive_micros(),
                                   resp.getTiming().getTransmit_micros(),
-                                  this.nowMicros());
+                                  destinationMicros);
       } else {
         this.warn("Collector response did not include timing info");
       }
@@ -533,7 +541,7 @@ public abstract class AbstractTracer implements Tracer {
    * @param span the span to be added
    */
   void addSpan(SpanRecord span) {
-    this.lastNewSpanMicros.set(this.nowMicros());
+    this.lastNewSpanMillis.set(System.currentTimeMillis());
 
     synchronized (this.mutex) {
       if (this.spans.size() >= this.maxBufferedSpans) {
@@ -629,8 +637,10 @@ public abstract class AbstractTracer implements Tracer {
         }
       }
 
+      long startTimestampRelativeNanos = -1;
       if (this.startTimestampMicros == 0) {
-        this.startTimestampMicros = AbstractTracer.this.nowMicros();
+	startTimestampRelativeNanos = System.nanoTime();
+        this.startTimestampMicros = AbstractTracer.this.nowMicrosApproximate();
       }
 
       SpanRecord record = new SpanRecord();
@@ -649,7 +659,7 @@ public abstract class AbstractTracer implements Tracer {
       record.setTrace_guid(newSpanContext.getTraceId());
       record.setSpan_guid(newSpanContext.getSpanId());
 
-      Span span = new Span(AbstractTracer.this, newSpanContext, record);
+      Span span = new Span(AbstractTracer.this, newSpanContext, record, startTimestampRelativeNanos);
       for (Map.Entry<String, String> pair : this.tags.entrySet()) {
            span.setTag(pair.getKey(), pair.getValue());
       }
@@ -766,7 +776,7 @@ public abstract class AbstractTracer implements Tracer {
     return status;
   }
 
-  protected long nowMicros() {
+  protected long nowMicrosApproximate() {
      return System.currentTimeMillis() * 1000;
   }
 }
