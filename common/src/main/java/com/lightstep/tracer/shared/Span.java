@@ -59,6 +59,10 @@ public class Span implements io.opentracing.Span {
 
   @Override
   public Span setTag(String key, String value) {
+    if (key == null || value == null) {
+      this.tracer.debug("key (" + key + ") or value (" + value + ") is null, ignoring");
+      return this;
+    }
     synchronized (this.mutex) {
       if (isJoinKey(key)) {
         this.record.addToJoin_ids(new TraceJoinId(key, value));
@@ -70,7 +74,7 @@ public class Span implements io.opentracing.Span {
   }
 
   @Override
-  public Span setTag(String key, boolean value){
+  public Span setTag(String key, boolean value) {
     synchronized (this.mutex) {
       if (isJoinKey(key)) {
         this.record.addToJoin_ids(new TraceJoinId(key, value ? "true" : "false"));
@@ -83,6 +87,10 @@ public class Span implements io.opentracing.Span {
 
   @Override
   public Span setTag(String key, Number value) {
+    if (key == null || value == null) {
+      this.tracer.debug("key (" + key + ") or value (" + value + ") is null, ignoring");
+      return this;
+    }
     synchronized (this.mutex) {
       if (isJoinKey(key)) {
         this.record.addToJoin_ids(new TraceJoinId(key, value.toString()));
