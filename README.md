@@ -47,7 +47,7 @@ Ensure the app's `AndroidManifest.xml` has the following (under the `<manifest>`
 
 
 ```java
-// Important the OpenTracing interfaces
+// Import the OpenTracing interfaces
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 
