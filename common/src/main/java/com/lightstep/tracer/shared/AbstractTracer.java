@@ -220,6 +220,10 @@ public abstract class AbstractTracer implements Tracer {
    */
   void doStopReporting() {
     synchronized (this) {
+      // Note: There is no synchronization to prevent multiple
+      // reporting loops from running simultaneously.  It's possible
+      // for one to start before another one exits, which is safe
+      // because flushInternal() is itself synchronized.
       if (this.reportingThread == null) {
 	return;
       }
