@@ -8,7 +8,7 @@ import com.lightstep.tracer.thrift.KeyValue;
 
 public class JRETracer extends AbstractTracer {
 
-    private static final long DEFAULT_REPORTING_INTERVAL_MILLIS = 2500;
+    private static final int DEFAULT_REPORTING_INTERVAL_MILLIS = 2500;
 
     private static class JavaTracerHolder {
         private static final JRETracer INSTANCE = new JRETracer(null);
@@ -23,12 +23,8 @@ public class JRETracer extends AbstractTracer {
     }
 
     public JRETracer(Options options) {
-        super(options);
+        super(AbstractTracer.setDefaultReportingIntervalMillis(options, DEFAULT_REPORTING_INTERVAL_MILLIS));
         this.addStandardTracerTags();
-    }
-
-    protected long getDefaultReportingIntervalMillis() {
-        return this.DEFAULT_REPORTING_INTERVAL_MILLIS;
     }
 
     // Flush any data stored in the log and span buffers

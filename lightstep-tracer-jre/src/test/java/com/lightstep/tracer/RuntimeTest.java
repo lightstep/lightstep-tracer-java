@@ -59,7 +59,7 @@ public class RuntimeTest {
                 .withCollectorEncryption(com.lightstep.tracer.shared.Options.Encryption.NONE)
                 .withVerbosity(2)
                 .withTag("my_tracer_tag", "zebra_stripes")
-                .withMaxReportingIntervalSeconds(30);
+                .withMaxReportingIntervalMillis(30000);
 
         JRETracer tracer = new JRETracer(options);
     }
