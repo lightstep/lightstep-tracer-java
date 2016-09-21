@@ -28,14 +28,11 @@ public class Tracer extends AbstractTracer {
    * @param options control LightStep-specific behavior
    */
   public Tracer(Context ctx, Options options) {
-    super(options);
+    super(options, new AbstractTracer.AbstractTracerOptions().
+	  withDefaultReportingIntervalMillis(DEFAULT_REPORTING_INTERVAL_MILLIS));
 
     this.ctx = ctx;
     this.addStandardTracerTags();
-  }
-
-  protected long getDefaultReportingIntervalMillis() {
-      return this.DEFAULT_REPORTING_INTERVAL_MILLIS;
   }
 
   /**

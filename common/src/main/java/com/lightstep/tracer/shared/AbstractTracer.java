@@ -65,6 +65,19 @@ public abstract class AbstractTracer implements Tracer {
   protected static final int VERBOSITY_FIRST_ERROR_ONLY = 1;
   protected static final int VERBOSITY_NONE = 0;
 
+  public static final class AbstractTracerOptions {
+      /** In case the user does not supply maxReportingIntervalSeconds, this value is used.
+       */
+      public long defaultReportingIntervalMillis;
+
+      /** Sets defaultReportingIntervalMillis.
+       */
+      public AbstractTracerOptions withDefaultReportingIntervalMillis(long value) {
+	  this.defaultReportingIntervalMillis = value;
+	  return this;
+      }
+  };
+
   /**
    * For mapping internal logs to Android log levels without importing Android
    * packages.
@@ -101,16 +114,20 @@ public abstract class AbstractTracer implements Tracer {
 
   // Should *NOT* attempt to take a span's lock while holding this lock.
   protected final Object mutex = new Object();
-  protected long maxReportingIntervalSeconds;
   private boolean reportInProgress;
+
+  // This is set to non-null if background reporting is enabled.
   private ReportingLoop reportingLoop;
+
+  // This is set to non-null when a background Thread is actually reporting.
+  private Thread reportingThread;
+
   protected boolean isDisabled;
-  protected boolean disableReportingLoop;
 
   protected TTransport transport;
   protected ReportingService.Client client;
 
-  public AbstractTracer(Options options) {
+  public AbstractTracer(Options options, AbstractTracerOptions aoptions) {
     // Set verbosity first so debug logs from the constructor take effect
     this.verbosity = options.verbosity;
 
@@ -122,8 +139,7 @@ public abstract class AbstractTracer implements Tracer {
 
     this.clockState = new ClockState();
     this.clientMetrics = new ClientMetrics();
-    this.visibleErrorCount = 0;
-    this.maxReportingIntervalSeconds = options.maxReportingIntervalSeconds;
+    this.visibleErrorCount = 0; 
 
     this.auth = new Auth();
     auth.setAccess_token(options.accessToken);
@@ -180,7 +196,12 @@ public abstract class AbstractTracer implements Tracer {
       return;
     }
 
-    this.disableReportingLoop = options.disableReportingLoop;
+    if (!options.disableReportingLoop) {
+        long intervalMillis = options.maxReportingIntervalSeconds > 0 ?
+	    options.maxReportingIntervalSeconds * 1000 :
+	    aoptions.defaultReportingIntervalMillis;
+        this.reportingLoop = new ReportingLoop(intervalMillis);
+    }
 
     if (!options.disableReportOnExit) {
       java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -194,13 +215,35 @@ public abstract class AbstractTracer implements Tracer {
     }
   }
 
+  /** 
+   * This call is NOT synchronized 
+   */
+  void doStopReporting() {
+    synchronized (this) {
+      if (this.reportingThread == null) {
+	return;
+      }
+      this.reportingThread.interrupt();
+      this.reportingThread = null;
+    }
+  }
+
+  /**
+   * This call is synchronized
+   */ 
+  void maybeStartReporting() {
+    if (this.reportingThread != null) {
+      return;
+    }
+    this.reportingThread = new Thread(this.reportingLoop);
+    this.reportingThread.start();
+  }
+
   public String getAccessToken() {
     synchronized (this.mutex) {
       return auth.getAccess_token();
     }
   }
-
-  protected abstract long getDefaultReportingIntervalMillis();
 
   /**
    * Runs a relatively frequent loop in a separate thread to check if the
@@ -216,7 +259,6 @@ public abstract class AbstractTracer implements Tracer {
 
     private static final int THREAD_TIMEOUT_MILLIS = 2000;
 
-    private AtomicBoolean active = new AtomicBoolean(false);
     private Random rng = new Random(System.currentTimeMillis());
     private long reportingIntervalMillis = 0;
     private int consecutiveFailures = 0;
@@ -227,13 +269,11 @@ public abstract class AbstractTracer implements Tracer {
 
     @Override
     public void run() {
-        this.active.set(true);
         AbstractTracer.this.debug("Reporting thread started");
-
         long nextReportMillis = this.computeNextReportMillis();
 
         // Run until the reporting loop has been explicitly told to stop.
-        while (this.active.get()) {
+        while (!Thread.interrupted()) {
           // Check if it's time to attempt the next report. At this point, the
           // report may not actually result in network traffic if the there's
           // no new data to report or, for example, the Android device does
@@ -261,7 +301,7 @@ public abstract class AbstractTracer implements Tracer {
           // reporting loop. It will be restarted if needed.
           long lastSpanAgeMillis = System.currentTimeMillis() - lastNewSpanMillis.get();
           if (lastSpanAgeMillis > this.THREAD_TIMEOUT_MILLIS) {
-            this.active.set(false);
+	    AbstractTracer.this.doStopReporting();
           } else {
             try {
               Thread.sleep(POLL_INTERVAL_MILLIS);
@@ -271,17 +311,6 @@ public abstract class AbstractTracer implements Tracer {
           }
         }
         AbstractTracer.this.debug("Reporting thread stopped");
-    }
-
-    public boolean isActive() {
-      return this.active.get();
-    }
-
-    /**
-     * Stops the reporting loop as soon any currently executing task finishes.
-     */
-    public void stop() {
-      this.active.set(false);
     }
 
     /**
@@ -323,9 +352,7 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     this.debug("shutdown() called");
-    if (this.reportingLoop != null) {
-      this.reportingLoop.stop();
-    }
+    this.doStopReporting();
     flush();
     disable();
   }
@@ -336,11 +363,9 @@ public abstract class AbstractTracer implements Tracer {
    */
   public void disable() {
     this.info("Disabling client library");
-    synchronized (this.mutex) {
-      if (this.reportingLoop != null) {
-        this.reportingLoop.stop();
-      }
+    this.doStopReporting();
 
+    synchronized (this.mutex) {
       if (this.transport != null) {
         this.transport.close();
         this.transport = null;
@@ -549,19 +574,8 @@ public abstract class AbstractTracer implements Tracer {
       } else {
         this.spans.add(span);
       }
-    }
 
-    // Start or restart the reporting loop as necessary (it may timeout and
-    // stop if no data has been received in a while).
-    if (!this.disableReportingLoop) {
-      if (this.reportingLoop == null || !this.reportingLoop.isActive()) {
-        long interval = this.maxReportingIntervalSeconds > 0 ?
-                this.maxReportingIntervalSeconds * 1000 :
-                this.getDefaultReportingIntervalMillis();
-
-        this.reportingLoop = new ReportingLoop(interval);
-        (new Thread(this.reportingLoop)).start();
-      }
+      maybeStartReporting();
     }
   }
 
