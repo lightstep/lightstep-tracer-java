@@ -46,6 +46,7 @@ public abstract class AbstractTracer implements Tracer {
   private static final long DEFAULT_CLOCK_STATE_INTERVAL_MILLIS = 500;
   private static final int DEFAULT_MAX_BUFFERED_SPANS = 1000;
   private static final int DEFAULT_REPORT_TIMEOUT_MILLIS = 10 * 1000;
+  private static final long DEFAULT_REPORTING_INTERVAL_MILLIS = 3000;
 
   private static final String DEFAULT_HOST = "collector.lightstep.com";
   private static final int DEFAULT_SECURE_PORT = 443;
@@ -64,19 +65,6 @@ public abstract class AbstractTracer implements Tracer {
   protected static final int VERBOSITY_ERRORS_ONLY = 2;
   protected static final int VERBOSITY_FIRST_ERROR_ONLY = 1;
   protected static final int VERBOSITY_NONE = 0;
-
-  public static final class AbstractTracerOptions {
-      /** In case the user does not supply maxReportingIntervalSeconds, this value is used.
-       */
-      public long defaultReportingIntervalMillis;
-
-      /** Sets defaultReportingIntervalMillis.
-       */
-      public AbstractTracerOptions withDefaultReportingIntervalMillis(long value) {
-	  this.defaultReportingIntervalMillis = value;
-	  return this;
-      }
-  };
 
   /**
    * For mapping internal logs to Android log levels without importing Android
@@ -127,7 +115,7 @@ public abstract class AbstractTracer implements Tracer {
   protected TTransport transport;
   protected ReportingService.Client client;
 
-  public AbstractTracer(Options options, AbstractTracerOptions aoptions) {
+  public AbstractTracer(Options options) {
     // Set verbosity first so debug logs from the constructor take effect
     this.verbosity = options.verbosity;
 
@@ -197,9 +185,9 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     if (!options.disableReportingLoop) {
-        long intervalMillis = options.maxReportingIntervalSeconds > 0 ?
-	    options.maxReportingIntervalSeconds * 1000 :
-	    aoptions.defaultReportingIntervalMillis;
+        long intervalMillis = options.maxReportingIntervalMillis > 0 ?
+	    options.maxReportingIntervalMillis :
+	    DEFAULT_REPORTING_INTERVAL_MILLIS;
         this.reportingLoop = new ReportingLoop(intervalMillis);
     }
 
@@ -247,6 +235,17 @@ public abstract class AbstractTracer implements Tracer {
     synchronized (this.mutex) {
       return auth.getAccess_token();
     }
+  }
+
+  /** 
+   * setDefaultReportingIntervalMillis modifies the Options' maximum
+   * reporting interval if the user has not specified a value. 
+   */
+  protected static Options setDefaultReportingIntervalMillis(Options input, int value) {
+    if (input.maxReportingIntervalMillis != 0) {
+      return input;
+    }
+    return input.clone().withMaxReportingIntervalMillis(value);
   }
 
   /**

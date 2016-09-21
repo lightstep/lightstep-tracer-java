@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Options control behaviors specific to the LightStep tracer.
  */
-public class Options {
+public final class Options implements Cloneable {
 
   /**
    * The unique identifier for this application.
@@ -64,7 +64,7 @@ public class Options {
   /**
    * Maximum interval between reports. If zero, the default will be used.
    */
-  public int maxReportingIntervalSeconds;
+  public int maxReportingIntervalMillis;
 
   /**
    * Controls the amount of local output produced by the tracer.  It does not
@@ -126,8 +126,8 @@ public class Options {
     return this;
   }
 
-  public Options withMaxReportingIntervalSeconds(int maxReportingIntervalSeconds) {
-    this.maxReportingIntervalSeconds = maxReportingIntervalSeconds;
+  public Options withMaxReportingIntervalMillis(int maxReportingIntervalMillis) {
+    this.maxReportingIntervalMillis = maxReportingIntervalMillis;
     return this;
   }
 
@@ -144,6 +144,14 @@ public class Options {
   public Options withDisableReportOnExit(boolean disable) {
     this.disableReportOnExit = true;
     return this;
+  }
+
+  public Options clone() {
+    try {
+      return (Options) super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
