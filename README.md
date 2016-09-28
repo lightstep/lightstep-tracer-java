@@ -2,7 +2,7 @@
 
 [ ![Download](https://api.bintray.com/packages/lightstep/maven/lightstep-tracer-android/images/download.svg) ](https://bintray.com/lightstep/maven/) [![Circle CI](https://circleci.com/gh/lightstep/lightstep-tracer-java.svg?style=shield)](https://circleci.com/gh/lightstep/lightstep-tracer-java) [![MIT license](http://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
-LightStep implementation of the [OpenTracing API](http://opentracing.io/) for Android and the standard Java JRE.
+LightStep distributed tracing library for Android and the standard Java runtime environment.
 
 * [Getting Started](#getting-started)
   * [Android](#getting-started-android)
@@ -13,7 +13,7 @@ LightStep implementation of the [OpenTracing API](http://opentracing.io/) for An
 <a name="#getting-started"></a>
 <a name="#getting-started-android"></a>
 
-## Getting Started: Android
+## Getting started: Android
 
 The Android library is hosted on Bintray, jcenter, and Maven Central. The Bintray [lightstep-tracer-android](https://bintray.com/lightstep/maven/lightstep-tracer-android/view) project contains additional installation and setup information for using the library with various build systems such as Ivy and Maven.
 
@@ -70,7 +70,7 @@ protected void onCreate(Bundle savedInstanceState) {
 
 <a name="#getting-started-jre"></a>
 
-## Getting Started: JRE
+## Getting started: JRE
 
 The JRE library is hosted on Bintray, jcenter, and Maven Central. The Bintray [lightstep-tracer-jre](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view) project contains additional installation and setup information for using the library with various build systems such as Ivy and Maven.
 
