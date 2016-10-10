@@ -58,6 +58,11 @@ class NoopSpan implements Span {
     return this;
   }
 
+  @Override
+  public Span setOperationName(String operationName) {
+    return this;
+  }
+
   private static class NoopSpanContext implements SpanContext {
     @Override
     public Iterable<Map.Entry<String, String>> baggageItems() {

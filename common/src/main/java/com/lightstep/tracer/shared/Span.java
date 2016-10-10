@@ -1,10 +1,7 @@
 package com.lightstep.tracer.shared;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
-import org.json.JSONArray;
+import org.json.JSONException;
 
 import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.thrift.KeyValue;
@@ -19,17 +16,12 @@ public class Span implements io.opentracing.Span {
   private SpanContext context;
   private final SpanRecord record;
   private final long startTimestampRelativeNanos;
-  private final ObjectMapper objectToJsonMapper;
 
   Span(AbstractTracer tracer, SpanContext context, SpanRecord record, long startTimestampRelativeNanos) {
     this.context = context;
     this.tracer = tracer;
     this.record = record;
     this.startTimestampRelativeNanos = startTimestampRelativeNanos;
-
-    this.objectToJsonMapper = new ObjectMapper();
-    this.objectToJsonMapper.setSerializationInclusion(
-      com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY);
   }
 
   @Override
@@ -39,14 +31,7 @@ public class Span implements io.opentracing.Span {
 
   @Override
   public void finish() {
-    // Note that this.startTimestampRelativeNanos will be -1 if the user
-    // provide an explicit start timestamp in the SpanBuilder.
-    if (this.startTimestampRelativeNanos > 0) {
-      long durationMicros = (System.nanoTime() - this.startTimestampRelativeNanos) / 1000;
-      this.finish(this.record.getOldest_micros() + durationMicros);
-    } else {
-      this.finish(System.currentTimeMillis() * 1000);
-    }
+    this.finish(nowMicros());
   }
 
   @Override
@@ -112,6 +97,12 @@ public class Span implements io.opentracing.Span {
     return this;
   }
 
+  @Override
+  public synchronized io.opentracing.Span setOperationName(String operationName) {
+    this.record.setSpan_name(operationName);
+    return this;
+  }
+
   public void close() {
     this.finish();
   }
@@ -124,10 +115,12 @@ public class Span implements io.opentracing.Span {
     return this.tracer;
   }
 
+  @Override
   public Span log(String message, /* @Nullable */ Object payload) {
-    return log(System.currentTimeMillis() * 1000, message, payload);
+    return log(this.nowMicros(), message, payload);
   }
 
+  @Override
   public Span log(long timestampMicroseconds, String message, /* @Nullable */ Object payload) {
     LogRecord log = new LogRecord();
 
@@ -135,19 +128,10 @@ public class Span implements io.opentracing.Span {
     log.setMessage(message);
 
     if (payload != null) {
-      // TODO perhaps if the payload is an exception, treat log as an error?
-      if (payload instanceof JSONObject || payload instanceof JSONArray) {
-        log.setPayload_json(payload.toString());
+      if (payload instanceof String) {
+        log.setPayload_json(JSONObject.quote((String)payload));
       } else {
-        try {
-          String payloadString = objectToJsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(payload);
-          log.setPayload_json(payloadString);
-        } catch (JsonProcessingException e) {
-          // Just use a string.
-          this.tracer.debug("Payload not serializable to JSON. Setting as String. (SpanId=" +
-              ((SpanContext)this.context()).getSpanId() + ")");
-          log.setPayload_json(payload.toString());
-        }
+        log.setPayload_json(JSONObject.wrap(payload).toString());
       }
     }
 
@@ -167,5 +151,16 @@ public class Span implements io.opentracing.Span {
 
   public SpanRecord thriftRecord() {
     return this.record;
+  }
+
+  private long nowMicros() {
+    // Note that this.startTimestampRelativeNanos will be -1 if the user
+    // provide an explicit start timestamp in the SpanBuilder.
+    if (this.startTimestampRelativeNanos > 0) {
+      long durationMicros = (System.nanoTime() - this.startTimestampRelativeNanos) / 1000;
+      return this.record.getOldest_micros() + durationMicros;
+    } else {
+      return System.currentTimeMillis() * 1000;
+    }
   }
 }
