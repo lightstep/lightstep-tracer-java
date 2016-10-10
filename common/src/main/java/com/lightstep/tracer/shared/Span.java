@@ -128,7 +128,11 @@ public class Span implements io.opentracing.Span {
     log.setMessage(message);
 
     if (payload != null) {
-      log.setPayload_json(JSONObject.wrap(payload).toString());
+      if (payload instanceof String) {
+        log.setPayload_json(JSONObject.quote((String)payload));
+      } else {
+        log.setPayload_json(JSONObject.wrap(payload).toString());
+      }
     }
 
     synchronized (this.mutex) {
