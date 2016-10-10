@@ -1,6 +1,7 @@
 package com.lightstep.tracer.shared;
 
 import org.json.JSONObject;
+import org.json.JSONException;
 
 import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.thrift.KeyValue;
@@ -30,14 +31,7 @@ public class Span implements io.opentracing.Span {
 
   @Override
   public void finish() {
-    // Note that this.startTimestampRelativeNanos will be -1 if the user
-    // provide an explicit start timestamp in the SpanBuilder.
-    if (this.startTimestampRelativeNanos > 0) {
-      long durationMicros = (System.nanoTime() - this.startTimestampRelativeNanos) / 1000;
-      this.finish(this.record.getOldest_micros() + durationMicros);
-    } else {
-      this.finish(System.currentTimeMillis() * 1000);
-    }
+    this.finish(nowMicros());
   }
 
   @Override
@@ -123,7 +117,7 @@ public class Span implements io.opentracing.Span {
 
   @Override
   public Span log(String message, /* @Nullable */ Object payload) {
-    return log(System.currentTimeMillis() * 1000, message, payload);
+    return log(this.nowMicros(), message, payload);
   }
 
   @Override
@@ -134,7 +128,7 @@ public class Span implements io.opentracing.Span {
     log.setMessage(message);
 
     if (payload != null) {
-      log.setPayload_json(JSONObject.valueToString(payload));
+      log.setPayload_json(JSONObject.wrap(payload).toString());
     }
 
     synchronized (this.mutex) {
@@ -153,5 +147,16 @@ public class Span implements io.opentracing.Span {
 
   public SpanRecord thriftRecord() {
     return this.record;
+  }
+
+  private long nowMicros() {
+    // Note that this.startTimestampRelativeNanos will be -1 if the user
+    // provide an explicit start timestamp in the SpanBuilder.
+    if (this.startTimestampRelativeNanos > 0) {
+      long durationMicros = (System.nanoTime() - this.startTimestampRelativeNanos) / 1000;
+      return this.record.getOldest_micros() + durationMicros;
+    } else {
+      return System.currentTimeMillis() * 1000;
+    }
   }
 }
