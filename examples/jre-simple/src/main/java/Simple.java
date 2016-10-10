@@ -26,6 +26,14 @@ public class Simple {
         // Create a simple span and delay for a while to ensure the reporting
         // loop works as expected
         final Span mySpan = tracer.buildSpan("my_span").start();
+
+        // Play with different sorts of payloads for fun.
+        mySpan.log("no payload", null);
+        mySpan.log("string payload", "str");
+        Map<String, Object> m = new HashMap<>();
+        m.put("foo", "bar");
+        m.put("baz", 42);
+        mySpan.log("map payload", m);
         mySpan.finish();
         Thread.sleep(4000);
 
