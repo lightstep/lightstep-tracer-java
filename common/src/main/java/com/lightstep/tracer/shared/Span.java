@@ -1,5 +1,8 @@
 package com.lightstep.tracer.shared;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -16,6 +19,8 @@ public class Span implements io.opentracing.Span {
   private SpanContext context;
   private final SpanRecord record;
   private final long startTimestampRelativeNanos;
+  private static final String LOG_KEY_EVENT = "event";
+  private static final String LOG_KEY_MESSAGE = "message";
 
   Span(AbstractTracer tracer, SpanContext context, SpanRecord record, long startTimestampRelativeNanos) {
     this.context = context;
@@ -116,6 +121,50 @@ public class Span implements io.opentracing.Span {
   }
 
   @Override
+  public final Span log(Map<String, ?> fields) {
+    return log(this.nowMicros(), fields);
+  }
+  @Override
+  public final Span log(long timestampMicros, Map<String, ?> fields) {
+    String message = null;
+    Map<String, String> payload = new HashMap<>(fields.size());
+    for (Map.Entry<String, ?> kv : fields.entrySet()) {
+      final String key = kv.getKey();
+      final Object inValue = kv.getValue();
+      if (message == null &&
+          (key.equals(LOG_KEY_EVENT) || key.equals(LOG_KEY_MESSAGE)) &&
+          inValue instanceof String) {
+        message = (String)inValue;
+        continue;
+      }
+      String outValue;
+      if (inValue == null) {
+        outValue = "<null>";
+      }
+      if (inValue instanceof String) {
+        outValue = JSONObject.quote((String)inValue);
+      } else {
+        outValue = JSONObject.wrap(inValue).toString();
+      }
+      payload.put(key, outValue);
+    }
+    if (message == null) {
+      message = "" + payload.size() + " key-value pair" + (payload.size() == 1 ? "" : "s");
+    }
+    return this.log(timestampMicros, message, payload);
+  }
+
+  @Override
+  public Span log(String message) {
+    return this.log(this.nowMicros(), message, null);
+  }
+
+  @Override
+  public Span log(long timestampMicroseconds, String message) {
+    return this.log(timestampMicroseconds, message, null);
+  }
+
+  @Override
   public Span log(String message, /* @Nullable */ Object payload) {
     return log(this.nowMicros(), message, payload);
   }
@@ -155,7 +204,7 @@ public class Span implements io.opentracing.Span {
 
   private long nowMicros() {
     // Note that this.startTimestampRelativeNanos will be -1 if the user
-    // provide an explicit start timestamp in the SpanBuilder.
+    // provided an explicit start timestamp in the SpanBuilder.
     if (this.startTimestampRelativeNanos > 0) {
       long durationMicros = (System.nanoTime() - this.startTimestampRelativeNanos) / 1000;
       return this.record.getOldest_micros() + durationMicros;
