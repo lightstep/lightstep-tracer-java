@@ -28,12 +28,17 @@ public class Simple {
         final Span mySpan = tracer.buildSpan("my_span").start();
 
         // Play with different sorts of payloads for fun.
+        mySpan.log("just a message");
+        mySpan.log("just a message");
         mySpan.log("no payload", null);
         mySpan.log("string payload", "str");
         Map<String, Object> m = new HashMap<>();
         m.put("foo", "bar");
         m.put("baz", 42);
         mySpan.log("map payload", m);
+        mySpan.log(m);
+        m.put("event", "now an event field exists");
+        mySpan.log(m);
         mySpan.finish();
         Thread.sleep(4000);
 
