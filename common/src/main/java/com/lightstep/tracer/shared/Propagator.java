@@ -12,7 +12,7 @@ public interface Propagator<C> {
   void inject(SpanContext spanContext, C carrier);
   SpanContext extract(C carrier);
 
-  
+
 
   // The three supported Propagators.
   static final Propagator<TextMap> TEXT_MAP = new Propagator<TextMap>() {
@@ -37,25 +37,20 @@ public interface Propagator<C> {
       int requiredFieldCount = 0;
       String traceId = null, spanId = null;
       Map<String,String> decodedBaggage = null;
+      
       for (Map.Entry<String,String> entry : carrier) {
-        switch (entry.getKey()) {
-          case FIELD_NAME_TRACE_ID: {
-            requiredFieldCount++;
-            traceId = entry.getValue();
-            break;
-          }
-          case FIELD_NAME_SPAN_ID: {
-            requiredFieldCount++;
-            spanId = entry.getValue();
-            break;
-          }
-          default: {
-            String key = entry.getKey();
-            if (key.startsWith(PREFIX_BAGGAGE)) {
-              if (decodedBaggage == null) {
-                decodedBaggage = new HashMap<String,String>();
-                decodedBaggage.put(key.substring(PREFIX_BAGGAGE.length()), entry.getValue());
-              }
+        final String key = entry.getKey();
+        if (key == FIELD_NAME_TRACE_ID) {
+          requiredFieldCount++;
+          traceId = entry.getValue();
+        } else if (key == FIELD_NAME_SPAN_ID) {
+          requiredFieldCount++;
+          spanId = entry.getValue();
+        } else {
+          if (key.startsWith(PREFIX_BAGGAGE)) {
+            if (decodedBaggage == null) {
+               decodedBaggage = new HashMap<String,String>();
+              decodedBaggage.put(key.substring(PREFIX_BAGGAGE.length()), entry.getValue());
             }
           }
         }

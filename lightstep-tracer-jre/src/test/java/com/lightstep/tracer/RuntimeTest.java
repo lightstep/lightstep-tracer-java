@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.opentracing.Tracer;
 import io.opentracing.Span;
@@ -62,6 +63,45 @@ public class RuntimeTest {
                 .withMaxReportingIntervalMillis(30000);
 
         JRETracer tracer = new JRETracer(options);
+    }
+
+    /**
+     * Note: this test *can* generate a false-positive, but the probability is
+     * so low (the probability of a collision of 8k values in a 2^64 range) that
+     * in practice this seems a reasonable way to make sure the GUID generation
+     * is not totally broken.
+     */
+    @Test
+    public void spanUniqueGUIDsTestt() {
+        final Tracer tracer = new JRETracer(
+            new com.lightstep.tracer.shared.Options("{your_access_token}"));
+
+        final ConcurrentHashMap m = new ConcurrentHashMap();
+        Thread[] t = new Thread[8];
+        for (int j = 0; j < 8; j++) {
+            t[j] = new Thread() {
+                public void run() {
+                    for (int i = 0; i < 1024; i++) {
+                        Span span = tracer.buildSpan("test_span").start();
+                        SpanContext ctx = span.context();
+                        String id = ((com.lightstep.tracer.shared.SpanContext)ctx).getSpanId();
+                        assertEquals(m.containsKey(id), false);
+                        m.put(id, true);
+                        span.finish();
+                    }
+                }
+            };
+        }
+        for (int j = 0; j < 8; j++) {
+            t[j].start();
+        }
+        for (int j = 0; j < 8; j++) {
+            try {
+                t[j].join();
+            } catch (InterruptedException ie) {
+                assertEquals(true, false);
+            }
+        }
     }
 
     @Test

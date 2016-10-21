@@ -35,9 +35,9 @@ public class SpanContext implements io.opentracing.SpanContext {
   public SpanContext withBaggageItem(String key, String value) {
     Map<String, String> baggageCopy;
     if (baggage == null) {
-      baggageCopy = new HashMap<>();
+      baggageCopy = new HashMap<String, String>();
     } else {
-      baggageCopy = new HashMap<>(baggage);
+      baggageCopy = new HashMap<String, String>(baggage);
     }
     baggageCopy.put(key, value);
     return new SpanContext(traceId, spanId, baggageCopy);
