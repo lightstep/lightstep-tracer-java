@@ -13,13 +13,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Simple {
-
-
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Starting Simple example...");
 
         final Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
             new com.lightstep.tracer.shared.Options("{your_access_token}")
+                .withComponentName("JRE Simple")
                 .withVerbosity(4)
         );
 
@@ -52,12 +51,12 @@ public class Simple {
             .withTag("hello", "world")
             .start();
         Thread.sleep(100);
-      	// Note that the returned SpanContext is still valid post-finish().
+        // Note that the returned SpanContext is still valid post-finish().
         SpanContext childCtx = childSpan.context();
         childSpan.finish();
 
-	// Throw inject and extract into the mix, even though we aren't making
-	// an RPC.
+        // Throw inject and extract into the mix, even though we aren't making
+        // an RPC.
         Span grandchild = createChildViaInjectExtract(tracer, "grandchild", childCtx);
         grandchild.log("grandchild created", null);
         grandchild.finish();
@@ -81,6 +80,8 @@ public class Simple {
         executor.awaitTermination(20, TimeUnit.SECONDS);
 
         parentSpan.finish();
+
+        ((com.lightstep.tracer.jre.JRETracer)tracer).flush();
         System.out.println("Done!");
     }
 
