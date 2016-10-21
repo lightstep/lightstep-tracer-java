@@ -37,7 +37,7 @@ public interface Propagator<C> {
       int requiredFieldCount = 0;
       String traceId = null, spanId = null;
       Map<String,String> decodedBaggage = null;
-      
+
       for (Map.Entry<String,String> entry : carrier) {
         final String key = entry.getKey();
         if (key == FIELD_NAME_TRACE_ID) {
@@ -49,7 +49,7 @@ public interface Propagator<C> {
         } else {
           if (key.startsWith(PREFIX_BAGGAGE)) {
             if (decodedBaggage == null) {
-               decodedBaggage = new HashMap<String,String>();
+              decodedBaggage = new HashMap<String,String>();
               decodedBaggage.put(key.substring(PREFIX_BAGGAGE.length()), entry.getValue());
             }
           }
