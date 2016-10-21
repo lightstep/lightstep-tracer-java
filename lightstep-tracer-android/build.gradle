@@ -33,7 +33,7 @@ def siteUrl = 'https://github.com/lightstep/lightstep-tracer-java'
 def gitUrl = 'https://github.com/lightstep/lightstep-tracer-java.git'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 18
     buildToolsVersion "22.0.1"
     resourcePrefix "lightstep__"
 
@@ -55,13 +55,6 @@ android {
                 srcDirs = [ "src/main", "../common/src"]
             }
         }
-    }
-
-    // lint throws an InvalidPackage error for java.nio.file, javax.security.sasl, javax.servlet.http, and javax.servlet.
-    // For now, I'm just going to ignore them.
-    lintOptions {
-        disable 'InvalidPackage'
-        abortOnError false
     }
 }
 

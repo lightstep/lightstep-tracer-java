@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -127,7 +127,7 @@ public abstract class AbstractTracer implements Tracer {
 
     this.clockState = new ClockState();
     this.clientMetrics = new ClientMetrics();
-    this.visibleErrorCount = 0; 
+    this.visibleErrorCount = 0;
 
     this.auth = new Auth();
     auth.setAccess_token(options.accessToken);
@@ -203,8 +203,8 @@ public abstract class AbstractTracer implements Tracer {
     }
   }
 
-  /** 
-   * This call is NOT synchronized 
+  /**
+   * This call is NOT synchronized
    */
   void doStopReporting() {
     synchronized (this) {
@@ -222,7 +222,7 @@ public abstract class AbstractTracer implements Tracer {
 
   /**
    * This call is synchronized
-   */ 
+   */
   void maybeStartReporting() {
     if (this.reportingThread != null) {
       return;
@@ -237,9 +237,9 @@ public abstract class AbstractTracer implements Tracer {
     }
   }
 
-  /** 
+  /**
    * setDefaultReportingIntervalMillis modifies the Options' maximum
-   * reporting interval if the user has not specified a value. 
+   * reporting interval if the user has not specified a value.
    */
   protected static Options setDefaultReportingIntervalMillis(Options input, int value) {
     if (input.maxReportingIntervalMillis != 0) {
@@ -582,9 +582,28 @@ public abstract class AbstractTracer implements Tracer {
     }
   }
 
+  /**
+   * Thread-specific random number generators. Each is seeded with the thread
+   * ID, so the sequence of pseudo-random numbers are unique between threads.
+   *
+   * See http://stackoverflow.com/questions/2546078/java-random-long-number-in-0-x-n-range
+   */
+  private static ThreadLocal<Random> random = new ThreadLocal<Random>() {
+      @Override
+      protected Random initialValue() {
+        // It'd be nice to get the process ID into the mix, but there's no clear
+        // cross-platform, Java 6-compatible way to determine that
+        return new Random(
+          System.currentTimeMillis() *
+          (System.nanoTime() % 1000000) * 
+          Thread.currentThread().getId() *
+          (long)(1024 * Math.random()));
+      }
+  };
+
   static final String generateGUID() {
     // Note that ThreadLocalRandom is a singleton, thread safe Random Generator
-    long guid = ThreadLocalRandom.current().nextLong(Long.MAX_VALUE);
+    long guid = AbstractTracer.random.get().nextLong();
     return Long.toHexString(guid);
   }
 
