@@ -595,6 +595,7 @@ public abstract class AbstractTracer implements Tracer {
         // cross-platform, Java 6-compatible way to determine that
         return new Random(
           System.currentTimeMillis() *
+          (long)(System.nanoTime() % 1000000) * 
           Thread.currentThread().getId() *
           (long)(1024 * Math.random()));
       }
