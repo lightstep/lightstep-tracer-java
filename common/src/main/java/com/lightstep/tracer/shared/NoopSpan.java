@@ -38,19 +38,10 @@ class NoopSpan implements Span {
     return this;
   }
 
-  @Override
-  public final Span log(Map<String, ?> fields) {
-    return this;
-  }
-  @Override
-  public final Span log(long timestampMicros, Map<String, ?> fields) {
-    return this;
-  }
-  @Override
   public Span log(String message) {
     return this;
   }
-  @Override
+
   public Span log(long timestampMicroseconds, String message) {
     return this;
   }
@@ -61,7 +52,15 @@ class NoopSpan implements Span {
   }
 
   @Override
-  public Span log(long instantMicroseconds, String message, /* @Nullable */ Object payload) {
+  public Span log(long timestampMicroseconds, String message, /* @Nullable */ Object payload) {
+    return this;
+  }
+
+  public final Span log(Map<String, ?> fields) {
+    return this;
+  }
+
+  public final Span log(long timestampMicros, Map<String, ?> fields) {
     return this;
   }
 
@@ -75,7 +74,6 @@ class NoopSpan implements Span {
     return this;
   }
 
-  @Override
   public Span setOperationName(String operationName) {
     return this;
   }

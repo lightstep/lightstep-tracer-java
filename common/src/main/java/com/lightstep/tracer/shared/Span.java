@@ -102,7 +102,6 @@ public class Span implements io.opentracing.Span {
     return this;
   }
 
-  @Override
   public synchronized io.opentracing.Span setOperationName(String operationName) {
     this.record.setSpan_name(operationName);
     return this;
@@ -120,14 +119,13 @@ public class Span implements io.opentracing.Span {
     return this.tracer;
   }
 
-  @Override
   public final Span log(Map<String, ?> fields) {
     return log(this.nowMicros(), fields);
   }
-  @Override
+
   public final Span log(long timestampMicros, Map<String, ?> fields) {
     String message = null;
-    Map<String, String> payload = new HashMap<>(fields.size());
+    Map<String, String> payload = new HashMap<String, String>(fields.size());
     for (Map.Entry<String, ?> kv : fields.entrySet()) {
       final String key = kv.getKey();
       final Object inValue = kv.getValue();
@@ -140,11 +138,8 @@ public class Span implements io.opentracing.Span {
       String outValue;
       if (inValue == null) {
         outValue = "<null>";
-      }
-      if (inValue instanceof String) {
-        outValue = JSONObject.quote((String)inValue);
       } else {
-        outValue = JSONObject.wrap(inValue).toString();
+        outValue = inValue.toString();
       }
       payload.put(key, outValue);
     }
@@ -154,12 +149,10 @@ public class Span implements io.opentracing.Span {
     return this.log(timestampMicros, message, payload);
   }
 
-  @Override
   public Span log(String message) {
     return this.log(this.nowMicros(), message, null);
   }
 
-  @Override
   public Span log(long timestampMicroseconds, String message) {
     return this.log(timestampMicroseconds, message, null);
   }
@@ -177,11 +170,7 @@ public class Span implements io.opentracing.Span {
     log.setMessage(message);
 
     if (payload != null) {
-      if (payload instanceof String) {
-        log.setPayload_json(JSONObject.quote((String)payload));
-      } else {
-        log.setPayload_json(JSONObject.wrap(payload).toString());
-      }
+      log.setPayload_json(Span.stringToJSONValue(payload.toString()));
     }
 
     synchronized (this.mutex) {
@@ -211,5 +200,55 @@ public class Span implements io.opentracing.Span {
     } else {
       return System.currentTimeMillis() * 1000;
     }
+  }
+
+  /**
+   * Quotes a plain string into a valid JSON value.
+   *
+   * Adapted from https://android.googlesource.com/platform/dalvik/libcore/json/src/main/java/org/json/JSONStringer.java
+   */
+  private static String stringToJSONValue(String value) {
+    StringBuffer out = new StringBuffer(value.length() + 2);
+    out.append("\"");
+    for (int i = 0, length = value.length(); i < length; i++) {
+      char c = value.charAt(i);
+      /*
+       * From RFC 4627, "All Unicode characters may be placed within the
+       * quotation marks except for the characters that must be escaped:
+       * quotation mark, reverse solidus, and the control characters
+       * (U+0000 through U+001F)."
+       */
+      switch (c) {
+        case '"':
+        case '\\':
+        case '/':
+          out.append('\\').append(c);
+          break;
+        case '\t':
+          out.append("\\t");
+          break;
+        case '\b':
+          out.append("\\b");
+          break;
+        case '\n':
+          out.append("\\n");
+          break;
+        case '\r':
+          out.append("\\r");
+          break;
+        case '\f':
+          out.append("\\f");
+          break;
+        default:
+          if (c <= 0x1F) {
+            out.append(String.format("\\u%04x", (int) c));
+          } else {
+            out.append(c);
+          }
+          break;
+      }
+    }
+    out.append("\"");
+    return out.toString();
   }
 }
