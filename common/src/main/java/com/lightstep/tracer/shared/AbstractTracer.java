@@ -301,10 +301,11 @@ public abstract class AbstractTracer implements Tracer {
           }
 
           // If the tracer hasn't received new data in a while, stop the
-          // reporting loop. It will be restarted if needed.
+          // reporting loop. It will be restarted when the next span is finished.
           boolean hasUnreportedSpans = (AbstractTracer.this.unreportedSpanCount() > 0);
           long lastSpanAgeMillis = System.currentTimeMillis() - lastNewSpanMillis.get();
-          if (!hasUnreportedSpans && lastSpanAgeMillis > this.THREAD_TIMEOUT_MILLIS) {
+          if ((!hasUnreportedSpans || this.consecutiveFailures >= 2) &&
+                  lastSpanAgeMillis > this.THREAD_TIMEOUT_MILLIS) {
             AbstractTracer.this.doStopReporting();
           } else {
             try {
