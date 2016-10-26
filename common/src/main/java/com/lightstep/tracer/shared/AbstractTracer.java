@@ -302,9 +302,10 @@ public abstract class AbstractTracer implements Tracer {
 
           // If the tracer hasn't received new data in a while, stop the
           // reporting loop. It will be restarted if needed.
+          boolean hasUnreportedSpans = (AbstractTracer.this.unreportedSpanCount() > 0);
           long lastSpanAgeMillis = System.currentTimeMillis() - lastNewSpanMillis.get();
-          if (lastSpanAgeMillis > this.THREAD_TIMEOUT_MILLIS) {
-	    AbstractTracer.this.doStopReporting();
+          if (!hasUnreportedSpans && lastSpanAgeMillis > this.THREAD_TIMEOUT_MILLIS) {
+            AbstractTracer.this.doStopReporting();
           } else {
             try {
               Thread.sleep(POLL_INTERVAL_MILLIS);
@@ -459,6 +460,18 @@ public abstract class AbstractTracer implements Tracer {
   }
 
   /**
+   * Returns the number of currently unreported (buffered) spans.
+   *
+   * Note: this method acquires the mutex. In Java synchronized locks are reentrant, but if the
+   * lock is already acquired, calling spans.size() directly should suffice.
+   */
+  protected int unreportedSpanCount() {
+    synchronized (this.mutex) {
+        return this.spans.size();
+    }
+  }
+
+  /**
    * Private worker function for sendReport() to make the locking and guard
    * variable bracketing a little more straightforward.
    *
@@ -518,8 +531,8 @@ public abstract class AbstractTracer implements Tracer {
       ReportResponse resp = this.client.Report(this.auth, req);
 
       if (resp.isSetTiming()) {
-	long deltaMicros = (System.nanoTime() - originRelativeNanos) / 1000;
-	long destinationMicros = originMicros + deltaMicros;
+        long deltaMicros = (System.nanoTime() - originRelativeNanos) / 1000;
+        long destinationMicros = originMicros + deltaMicros;
         this.clockState.addSample(originMicros,
                                   resp.getTiming().getReceive_micros(),
                                   resp.getTiming().getTransmit_micros(),
@@ -675,7 +688,7 @@ public abstract class AbstractTracer implements Tracer {
 
       long startTimestampRelativeNanos = -1;
       if (this.startTimestampMicros == 0) {
-	startTimestampRelativeNanos = System.nanoTime();
+        startTimestampRelativeNanos = System.nanoTime();
         this.startTimestampMicros = AbstractTracer.this.nowMicrosApproximate();
       }
 
