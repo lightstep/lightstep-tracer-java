@@ -305,7 +305,7 @@ public abstract class AbstractTracer implements Tracer {
           boolean hasUnreportedSpans = (AbstractTracer.this.unreportedSpanCount() > 0);
           long lastSpanAgeMillis = System.currentTimeMillis() - lastNewSpanMillis.get();
           if (!hasUnreportedSpans && lastSpanAgeMillis > this.THREAD_TIMEOUT_MILLIS) {
-	          AbstractTracer.this.doStopReporting();
+            AbstractTracer.this.doStopReporting();
           } else {
             try {
               Thread.sleep(POLL_INTERVAL_MILLIS);
@@ -531,8 +531,8 @@ public abstract class AbstractTracer implements Tracer {
       ReportResponse resp = this.client.Report(this.auth, req);
 
       if (resp.isSetTiming()) {
-	      long deltaMicros = (System.nanoTime() - originRelativeNanos) / 1000;
-	      long destinationMicros = originMicros + deltaMicros;
+        long deltaMicros = (System.nanoTime() - originRelativeNanos) / 1000;
+        long destinationMicros = originMicros + deltaMicros;
         this.clockState.addSample(originMicros,
                                   resp.getTiming().getReceive_micros(),
                                   resp.getTiming().getTransmit_micros(),
@@ -688,7 +688,7 @@ public abstract class AbstractTracer implements Tracer {
 
       long startTimestampRelativeNanos = -1;
       if (this.startTimestampMicros == 0) {
-	      startTimestampRelativeNanos = System.nanoTime();
+        startTimestampRelativeNanos = System.nanoTime();
         this.startTimestampMicros = AbstractTracer.this.nowMicrosApproximate();
       }
 
