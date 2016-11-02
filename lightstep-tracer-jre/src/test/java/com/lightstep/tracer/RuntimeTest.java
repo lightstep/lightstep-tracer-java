@@ -106,14 +106,20 @@ public class RuntimeTest {
 
     @Test
     public void spanSetTagTest() {
+        final String testStr = ")/forward\\back+%20/<operation>|⅕⚜±♈ 🌠🍕/%%%20%14\n\'\"@+!=#$%$^%   &^() '";
+
         Tracer tracer = new JRETracer(
             new com.lightstep.tracer.shared.Options("{your_access_token}"));
 
         Span span = tracer.buildSpan("test_span").start();
         span.setTag("my_key", "my_value");
+        span.setTag("key2", testStr);
+        span.setTag(testStr, "my_value2");
         span.finish();
 
         this.assertSpanHasTag(span, "my_key", "my_value");
+        this.assertSpanHasTag(span, "key2", testStr);
+        this.assertSpanHasTag(span, testStr, "my_value2");
     }
 
     @Test

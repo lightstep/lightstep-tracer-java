@@ -42,8 +42,16 @@ public class Simple {
         Thread.sleep(4000);
 
         // Create an outer span to capture all activity
-        final Span parentSpan = tracer.buildSpan("outer_span").start();
+        final Span parentSpan = tracer
+            .buildSpan("outer_span")
+            .withTag("favorie_unicode", "🌠🍕🍕🍕🍕")
+            .withTag("boring_characters", " \n\b\t()%20/\\#@$!-=")
+            .withTag("Valid ASCII", "abcdefg")
+            .withTag("Manual unicode", "\u0027\u0018\u00f6\u0003\u0012\u008e\u00fa\u00ec\u0011\r")
+            .withTag("🍕", "pepperoni")
+            .start();
         parentSpan.log("Starting outer span", null);
+
 
         // Create a simple child span
         Span childSpan = tracer.buildSpan("hello_world")
