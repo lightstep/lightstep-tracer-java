@@ -81,7 +81,6 @@ The JRE library is hosted on Bintray, jcenter, and Maven Central. The Bintray [l
   <groupId>com.lightstep.tracer</groupId>
   <artifactId>lightstep-tracer-jre</artifactId>
   <version> VERSION </version>
-  <type>pom</type>
 </dependency>
 ```
 

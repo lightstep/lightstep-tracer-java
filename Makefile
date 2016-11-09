@@ -1,22 +1,11 @@
-.PHONY: build build-libs publish pre-publish ci_test clean test
+.PHONY: build publish pre-publish ci_test clean test inc-version
 
-build: build-libs
-	make -C examples/jre-simple build
-	make -C examples/android-simple build
-	make -C examples/android-demo build
-
-build-libs:
-	make -C lightstep-tracer-jre  build
-	make -C lightstep-tracer-android build
-
+build:
+	./gradlew build
 
 # gradle can fail on clean, thus the "|| true"
 clean:
-	make -C examples/android-demo clean || true
-	make -C examples/android-simple clean || true
-	make -C examples/jre-simple clean || true
-	make -C lightstep-tracer-android clean || true
-	make -C lightstep-tracer-jre  clean || true
+	./gradlew clean
 
 test: ci_test
 
@@ -25,18 +14,18 @@ test: ci_test
 # a setup error -- but for now, a clean build is done just in case.
 #
 # See https://bintray.com/lightstep for published artifacts
-publish: pre-publish build-libs test
+publish: pre-publish build test inc-version
 	@git diff-index --quiet HEAD || (echo "git has uncommitted changes. Refusing to publish." && false)
-	make -C common inc-version
-	git add common/VERSION common/src
+	git add gradle.properties
+	git add common/src
 	git commit -m "Update VERSION"
-	git tag `cat common/VERSION`
+	git tag `awk 'BEGIN { FS = "=" }; { printf("%s", $$2) }' gradle.properties`
 	git push
 	git push --tags
 	make -C lightstep-tracer-jre publish
 	make -C lightstep-tracer-android publish
 	@echo
-	@echo "\033[92mSUCCESS: published v`cat common/VERSION` \033[0m"
+	@echo "\033[92mSUCCESS: published v`awk 'BEGIN { FS = "=" }; { printf("%s", $$2) }' gradle.properties` \033[0m"
 	@echo
 
 pre-publish:
@@ -47,6 +36,13 @@ pre-publish:
 	@echo "\033[92mPublishing as $$BINTRAY_USER with key <HIDDEN> \033[0m"
 
 # CircleCI test
-ci_test: build-libs
-	make -C lightstep-tracer-jre test
+ci_test: build
+	./gradlew test
 	make -C examples/jre-simple run
+
+# The version of the Android and JRE libraries is kept in lock-step as the
+# majority of the code is the same.
+inc-version:
+	awk 'BEGIN { FS = "." }; { printf("%s.%d.%d", $$1, $$2, $$3+1) }' gradle.properties > gradle.properties.incr
+	mv gradle.properties.incr gradle.properties
+	make -C common generate-version-source-file
