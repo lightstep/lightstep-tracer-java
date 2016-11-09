@@ -8,4 +8,5 @@
 **/.settings/**
 local.properties
 build
+**/*.iml
 
