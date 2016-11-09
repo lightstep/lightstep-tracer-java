@@ -3,10 +3,6 @@ package com.lightstep.tracer.shared;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONObject;
-import org.json.JSONException;
-
-import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.thrift.KeyValue;
 import com.lightstep.tracer.thrift.LogRecord;
 import com.lightstep.tracer.thrift.SpanRecord;

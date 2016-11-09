@@ -2,10 +2,8 @@ package com.lightstep.tracer.shared;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
 
 public interface Propagator<C> {

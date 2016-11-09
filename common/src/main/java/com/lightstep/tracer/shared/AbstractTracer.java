@@ -1,7 +1,5 @@
 package com.lightstep.tracer.shared;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -11,11 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Random;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.thrift.TException;
