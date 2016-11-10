@@ -3,6 +3,8 @@ package com.lightstep.tracer.shared;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.lightstep.tracer.shared.AbstractTracer.COMPONENT_NAME_KEY;
+
 /**
  * Options control behaviors specific to the LightStep tracer.
  */
@@ -118,7 +120,7 @@ public final class Options implements Cloneable {
     }
 
     public Options withComponentName(String name) {
-        return this.withTag(AbstractTracer.COMPONENT_NAME_KEY, name);
+        return this.withTag(COMPONENT_NAME_KEY, name);
     }
 
     public Options withTag(String key, Object value) {

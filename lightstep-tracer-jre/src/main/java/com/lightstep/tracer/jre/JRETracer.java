@@ -7,6 +7,8 @@ import com.lightstep.tracer.shared.Version;
 
 import java.util.HashMap;
 
+import static com.lightstep.tracer.shared.Version.LIGHTSTEP_TRACER_VERSION;
+
 public class JRETracer extends AbstractTracer {
 
     private static final int DEFAULT_REPORTING_INTERVAL_MILLIS = 2500;
@@ -73,6 +75,6 @@ public class JRETracer extends AbstractTracer {
         // differentiate this library from the Android version
         this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_KEY, "jre");
         this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY, System.getProperty("java.version"));
-        this.addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, Version.LIGHTSTEP_TRACER_VERSION);
+        this.addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, LIGHTSTEP_TRACER_VERSION);
     }
 }

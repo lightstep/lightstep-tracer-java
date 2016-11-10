@@ -1,6 +1,7 @@
 package com.lightstep.tracer.jre;
 
 import com.lightstep.tracer.jre.JRETracer;
+import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.thrift.KeyValue;
 import com.lightstep.tracer.thrift.SpanRecord;
 
@@ -16,15 +17,17 @@ import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapExtractAdapter;
 
+import static com.lightstep.tracer.shared.Options.Encryption.NONE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static io.opentracing.propagation.Format.Builtin.HTTP_HEADERS;
 
 public class RuntimeTest {
 
     @Test
     public void tracerHasStandardTags() throws Exception {
         JRETracer tracer = new JRETracer(
-                new com.lightstep.tracer.shared.Options("{your_access_token}"));
+                new Options("{your_access_token}"));
 
         JRETracer.Status status = tracer.status();
 
@@ -40,7 +43,7 @@ public class RuntimeTest {
     @Test
     public void tracerSupportsWithComponentName() throws Exception {
         JRETracer tracer = new JRETracer(
-                new com.lightstep.tracer.shared.Options("{your_access_token}")
+                new Options("{your_access_token}")
                         .withComponentName("my_component"));
 
         JRETracer.Status status = tracer.status();
@@ -51,11 +54,11 @@ public class RuntimeTest {
     public void tracerOptionsAreSupported() {
         // Ensure all the expected option methods are there and support
         // chaining.
-        com.lightstep.tracer.shared.Options options =
-                new com.lightstep.tracer.shared.Options("{your_access_token}")
+        Options options =
+                new Options("{your_access_token}")
                         .withCollectorHost("localhost")
                         .withCollectorPort(4321)
-                        .withCollectorEncryption(com.lightstep.tracer.shared.Options.Encryption.NONE)
+                        .withCollectorEncryption(NONE)
                         .withVerbosity(2)
                         .withTag("my_tracer_tag", "zebra_stripes")
                         .withMaxReportingIntervalMillis(30000);
@@ -72,7 +75,7 @@ public class RuntimeTest {
     @Test
     public void spanUniqueGUIDsTestt() {
         final Tracer tracer = new JRETracer(
-                new com.lightstep.tracer.shared.Options("{your_access_token}"));
+                new Options("{your_access_token}"));
 
         final ConcurrentHashMap m = new ConcurrentHashMap();
         Thread[] t = new Thread[8];
@@ -107,7 +110,7 @@ public class RuntimeTest {
         final String testStr = ")/forward\\back+%20/<operation>|⅕⚜±♈ 🌠🍕/%%%20%14\n\'\"@+!=#$%$^%   &^() '";
 
         Tracer tracer = new JRETracer(
-                new com.lightstep.tracer.shared.Options("{your_access_token}"));
+                new Options("{your_access_token}"));
 
         Span span = tracer.buildSpan("test_span").start();
         span.setTag("my_key", "my_value");
@@ -123,7 +126,7 @@ public class RuntimeTest {
     @Test
     public void spanBuilderWithTagTest() {
         Tracer tracer = new JRETracer(
-                new com.lightstep.tracer.shared.Options("{your_access_token}"));
+                new Options("{your_access_token}"));
 
         Span span = tracer
                 .buildSpan("test_span")
@@ -137,7 +140,7 @@ public class RuntimeTest {
     @Test
     public void spansDroppedCounterTest() {
         JRETracer tracer = new JRETracer(
-                new com.lightstep.tracer.shared.Options("{your_access_token}")
+                new Options("{your_access_token}")
                         .withMaxBufferedSpans(10));
 
         JRETracer.Status status = tracer.status();
@@ -159,10 +162,10 @@ public class RuntimeTest {
     @Test
     public void extractOnOpenTracingTracer() {
         final io.opentracing.Tracer tracer = new JRETracer(
-                new com.lightstep.tracer.shared.Options("{your_access_token}"));
+                new Options("{your_access_token}"));
 
         Map<String, String> headerMap = new HashMap<String, String>();
-        SpanContext parentCtx = tracer.extract(Format.Builtin.HTTP_HEADERS, new TextMapExtractAdapter(headerMap));
+        SpanContext parentCtx = tracer.extract(HTTP_HEADERS, new TextMapExtractAdapter(headerMap));
 
         Span span = tracer.buildSpan("test_span")
                 .asChildOf(parentCtx)

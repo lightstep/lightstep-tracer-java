@@ -89,14 +89,14 @@ public class Tracer extends AbstractTracer {
         // or package name.
         boolean found = false;
         for (KeyValue keyValue : super.runtime.attrs) {
-            if (keyValue.getKey() == super.COMPONENT_NAME_KEY) {
+            if (keyValue.getKey() == COMPONENT_NAME_KEY) {
                 found = true;
                 break;
             }
         }
         if (!found) {
             super.runtime.addToAttrs(
-                    new KeyValue(super.COMPONENT_NAME_KEY, ctx.getApplicationInfo().processName));
+                    new KeyValue(COMPONENT_NAME_KEY, ctx.getApplicationInfo().processName));
         }
     }
 

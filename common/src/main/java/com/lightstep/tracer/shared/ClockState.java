@@ -2,6 +2,8 @@ package com.lightstep.tracer.shared;
 
 import java.util.LinkedList;
 
+import static java.lang.Long.MAX_VALUE;
+
 public class ClockState {
     /**
      * How many updates before a sample is considered old. This happens to
@@ -9,8 +11,6 @@ public class ClockState {
      * somewhat arbitrary.
      */
     private static final int maxOffsetAge = 7;
-
-    private static final long storedSamplesTTLMicros = 60 * 60 * 1000 * 1000; // 1 hour
 
     private class Sample {
         long delayMicros;
@@ -47,7 +47,7 @@ public class ClockState {
                    long receiveMicros,
                    long transmitMicros,
                    long destinationMicros) {
-        long latestDelayMicros = Long.MAX_VALUE;
+        long latestDelayMicros = MAX_VALUE;
         long latestOffsetMicros = 0;
         // Ensure that all of the data are valid before using them. If not, we'll
         // push a {0, MAX} record into the queue.
@@ -96,7 +96,7 @@ public class ClockState {
 
         // Find the sample with the smallest delay; the corresponding offset is
         // the "best" one.
-        long minDelayMicros = Long.MAX_VALUE;
+        long minDelayMicros = MAX_VALUE;
         long bestOffsetMicros = 0;
         for (Sample sample : this.samples) {
             if (sample.delayMicros < minDelayMicros) {

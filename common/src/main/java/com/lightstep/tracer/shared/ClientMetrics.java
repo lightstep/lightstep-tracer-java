@@ -9,7 +9,7 @@ public class ClientMetrics {
 
     // For capacity allocation purposes, keep this in sync with the number of
     // counts actually being tracked.
-    private final int NUMBER_OF_COUNTS = 1;
+    private static final int NUMBER_OF_COUNTS = 1;
 
     public long spansDropped;
 

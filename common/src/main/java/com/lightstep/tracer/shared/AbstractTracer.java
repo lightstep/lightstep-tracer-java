@@ -31,9 +31,12 @@ import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
 
+import static com.lightstep.tracer.shared.AbstractTracer.InternalLogLevel.DEBUG;
+import static com.lightstep.tracer.shared.AbstractTracer.InternalLogLevel.ERROR;
+import static io.opentracing.References.CHILD_OF;
+import static io.opentracing.References.FOLLOWS_FROM;
+
 public abstract class AbstractTracer implements Tracer {
-    // Delay before sending the initial report
-    private static final long REPORTING_DELAY_MILLIS = 20;
     // Maximum interval between reports
     private static final long DEFAULT_CLOCK_STATE_INTERVAL_MILLIS = 500;
     private static final int DEFAULT_MAX_BUFFERED_SPANS = 1000;
@@ -297,7 +300,7 @@ public abstract class AbstractTracer implements Tracer {
                 boolean hasUnreportedSpans = (AbstractTracer.this.unreportedSpanCount() > 0);
                 long lastSpanAgeMillis = System.currentTimeMillis() - lastNewSpanMillis.get();
                 if ((!hasUnreportedSpans || this.consecutiveFailures >= 2) &&
-                        lastSpanAgeMillis > this.THREAD_TIMEOUT_MILLIS) {
+                        lastSpanAgeMillis > THREAD_TIMEOUT_MILLIS) {
                     AbstractTracer.this.doStopReporting();
                 } else {
                     try {
@@ -318,7 +321,7 @@ public abstract class AbstractTracer implements Tracer {
         protected long computeNextReportMillis() {
             double base;
             if (!AbstractTracer.this.clockState.isReady()) {
-                base = (double) AbstractTracer.this.DEFAULT_CLOCK_STATE_INTERVAL_MILLIS;
+                base = (double) DEFAULT_CLOCK_STATE_INTERVAL_MILLIS;
             } else {
                 base = (double) this.reportingIntervalMillis;
             }
@@ -495,7 +498,7 @@ public abstract class AbstractTracer implements Tracer {
                 try {
                     // TODO add support for cookies (for load balancer sessions)
                     THttpClient client = new THttpClient(this.collectorURL.toString());
-                    client.setConnectTimeout(this.DEFAULT_REPORT_TIMEOUT_MILLIS);
+                    client.setConnectTimeout(DEFAULT_REPORT_TIMEOUT_MILLIS);
                     this.transport = client;
                     this.transport.open();
                     TBinaryProtocol protocol = new TBinaryProtocol(this.transport);
@@ -633,11 +636,11 @@ public abstract class AbstractTracer implements Tracer {
         }
 
         public Tracer.SpanBuilder asChildOf(io.opentracing.SpanContext parent) {
-            return this.addReference(References.CHILD_OF, parent);
+            return this.addReference(CHILD_OF, parent);
         }
 
         public Tracer.SpanBuilder addReference(String type, io.opentracing.SpanContext referredTo) {
-            if (type == References.CHILD_OF || type == References.FOLLOWS_FROM) {
+            if (type == CHILD_OF || type == FOLLOWS_FROM) {
                 this.parent = (SpanContext) referredTo;
             }
             return this;
@@ -726,7 +729,7 @@ public abstract class AbstractTracer implements Tracer {
         if (this.verbosity < VERBOSITY_DEBUG) {
             return;
         }
-        this.printLogToConsole(InternalLogLevel.DEBUG, msg, payload);
+        this.printLogToConsole(DEBUG, msg, payload);
     }
 
     /**
@@ -781,7 +784,7 @@ public abstract class AbstractTracer implements Tracer {
             return;
         }
         this.visibleErrorCount++;
-        this.printLogToConsole(InternalLogLevel.ERROR, msg, payload);
+        this.printLogToConsole(ERROR, msg, payload);
     }
 
     protected abstract void printLogToConsole(InternalLogLevel level, String msg, Object payload);
