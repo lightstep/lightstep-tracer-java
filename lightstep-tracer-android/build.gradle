@@ -42,10 +42,6 @@ android {
     buildTypes {
     }
 
-    lintOptions {
-        abortOnError false
-    }
-
     // By default, only "src/" will be included, but we want to include the code
     // from the "common" project as well -- and want it to be part of this JAR,
     // not a separate artifact.
