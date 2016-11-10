@@ -39,17 +39,8 @@ android {
         versionCode 2
         versionName version
     }
-    buildTypes {
-    }
 
-    // By default, only "src/" will be included, but we want to include the code
-    // from the "common" project as well -- and want it to be part of this JAR,
-    // not a separate artifact.
-    sourceSets {
-        main {
-            java {
-            }
-        }
+    buildTypes {
     }
 
     lintOptions {

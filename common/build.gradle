@@ -22,16 +22,6 @@ jar {
     version = current_version
 }
 
-// By default, only "src/" will be included, but we want to include the code
-// from the "common" project as well -- and want it to be part of this JAR,
-// not a separate artifact.
-sourceSets {
-    main {
-        java {
-        }
-    }
-}
-
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allJava

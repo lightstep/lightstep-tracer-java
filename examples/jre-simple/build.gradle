@@ -1,12 +1,5 @@
 apply plugin: 'java'
 
-sourceSets {
-    main {
-        java {
-        }
-    }
-}
-
 repositories {
     // NOTE: mavenCentral updates rather slowly. The sample won't be able to
     // find the published artifact right after a new publication. jcenter()
