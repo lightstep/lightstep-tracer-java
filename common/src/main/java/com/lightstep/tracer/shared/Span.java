@@ -107,7 +107,7 @@ public class Span implements io.opentracing.Span {
         this.finish();
     }
 
-    private static final boolean isJoinKey(String key) {
+    private static boolean isJoinKey(String key) {
         return key.startsWith("join:");
     }
 

@@ -609,7 +609,7 @@ public abstract class AbstractTracer implements Tracer {
         }
     };
 
-    static final String generateGUID() {
+    static String generateGUID() {
         // Note that ThreadLocalRandom is a singleton, thread safe Random Generator
         long guid = AbstractTracer.random.get().nextLong();
         return Long.toHexString(guid);
