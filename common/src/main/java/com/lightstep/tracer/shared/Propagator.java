@@ -38,10 +38,10 @@ public interface Propagator<C> {
 
             for (Map.Entry<String, String> entry : carrier) {
                 final String key = entry.getKey();
-                if (key == FIELD_NAME_TRACE_ID) {
+                if (FIELD_NAME_TRACE_ID.equals(key)) {
                     requiredFieldCount++;
                     traceId = entry.getValue();
-                } else if (key == FIELD_NAME_SPAN_ID) {
+                } else if (FIELD_NAME_SPAN_ID.equals(key)) {
                     requiredFieldCount++;
                     spanId = entry.getValue();
                 } else {

@@ -26,7 +26,6 @@ import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicLong;
 
-import io.opentracing.References;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
@@ -640,7 +639,7 @@ public abstract class AbstractTracer implements Tracer {
         }
 
         public Tracer.SpanBuilder addReference(String type, io.opentracing.SpanContext referredTo) {
-            if (type == CHILD_OF || type == FOLLOWS_FROM) {
+            if (CHILD_OF.equals(type) || FOLLOWS_FROM.equals(type)) {
                 this.parent = (SpanContext) referredTo;
             }
             return this;
