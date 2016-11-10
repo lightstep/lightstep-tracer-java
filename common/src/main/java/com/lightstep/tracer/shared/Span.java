@@ -121,7 +121,7 @@ public class Span implements io.opentracing.Span {
 
     public final Span log(long timestampMicros, Map<String, ?> fields) {
         String message = null;
-        Map<String, String> payload = new HashMap<String, String>(fields.size());
+        Map<String, String> payload = new HashMap<>(fields.size());
         for (Map.Entry<String, ?> kv : fields.entrySet()) {
             final String key = kv.getKey();
             final Object inValue = kv.getValue();

@@ -52,7 +52,7 @@ public final class Options implements Cloneable {
      * User-defined key-value pairs that should be associated with all of the
      * data produced by this tracer.
      */
-    public Map<String, Object> tags = new HashMap<String, Object>();
+    public Map<String, Object> tags = new HashMap<>();
 
     /**
      * UNSUPPORTED API: intended for unit testing purposes only and should

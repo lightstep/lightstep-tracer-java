@@ -89,7 +89,7 @@ class NoopSpan implements Span {
     private static class NoopSpanContext implements SpanContext {
         @Override
         public Iterable<Map.Entry<String, String>> baggageItems() {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
     }
 }

@@ -33,7 +33,7 @@ public class JRETracer extends AbstractTracer {
 
     // Flush any data stored in the log and span buffers
     protected SimpleFuture<Boolean> flushInternal(boolean explicitRequest) {
-        return new SimpleFuture<Boolean>(sendReport(explicitRequest));
+        return new SimpleFuture<>(sendReport(explicitRequest));
     }
 
     protected void printLogToConsole(InternalLogLevel level, String msg, Object payload) {

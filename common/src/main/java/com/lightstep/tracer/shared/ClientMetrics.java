@@ -29,7 +29,7 @@ public class ClientMetrics {
     }
 
     public Metrics toThrift() {
-        ArrayList<MetricsSample> counts = new ArrayList<MetricsSample>(NUMBER_OF_COUNTS);
+        ArrayList<MetricsSample> counts = new ArrayList<>(NUMBER_OF_COUNTS);
         counts.add(new MetricsSample("spans.dropped").setInt64_value(spansDropped));
         return new Metrics().setCounts(counts);
     }

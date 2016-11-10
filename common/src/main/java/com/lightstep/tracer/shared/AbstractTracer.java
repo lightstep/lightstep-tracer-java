@@ -118,7 +118,7 @@ public abstract class AbstractTracer implements Tracer {
         this.maxBufferedSpans = options.maxBufferedSpans > 0 ?
                 options.maxBufferedSpans : DEFAULT_MAX_BUFFERED_SPANS;
         this.lastNewSpanMillis = new AtomicLong(System.currentTimeMillis());
-        this.spans = new ArrayList<SpanRecord>(maxBufferedSpans);
+        this.spans = new ArrayList<>(maxBufferedSpans);
 
         this.clockState = new ClockState();
         this.clientMetrics = new ClientMetrics();
@@ -375,7 +375,7 @@ public abstract class AbstractTracer implements Tracer {
 
             // The code makes various assumptions about this field never being
             // null, so replace it with an empty list rather than nulling it out.
-            this.spans = new ArrayList<SpanRecord>(0);
+            this.spans = new ArrayList<>(0);
         }
     }
 
@@ -483,7 +483,7 @@ public abstract class AbstractTracer implements Tracer {
                 // Copy the reference to the spans and make a new array for other spans.
                 spans = this.spans;
                 clientMetrics = this.clientMetrics;
-                this.spans = new ArrayList<SpanRecord>(this.maxBufferedSpans);
+                this.spans = new ArrayList<>(this.maxBufferedSpans);
                 this.clientMetrics = new ClientMetrics();
                 this.debug(String.format("Sending report, %d spans", spans.size()));
             } else {
@@ -628,7 +628,7 @@ public abstract class AbstractTracer implements Tracer {
 
         SpanBuilder(String operationName) {
             this.operationName = operationName;
-            this.tags = new HashMap<String, String>();
+            this.tags = new HashMap<>();
         }
 
         public Tracer.SpanBuilder asChildOf(io.opentracing.Span parent) {
@@ -668,7 +668,7 @@ public abstract class AbstractTracer implements Tracer {
 
         public Iterable<Map.Entry<String, String>> baggageItems() {
             if (parent == null) {
-                return Collections.EMPTY_SET;
+                return Collections.emptySet();
             } else {
                 return parent.baggageItems();
             }
@@ -798,7 +798,7 @@ public abstract class AbstractTracer implements Tracer {
         public ClientMetrics clientMetrics;
 
         public Status() {
-            this.tags = new HashMap<String, String>();
+            this.tags = new HashMap<>();
         }
     }
 

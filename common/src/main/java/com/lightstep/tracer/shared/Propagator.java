@@ -47,7 +47,7 @@ public interface Propagator<C> {
                 } else {
                     if (key.startsWith(PREFIX_BAGGAGE)) {
                         if (decodedBaggage == null) {
-                            decodedBaggage = new HashMap<String, String>();
+                            decodedBaggage = new HashMap<>();
                             decodedBaggage.put(key.substring(PREFIX_BAGGAGE.length()), entry.getValue());
                         }
                     }

@@ -94,7 +94,7 @@ public class Simple {
 
     // An ultra-hacky demonstration of inject() and extract() in-process.
     public static Span createChildViaInjectExtract(Tracer tracer, String opName, SpanContext parentCtx) {
-        final Map<String, String> textMap = new HashMap<String, String>();
+        final Map<String, String> textMap = new HashMap<>();
         final TextMap demoCarrier = new TextMap() {
             public void put(String key, String value) {
                 textMap.put(key, value);

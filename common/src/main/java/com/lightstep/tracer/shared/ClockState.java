@@ -30,7 +30,7 @@ public class ClockState {
     ClockState() {
         // The last eight samples, computed from timing information in
         // RPCs.
-        this.samples = new LinkedList<Sample>();
+        this.samples = new LinkedList<>();
         this.currentOffsetMicros = 0;
 
         // How many updates since we've updated currentOffsetMicros.

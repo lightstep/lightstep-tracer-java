@@ -39,10 +39,10 @@ public class Tracer extends AbstractTracer {
     protected SimpleFuture<Boolean> flushInternal(boolean explicitRequest) {
         synchronized (this.mutex) {
             if (this.isDisabled || this.ctx == null) {
-                return new SimpleFuture<Boolean>(false);
+                return new SimpleFuture<>(false);
             }
 
-            SimpleFuture<Boolean> future = new SimpleFuture<Boolean>();
+            SimpleFuture<Boolean> future = new SimpleFuture<>();
 
             ConnectivityManager connMgr = (ConnectivityManager)
                     this.ctx.getApplicationContext()
