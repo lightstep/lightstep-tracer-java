@@ -20,3 +20,7 @@ lightstep-tracer-android/   # Android instrumentation library
 lightstep-tracer-jre/       # JRE instrumentation library
 examples/                   # Sample code for both JRE and Android
 ```
+
+## Formatting
+
+The project uses the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) as a formatting standard. Configurations for your IDE can be downloaded from [github.com/google/styleguide](https://github.com/google/styleguide).
