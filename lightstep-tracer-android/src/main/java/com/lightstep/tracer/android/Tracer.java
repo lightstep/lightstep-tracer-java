@@ -10,7 +10,6 @@ import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.shared.SimpleFuture;
 import com.lightstep.tracer.shared.Version;
-import com.lightstep.tracer.thrift.KeyValue;
 
 public class Tracer extends AbstractTracer {
     private final Context ctx;
@@ -38,7 +37,7 @@ public class Tracer extends AbstractTracer {
     @Override
     protected SimpleFuture<Boolean> flushInternal(boolean explicitRequest) {
         synchronized (this.mutex) {
-            if (this.isDisabled || this.ctx == null) {
+            if (isDisabled() || this.ctx == null) {
                 return new SimpleFuture<>(false);
             }
 
@@ -87,16 +86,9 @@ public class Tracer extends AbstractTracer {
 
         // Check to see if component name is set and, if not, use the app process
         // or package name.
-        boolean found = false;
-        for (KeyValue keyValue : super.runtime.attrs) {
-            if (keyValue.getKey() == COMPONENT_NAME_KEY) {
-                found = true;
-                break;
-            }
-        }
+        boolean found = isComponentNameSet();
         if (!found) {
-            super.runtime.addToAttrs(
-                    new KeyValue(COMPONENT_NAME_KEY, ctx.getApplicationInfo().processName));
+            setComponentName(ctx.getApplicationInfo().processName);
         }
     }
 

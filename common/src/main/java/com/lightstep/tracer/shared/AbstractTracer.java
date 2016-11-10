@@ -79,20 +79,20 @@ public abstract class AbstractTracer implements Tracer {
 
     // copied from options
     private final int maxBufferedSpans;
-    protected final int verbosity;
-    protected int visibleErrorCount;
+    private final int verbosity;
+    private int visibleErrorCount;
 
     private final Auth auth;
-    protected final Runtime runtime;
+    private final Runtime runtime;
     private URL collectorURL;
 
     // Timestamp of the last recorded span. Used to terminate the reporting
     // loop thread if no new data has come in (which is necessary for clean
     // shutdown).
-    protected AtomicLong lastNewSpanMillis;
-    protected ArrayList<SpanRecord> spans;
-    protected ClockState clockState;
-    protected ClientMetrics clientMetrics;
+    private AtomicLong lastNewSpanMillis;
+    private ArrayList<SpanRecord> spans;
+    private ClockState clockState;
+    private ClientMetrics clientMetrics;
 
     // Should *NOT* attempt to take a span's lock while holding this lock.
     protected final Object mutex = new Object();
@@ -104,10 +104,10 @@ public abstract class AbstractTracer implements Tracer {
     // This is set to non-null when a background Thread is actually reporting.
     private Thread reportingThread;
 
-    protected boolean isDisabled;
+    private boolean isDisabled;
 
-    protected TTransport transport;
-    protected ReportingService.Client client;
+    private TTransport transport;
+    private ReportingService.Client client;
 
     public AbstractTracer(Options options) {
         // Set verbosity first so debug logs from the constructor take effect
@@ -376,6 +376,10 @@ public abstract class AbstractTracer implements Tracer {
             // null, so replace it with an empty list rather than nulling it out.
             this.spans = new ArrayList<>(0);
         }
+    }
+
+    public boolean isDisabled() {
+        return this.isDisabled;
     }
 
     public Tracer.SpanBuilder buildSpan(String operationName) {
@@ -817,6 +821,20 @@ public abstract class AbstractTracer implements Tracer {
             status.clientMetrics = new ClientMetrics(this.clientMetrics);
         }
         return status;
+    }
+
+    protected boolean isComponentNameSet() {
+        for (KeyValue keyValue : runtime.attrs) {
+            if (COMPONENT_NAME_KEY.equals(keyValue.getKey())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected void setComponentName(String componentName) {
+        runtime.addToAttrs(
+                new KeyValue(COMPONENT_NAME_KEY, componentName));
     }
 
     protected long nowMicrosApproximate() {
