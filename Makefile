@@ -15,9 +15,8 @@ test: ci_test
 #
 # See https://bintray.com/lightstep for published artifacts
 publish: pre-publish build test inc-version
-	@git diff-index --quiet HEAD || (echo "git has uncommitted changes. Refusing to publish." && false)
 	git add gradle.properties
-	git add common/src
+	git add common/src/main/java/com/lightstep/tracer/shared/Version.java
 	git commit -m "Update VERSION"
 	git tag `awk 'BEGIN { FS = "=" }; { printf("%s", $$2) }' gradle.properties`
 	git push
@@ -43,6 +42,7 @@ ci_test: build
 # The version of the Android and JRE libraries is kept in lock-step as the
 # majority of the code is the same.
 inc-version:
+	@git diff-index --quiet HEAD || (echo "git has uncommitted changes. Refusing to publish." && false)
 	awk 'BEGIN { FS = "." }; { printf("%s.%d.%d", $$1, $$2, $$3+1) }' gradle.properties > gradle.properties.incr
 	mv gradle.properties.incr gradle.properties
 	make -C common generate-version-source-file
