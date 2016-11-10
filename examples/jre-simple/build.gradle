@@ -17,9 +17,6 @@ dependencies {
     // explicitly included here.
     compile project(':lightstep-tracer-jre')
     compile 'io.opentracing:opentracing-api:0.16.0'
-    compile 'org.apache.thrift:libthrift:0.9.2'
-    compile 'org.json:json:20160212'
-    compile 'javax.annotation:jsr250-api:1.0'
 }
 
 task runSample(type: JavaExec, dependsOn: 'classes') {
