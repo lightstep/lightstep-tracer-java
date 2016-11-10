@@ -1,5 +1,20 @@
 package com.lightstep.tracer.shared;
 
+import com.lightstep.tracer.thrift.Auth;
+import com.lightstep.tracer.thrift.Command;
+import com.lightstep.tracer.thrift.KeyValue;
+import com.lightstep.tracer.thrift.ReportRequest;
+import com.lightstep.tracer.thrift.ReportResponse;
+import com.lightstep.tracer.thrift.ReportingService;
+import com.lightstep.tracer.thrift.Runtime;
+import com.lightstep.tracer.thrift.SpanRecord;
+
+import org.apache.thrift.TApplicationException;
+import org.apache.thrift.TException;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.transport.THttpClient;
+import org.apache.thrift.transport.TTransport;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -11,26 +26,10 @@ import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.thrift.TException;
-import org.apache.thrift.TApplicationException;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.transport.THttpClient;
-import org.apache.thrift.transport.TTransport;
-
 import io.opentracing.References;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
-
-import com.lightstep.tracer.thrift.Auth;
-import com.lightstep.tracer.thrift.Command;
-import com.lightstep.tracer.thrift.KeyValue;
-import com.lightstep.tracer.thrift.Runtime;
-import com.lightstep.tracer.thrift.SpanRecord;
-import com.lightstep.tracer.thrift.ReportingService;
-import com.lightstep.tracer.thrift.ReportRequest;
-import com.lightstep.tracer.thrift.ReportResponse;
-import com.lightstep.tracer.shared.SimpleFuture;
 
 public abstract class AbstractTracer implements Tracer {
   // Delay before sending the initial report

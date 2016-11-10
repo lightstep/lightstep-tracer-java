@@ -1,10 +1,11 @@
 package com.lightstep.tracer.jre;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.lightstep.tracer.shared.AbstractTracer;
+import com.lightstep.tracer.shared.Options;
+import com.lightstep.tracer.shared.SimpleFuture;
+import com.lightstep.tracer.shared.Version;
 
-import com.lightstep.tracer.shared.*;
-import com.lightstep.tracer.thrift.KeyValue;
+import java.util.HashMap;
 
 public class JRETracer extends AbstractTracer {
 

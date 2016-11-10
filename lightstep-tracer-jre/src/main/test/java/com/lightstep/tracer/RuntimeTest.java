@@ -1,25 +1,23 @@
 package com.lightstep.tracer.jre;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.util.Map;
+import com.lightstep.tracer.jre.JRETracer;
+import com.lightstep.tracer.thrift.KeyValue;
+import com.lightstep.tracer.thrift.SpanRecord;
+
+import org.junit.Test;
+
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.opentracing.Tracer;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapExtractAdapter;
-import com.lightstep.tracer.jre.JRETracer;
-import com.lightstep.tracer.thrift.SpanRecord;
-import com.lightstep.tracer.thrift.KeyValue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
 
 public class RuntimeTest {
 

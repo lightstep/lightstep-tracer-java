@@ -6,12 +6,10 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import java.util.concurrent.Future;
-
 import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.shared.Options;
-import com.lightstep.tracer.shared.Version;
 import com.lightstep.tracer.shared.SimpleFuture;
+import com.lightstep.tracer.shared.Version;
 import com.lightstep.tracer.thrift.KeyValue;
 
 public class Tracer extends AbstractTracer {
