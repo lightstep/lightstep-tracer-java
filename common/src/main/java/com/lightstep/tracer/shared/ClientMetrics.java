@@ -1,6 +1,7 @@
 package com.lightstep.tracer.shared;
 
 import java.util.ArrayList;
+
 import com.lightstep.tracer.thrift.Metrics;
 import com.lightstep.tracer.thrift.MetricsSample;
 
@@ -15,7 +16,7 @@ public class ClientMetrics {
     public ClientMetrics() {
         this.spansDropped = 0;
     }
-    
+
     public ClientMetrics(ClientMetrics that) {
         this.spansDropped = that.spansDropped;
     }

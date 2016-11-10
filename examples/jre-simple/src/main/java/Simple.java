@@ -16,9 +16,9 @@ public class Simple {
         System.out.println("Starting Simple example...");
 
         final Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
-            new com.lightstep.tracer.shared.Options("{your_access_token}")
-                .withComponentName("JRE Simple")
-                .withVerbosity(4)
+                new com.lightstep.tracer.shared.Options("{your_access_token}")
+                        .withComponentName("JRE Simple")
+                        .withVerbosity(4)
         );
 
         // Create a simple span and delay for a while to ensure the reporting
@@ -42,21 +42,21 @@ public class Simple {
 
         // Create an outer span to capture all activity
         final Span parentSpan = tracer
-            .buildSpan("outer_span")
-            .withTag("favorie_unicode", "🌠🍕🍕🍕🍕")
-            .withTag("boring_characters", " \n\b\t()%20/\\#@$!-=")
-            .withTag("Valid ASCII", "abcdefg")
-            .withTag("Manual unicode", "\u0027\u0018\u00f6\u0003\u0012\u008e\u00fa\u00ec\u0011\r")
-            .withTag("🍕", "pepperoni")
-            .start();
+                .buildSpan("outer_span")
+                .withTag("favorie_unicode", "🌠🍕🍕🍕🍕")
+                .withTag("boring_characters", " \n\b\t()%20/\\#@$!-=")
+                .withTag("Valid ASCII", "abcdefg")
+                .withTag("Manual unicode", "\u0027\u0018\u00f6\u0003\u0012\u008e\u00fa\u00ec\u0011\r")
+                .withTag("🍕", "pepperoni")
+                .start();
         parentSpan.log("Starting outer span", null);
 
 
         // Create a simple child span
         Span childSpan = tracer.buildSpan("hello_world")
-            .asChildOf(parentSpan.context())
-            .withTag("hello", "world")
-            .start();
+                .asChildOf(parentSpan.context())
+                .withTag("hello", "world")
+                .start();
         Thread.sleep(100);
         // Note that the returned SpanContext is still valid post-finish().
         SpanContext childCtx = childSpan.context();
@@ -88,37 +88,38 @@ public class Simple {
 
         parentSpan.finish();
 
-        ((com.lightstep.tracer.jre.JRETracer)tracer).flush();
+        ((com.lightstep.tracer.jre.JRETracer) tracer).flush();
         System.out.println("Done!");
     }
 
     // An ultra-hacky demonstration of inject() and extract() in-process.
     public static Span createChildViaInjectExtract(Tracer tracer, String opName, SpanContext parentCtx) {
-      final Map<String,String> textMap = new HashMap<String,String>();
-      final TextMap demoCarrier = new TextMap() {
-        public void put(String key, String value) {
-          textMap.put(key, value);
-        }
-        public Iterator<Map.Entry<String,String>> iterator() {
-          return textMap.entrySet().iterator();
-        }
-      };
+        final Map<String, String> textMap = new HashMap<String, String>();
+        final TextMap demoCarrier = new TextMap() {
+            public void put(String key, String value) {
+                textMap.put(key, value);
+            }
 
-      tracer.inject(parentCtx, Format.Builtin.TEXT_MAP, demoCarrier);
-      System.out.println("Carrier contents:");
-        for (Map.Entry<String,String> entry : textMap.entrySet()) {
-          System.out.println(
-              "    key='" + entry.getKey() +
-              "', value='" + entry.getValue() + "'");
+            public Iterator<Map.Entry<String, String>> iterator() {
+                return textMap.entrySet().iterator();
+            }
+        };
+
+        tracer.inject(parentCtx, Format.Builtin.TEXT_MAP, demoCarrier);
+        System.out.println("Carrier contents:");
+        for (Map.Entry<String, String> entry : textMap.entrySet()) {
+            System.out.println(
+                    "    key='" + entry.getKey() +
+                            "', value='" + entry.getValue() + "'");
         }
-      SpanContext extracted = tracer.extract(Format.Builtin.TEXT_MAP, demoCarrier);
-      return tracer.buildSpan(opName).asChildOf(extracted).start();
+        SpanContext extracted = tracer.extract(Format.Builtin.TEXT_MAP, demoCarrier);
+        return tracer.buildSpan(opName).asChildOf(extracted).start();
     }
 
-    public static void spawnWorkers(final Tracer tracer, Span outerSpan) throws InterruptedException  {
+    public static void spawnWorkers(final Tracer tracer, Span outerSpan) throws InterruptedException {
         final Span parentSpan = tracer.buildSpan("spawn_workers")
-            .asChildOf(outerSpan.context())
-            .start();
+                .asChildOf(outerSpan.context())
+                .start();
 
         System.out.println("Launching worker threads.");
 
@@ -126,12 +127,12 @@ public class Simple {
         workers[0] = new Thread() {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker0")
-                    .asChildOf(parentSpan.context())
-                    .start();
+                        .asChildOf(parentSpan.context())
+                        .start();
                 for (int i = 0; i < 20; i++) {
                     Span innerSpan = tracer.buildSpan("worker0/microspan")
-                        .asChildOf(childSpan.context())
-                        .start();
+                            .asChildOf(childSpan.context())
+                            .start();
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
@@ -146,8 +147,8 @@ public class Simple {
         workers[1] = new Thread() {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker1")
-                    .asChildOf(parentSpan.context())
-                    .start();
+                        .asChildOf(parentSpan.context())
+                        .start();
                 for (int i = 0; i < 20; i++) {
                     childSpan.log("Beginning inner loop", i);
                     for (int j = 0; j < 10; j++) {
@@ -165,8 +166,8 @@ public class Simple {
         workers[2] = new Thread() {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker2")
-                    .asChildOf(parentSpan.context())
-                    .start();
+                        .asChildOf(parentSpan.context())
+                        .start();
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
@@ -179,8 +180,8 @@ public class Simple {
         workers[3] = new Thread() {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker3")
-                    .asChildOf(parentSpan.context())
-                    .start();
+                        .asChildOf(parentSpan.context())
+                        .start();
                 for (int i = 0; i < 20; i++) {
                     try {
                         Thread.sleep(10);

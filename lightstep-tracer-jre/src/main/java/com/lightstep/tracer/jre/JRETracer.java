@@ -17,7 +17,8 @@ public class JRETracer extends AbstractTracer {
 
     /**
      * Returns the singleton Tracer instance that can be utilized to record logs and spans.
-     * @return  tracer instance
+     *
+     * @return tracer instance
      */
     public static JRETracer getInstance() {
         return JavaTracerHolder.INSTANCE;
@@ -36,21 +37,21 @@ public class JRETracer extends AbstractTracer {
     protected void printLogToConsole(InternalLogLevel level, String msg, Object payload) {
         String s;
         switch (level) {
-        case DEBUG:
-            s = "[Lightstep:DEBUG] ";
-            break;
-        case INFO:
-            s = "[Lightstep:INFO] ";
-            break;
-        case WARN:
-            s = "[Lightstep:WARN] ";
-            break;
-        case ERROR:
-            s = "[Lightstep:ERROR] ";
-            break;
-        default:
-            s = "[Lightstep:???] ";
-            break;
+            case DEBUG:
+                s = "[Lightstep:DEBUG] ";
+                break;
+            case INFO:
+                s = "[Lightstep:INFO] ";
+                break;
+            case WARN:
+                s = "[Lightstep:WARN] ";
+                break;
+            case ERROR:
+                s = "[Lightstep:ERROR] ";
+                break;
+            default:
+                s = "[Lightstep:???] ";
+                break;
         }
         s += msg;
         if (payload != null) {
