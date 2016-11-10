@@ -48,9 +48,12 @@ android {
     sourceSets {
         main {
             java {
-                srcDirs = [ "src/java"]
             }
         }
+    }
+
+    lintOptions {
+        lintConfig file("lightstep-tracer-android/lint.xml")
     }
 }
 

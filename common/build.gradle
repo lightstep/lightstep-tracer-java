@@ -28,7 +28,6 @@ jar {
 sourceSets {
     main {
         java {
-            srcDirs = [ "src/java"]
         }
     }
 }
