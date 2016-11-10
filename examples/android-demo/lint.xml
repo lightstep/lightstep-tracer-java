@@ -1,0 +1,6 @@
+<lint>
+    <issue id="InvalidPackage">
+        <ignore path="**/jackson-databind*.jar"/>
+        <ignore path="**/libthrift*.jar"/>
+    </issue>
+</lint>

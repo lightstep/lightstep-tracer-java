@@ -5,16 +5,16 @@
 .PHONY: build clean publish test doc
 
 build:
-	./gradlew build
+	../gradlew build
 
 clean:
-	./gradlew clean
+	../gradlew clean
 
 test:
-	./gradlew test
+	../gradlew test
 
 doc:
-	./gradlew javadocJar
+	../gradlew javadocJar
 
 # NOTE: this is intended to be called by the top-level Makefile. That will
 # increment the version, run all tests, etc.

@@ -1,10 +1,10 @@
 .PHONY: run build clean
 
 run:
-	./gradlew runSample
+	../../gradlew runSample
 
 clean:
-	./gradlew clean
+	../../gradlew clean
 
 build:
-	./gradlew build
+	../../gradlew build

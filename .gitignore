@@ -7,3 +7,6 @@
 **/.classpath
 **/.settings/**
 local.properties
+build
+**/*.iml
+

@@ -1,5 +1,7 @@
 .PHONY: build clean
+
 build:
-	./gradlew build
+	../../gradlew build
+
 clean:
-	./gradlew clean
+	../../gradlew clean
