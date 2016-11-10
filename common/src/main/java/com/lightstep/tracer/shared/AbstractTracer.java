@@ -692,7 +692,7 @@ public abstract class AbstractTracer implements Tracer {
             record.setOldest_micros(this.startTimestampMicros);
 
             String traceId = null;
-            if (this.parent != null && this.parent instanceof SpanContext) {
+            if (this.parent != null) {
                 traceId = this.parent.getTraceId();
                 record.addToAttributes(new KeyValue(
                         PARENT_SPAN_GUID_KEY,

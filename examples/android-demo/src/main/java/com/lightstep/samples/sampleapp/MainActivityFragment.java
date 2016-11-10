@@ -167,9 +167,6 @@ public class MainActivityFragment extends Fragment {
         private void doHTTPGet(String url,
                                final Response.Listener<String> listener,
                                final Response.ErrorListener errorListener) {
-            if (PROXY != null) {
-                url = url.replace("https://api.github.com/", PROXY);
-            }
             Span childSpan = tracer.buildSpan("http_get").asChildOf(span).start();
             childSpan.log("HTTP request", url);
             WrappedRequest req = new WrappedRequest(childSpan, url, listener, errorListener);
@@ -241,7 +238,7 @@ public class MainActivityFragment extends Fragment {
         WrappedRequest(final Span span, String url,
                        final Response.Listener<String> listener,
                        final Response.ErrorListener errorListener) {
-            super(Request.Method.GET, url + (AUTH == null ? "" : AUTH),
+            super(Request.Method.GET, url,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
