@@ -47,11 +47,15 @@ public abstract class AbstractTracer implements Tracer {
     private static final int DEFAULT_PLAINTEXT_PORT = 80;
     private static final String COLLECTOR_PATH = "/_rpc/v1/reports/binary";
 
-    public static final String LIGHTSTEP_TRACER_PLATFORM_KEY = "lightstep.tracer_platform";
-    public static final String LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY = "lightstep.tracer_platform_version";
-    public static final String LIGHTSTEP_TRACER_VERSION_KEY = "lightstep.tracer_version";
-    public static final String LEGACY_COMPONENT_NAME_KEY = "component_name";
+    protected static final String LIGHTSTEP_TRACER_PLATFORM_KEY = "lightstep.tracer_platform";
+    protected static final String LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY = "lightstep.tracer_platform_version";
+    protected static final String LIGHTSTEP_TRACER_VERSION_KEY = "lightstep.tracer_version";
+    private static final String LEGACY_COMPONENT_NAME_KEY = "component_name";
+
+    @SuppressWarnings("WeakerAccess")
     public static final String COMPONENT_NAME_KEY = "lightstep.component_name";
+
+    @SuppressWarnings("WeakerAccess")
     public static final String GUID_KEY = "lightstep.guid";
 
     protected static final int VERBOSITY_DEBUG = 4;
@@ -75,7 +79,7 @@ public abstract class AbstractTracer implements Tracer {
      * The tag key used to record the relationship between child and parent
      * spans.
      */
-    public static final String PARENT_SPAN_GUID_KEY = "parent_span_guid";
+    private static final String PARENT_SPAN_GUID_KEY = "parent_span_guid";
 
     // copied from options
     private final int maxBufferedSpans;
@@ -200,7 +204,7 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * This call is NOT synchronized
      */
-    void doStopReporting() {
+    private void doStopReporting() {
         synchronized (this) {
             // Note: There is no synchronization to prevent multiple
             // reporting loops from running simultaneously.  It's possible
@@ -217,7 +221,7 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * This call is synchronized
      */
-    void maybeStartReporting() {
+    private void maybeStartReporting() {
         if (this.reportingThread != null) {
             return;
         }
@@ -250,7 +254,7 @@ public abstract class AbstractTracer implements Tracer {
      * case of Android, this thread will block and wait until the Android
      * AsyncTask finishes.
      */
-    class ReportingLoop implements Runnable {
+    private class ReportingLoop implements Runnable {
         // Controls how often the reporting loop itself checks if the status.
         private static final int POLL_INTERVAL_MILLIS = 40;
 
@@ -317,7 +321,7 @@ public abstract class AbstractTracer implements Tracer {
          * a report should be attempted.  Accounts for clock state, error back off,
          * and random jitter.
          */
-        protected long computeNextReportMillis() {
+        long computeNextReportMillis() {
             double base;
             if (!AbstractTracer.this.clockState.isReady()) {
                 base = (double) DEFAULT_CLOCK_STATE_INTERVAL_MILLIS;
@@ -345,7 +349,7 @@ public abstract class AbstractTracer implements Tracer {
      * if the consumer has not alreayd called it, *must* be called internally by
      * the library to cancel the timer.
      */
-    public void shutdown() {
+    private void shutdown() {
         if (isDisabled) {
             return;
         }
@@ -463,7 +467,7 @@ public abstract class AbstractTracer implements Tracer {
      * Note: this method acquires the mutex. In Java synchronized locks are reentrant, but if the
      * lock is already acquired, calling spans.size() directly should suffice.
      */
-    protected int unreportedSpanCount() {
+    private int unreportedSpanCount() {
         synchronized (this.mutex) {
             return this.spans.size();
         }
@@ -623,7 +627,7 @@ public abstract class AbstractTracer implements Tracer {
         this.runtime.addToAttrs(new KeyValue(key, value));
     }
 
-    class SpanBuilder implements Tracer.SpanBuilder {
+    private class SpanBuilder implements Tracer.SpanBuilder {
         private String operationName;
         private SpanContext parent;
         private Map<String, String> tags;
@@ -755,14 +759,14 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * Internal logging.
      */
-    protected void warn(String s) {
+    private void warn(String s) {
         this.warn(s, null);
     }
 
     /**
      * Internal warning.
      */
-    protected void warn(String msg, Object payload) {
+    private void warn(String msg, Object payload) {
         if (this.verbosity < VERBOSITY_INFO) {
             return;
         }
@@ -798,7 +802,7 @@ public abstract class AbstractTracer implements Tracer {
      */
     public class Status {
         public Map<String, String> tags;
-        public ClientMetrics clientMetrics;
+        ClientMetrics clientMetrics;
 
         public Status() {
             this.tags = new HashMap<>();
@@ -837,7 +841,7 @@ public abstract class AbstractTracer implements Tracer {
                 new KeyValue(COMPONENT_NAME_KEY, componentName));
     }
 
-    protected long nowMicrosApproximate() {
+    private long nowMicrosApproximate() {
         return System.currentTimeMillis() * 1000;
     }
 }

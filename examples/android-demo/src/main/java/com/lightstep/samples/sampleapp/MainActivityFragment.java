@@ -227,7 +227,7 @@ public class MainActivityFragment extends Fragment {
         }
     }
 
-    class WrappedRequest extends StringRequest {
+    private class WrappedRequest extends StringRequest {
         private final com.lightstep.tracer.shared.Span span;
 
         WrappedRequest(final Span span, String url,

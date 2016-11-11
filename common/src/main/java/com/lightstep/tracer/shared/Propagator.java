@@ -6,7 +6,7 @@ import java.util.Map;
 
 import io.opentracing.propagation.TextMap;
 
-public interface Propagator<C> {
+interface Propagator<C> {
     void inject(SpanContext spanContext, C carrier);
 
     SpanContext extract(C carrier);
@@ -17,7 +17,6 @@ public interface Propagator<C> {
         private static final String PREFIX_TRACER_STATE = "ot-tracer-";
         private static final String PREFIX_BAGGAGE = "ot-baggage-";
 
-        private static final int TRACER_STATE_FIELD_COUNT = 3;
         private static final String FIELD_NAME_TRACE_ID = PREFIX_TRACER_STATE + "traceid";
         private static final String FIELD_NAME_SPAN_ID = PREFIX_TRACER_STATE + "spanid";
         private static final String FIELD_NAME_SAMPLED = PREFIX_TRACER_STATE + "sampled";

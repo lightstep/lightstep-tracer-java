@@ -93,7 +93,7 @@ public class Simple {
     }
 
     // An ultra-hacky demonstration of inject() and extract() in-process.
-    public static Span createChildViaInjectExtract(Tracer tracer, String opName, SpanContext parentCtx) {
+    private static Span createChildViaInjectExtract(Tracer tracer, String opName, SpanContext parentCtx) {
         final Map<String, String> textMap = new HashMap<>();
         final TextMap demoCarrier = new TextMap() {
             public void put(String key, String value) {
@@ -116,7 +116,7 @@ public class Simple {
         return tracer.buildSpan(opName).asChildOf(extracted).start();
     }
 
-    public static void spawnWorkers(final Tracer tracer, Span outerSpan) throws InterruptedException {
+    private static void spawnWorkers(final Tracer tracer, Span outerSpan) throws InterruptedException {
         final Span parentSpan = tracer.buildSpan("spawn_workers")
                 .asChildOf(outerSpan.context())
                 .start();

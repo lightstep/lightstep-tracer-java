@@ -183,10 +183,6 @@ public class Span implements io.opentracing.Span {
         }
     }
 
-    public SpanRecord thriftRecord() {
-        return this.record;
-    }
-
     private long nowMicros() {
         // Note that this.startTimestampRelativeNanos will be -1 if the user
         // provided an explicit start timestamp in the SpanBuilder.

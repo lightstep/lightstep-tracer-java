@@ -10,7 +10,7 @@ import io.opentracing.SpanContext;
 class NoopSpan implements Span {
 
     static final Span INSTANCE = new NoopSpan();
-    static final SpanContext CONTEXT = new NoopSpanContext();
+    private static final SpanContext CONTEXT = new NoopSpanContext();
 
     private NoopSpan() {
     }

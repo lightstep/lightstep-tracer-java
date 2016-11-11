@@ -13,18 +13,18 @@ public final class Options implements Cloneable {
     /**
      * The unique identifier for this application.
      */
-    public String accessToken;
+    String accessToken;
 
     /**
      * The host to which the tracer will send data.  If null, the default will be used.
      */
-    public String collectorHost;
+    String collectorHost;
 
     /**
      * The port to which the tracer will send data.  If 0, the default will be
      * used.
      */
-    public int collectorPort;
+    int collectorPort;
 
     /**
      * Encryption describes methods of protecting data sent from the tracer to
@@ -46,13 +46,13 @@ public final class Options implements Cloneable {
     /**
      * Determines how the tracer communicates with the collector.
      */
-    public Encryption collectorEncryption = Encryption.TLS;
+    Encryption collectorEncryption = Encryption.TLS;
 
     /**
      * User-defined key-value pairs that should be associated with all of the
      * data produced by this tracer.
      */
-    public Map<String, Object> tags = new HashMap<>();
+    Map<String, Object> tags = new HashMap<>();
 
     /**
      * UNSUPPORTED API: intended for unit testing purposes only and should
@@ -61,12 +61,12 @@ public final class Options implements Cloneable {
      * Production control of limits will be via a throughput-based limit on
      * resource use.
      */
-    public int maxBufferedSpans;
+    int maxBufferedSpans;
 
     /**
      * Maximum interval between reports. If zero, the default will be used.
      */
-    public int maxReportingIntervalMillis;
+    int maxReportingIntervalMillis;
 
     /**
      * Controls the amount of local output produced by the tracer.  It does not
@@ -79,18 +79,18 @@ public final class Options implements Cloneable {
      * 3 - all errors, warnings, and info statements are echoed locally
      * 4 - all internal log statements, including debugging details
      */
-    public int verbosity;
+    int verbosity;
 
     /**
      * If true, the background reporting loop will be disabled. Reports will
      * only occur on explicit calls to Flush();
      */
-    public boolean disableReportingLoop;
+    boolean disableReportingLoop;
 
     /**
      * If true, the library will *not* attempt an automatic report at process exit.
      */
-    public boolean disableReportOnExit;
+    boolean disableReportOnExit;
 
     public Options(String accessToken) {
         this.accessToken = accessToken;
@@ -99,21 +99,25 @@ public final class Options implements Cloneable {
         this.disableReportOnExit = false;
     }
 
+    @SuppressWarnings("unused")
     public Options withAccessToken(String accessToken) {
         this.accessToken = accessToken;
         return this;
     }
 
+    @SuppressWarnings("unused")
     public Options withCollectorHost(String collectorHost) {
         this.collectorHost = collectorHost;
         return this;
     }
 
+    @SuppressWarnings("unused")
     public Options withCollectorPort(int collectorPort) {
         this.collectorPort = collectorPort;
         return this;
     }
 
+    @SuppressWarnings("unused")
     public Options withCollectorEncryption(Encryption collectorEncryption) {
         this.collectorEncryption = collectorEncryption;
         return this;
@@ -123,11 +127,13 @@ public final class Options implements Cloneable {
         return this.withTag(COMPONENT_NAME_KEY, name);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public Options withTag(String key, Object value) {
         this.tags.put(key, value);
         return this;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public Options withMaxReportingIntervalMillis(int maxReportingIntervalMillis) {
         this.maxReportingIntervalMillis = maxReportingIntervalMillis;
         return this;
@@ -138,11 +144,13 @@ public final class Options implements Cloneable {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public Options withDisableReportingLoop(boolean disable) {
         this.disableReportingLoop = true;
         return this;
     }
 
+    @SuppressWarnings("unused")
     public Options withDisableReportOnExit(boolean disable) {
         this.disableReportOnExit = true;
         return this;
@@ -159,6 +167,7 @@ public final class Options implements Cloneable {
     /**
      * UNSUPPORTED API: intended for unit testing purposes only.
      */
+    @SuppressWarnings("unused")
     public Options withMaxBufferedSpans(int max) {
         this.maxBufferedSpans = max;
         return this;
