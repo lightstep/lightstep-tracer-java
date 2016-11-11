@@ -4,8 +4,6 @@ import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.shared.SimpleFuture;
 
-import java.util.HashMap;
-
 import static com.lightstep.tracer.shared.Version.LIGHTSTEP_TRACER_VERSION;
 
 public class JRETracer extends AbstractTracer {
@@ -28,7 +26,7 @@ public class JRETracer extends AbstractTracer {
 
     public JRETracer(Options options) {
         super(AbstractTracer.setDefaultReportingIntervalMillis(options, DEFAULT_REPORTING_INTERVAL_MILLIS));
-        this.addStandardTracerTags();
+        addStandardTracerTags();
     }
 
     // Flush any data stored in the log and span buffers
@@ -68,8 +66,8 @@ public class JRETracer extends AbstractTracer {
     private void addStandardTracerTags() {
         // The platform is called "jre" rather than "Java" to clearly
         // differentiate this library from the Android version
-        this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_KEY, "jre");
-        this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY, System.getProperty("java.version"));
-        this.addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, LIGHTSTEP_TRACER_VERSION);
+        addTracerTag(LIGHTSTEP_TRACER_PLATFORM_KEY, "jre");
+        addTracerTag(LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY, System.getProperty("java.version"));
+        addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, LIGHTSTEP_TRACER_VERSION);
     }
 }

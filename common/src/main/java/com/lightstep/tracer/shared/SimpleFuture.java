@@ -11,38 +11,38 @@ public class SimpleFuture<T> {
     private T value;
 
     public SimpleFuture() {
-        this.resolved = false;
+        resolved = false;
     }
 
     public SimpleFuture(T value) {
         this.value = value;
-        this.resolved = true;
+        resolved = true;
     }
 
     public void set(T value) {
         synchronized (this) {
             this.value = value;
-            this.resolved = true;
-            this.notifyAll();
+            resolved = true;
+            notifyAll();
         }
     }
 
     public T get() throws InterruptedException {
         if (!resolved) {
             synchronized (this) {
-                this.wait();
+                wait();
             }
         }
-        return this.value;
+        return value;
     }
 
     @SuppressWarnings("unused")
     public T getWithTimeout(long millis) throws InterruptedException {
         if (!resolved) {
             synchronized (this) {
-                this.wait(millis);
+                wait(millis);
             }
         }
-        return this.value;
+        return value;
     }
 }

@@ -20,18 +20,18 @@ public class SpanContext implements io.opentracing.SpanContext {
     }
 
     public String getSpanId() {
-        return this.spanId;
+        return spanId;
     }
 
     public String getTraceId() {
-        return this.traceId;
+        return traceId;
     }
 
     String getBaggageItem(String key) {
-        if (this.baggage == null) {
+        if (baggage == null) {
             return null;
         }
-        return this.baggage.get(key);
+        return baggage.get(key);
     }
 
     SpanContext withBaggageItem(String key, String value) {

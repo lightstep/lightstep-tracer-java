@@ -119,9 +119,9 @@ public final class Options implements Cloneable {
 
     public Options(String accessToken) {
         this.accessToken = accessToken;
-        this.verbosity = 1;
-        this.disableReportingLoop = false;
-        this.disableReportOnExit = false;
+        verbosity = 1;
+        disableReportingLoop = false;
+        disableReportOnExit = false;
     }
 
     @SuppressWarnings("unused")
@@ -149,12 +149,12 @@ public final class Options implements Cloneable {
     }
 
     public Options withComponentName(String name) {
-        return this.withTag(COMPONENT_NAME_KEY, name);
+        return withTag(COMPONENT_NAME_KEY, name);
     }
 
     @SuppressWarnings("WeakerAccess")
     public Options withTag(String key, Object value) {
-        this.tags.put(key, value);
+        tags.put(key, value);
         return this;
     }
 
@@ -177,7 +177,7 @@ public final class Options implements Cloneable {
 
     @SuppressWarnings("unused")
     public Options withDisableReportOnExit(boolean disable) {
-        this.disableReportOnExit = true;
+        disableReportOnExit = true;
         return this;
     }
 
@@ -194,7 +194,7 @@ public final class Options implements Cloneable {
      */
     @SuppressWarnings("unused")
     public Options withMaxBufferedSpans(int max) {
-        this.maxBufferedSpans = max;
+        maxBufferedSpans = max;
         return this;
     }
 }

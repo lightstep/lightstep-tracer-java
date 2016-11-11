@@ -19,18 +19,18 @@ class ClientMetrics {
     long spansDropped;
 
     ClientMetrics() {
-        this.spansDropped = 0;
+        spansDropped = 0;
     }
 
     ClientMetrics(ClientMetrics that) {
-        this.spansDropped = that.spansDropped;
+        spansDropped = that.spansDropped;
     }
 
     void merge(ClientMetrics that) {
         if (that == null) {
             return;
         }
-        this.spansDropped += that.spansDropped;
+        spansDropped += that.spansDropped;
     }
 
     Metrics toThrift() {

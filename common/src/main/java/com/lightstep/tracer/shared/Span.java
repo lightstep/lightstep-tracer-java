@@ -27,33 +27,33 @@ public class Span implements io.opentracing.Span {
 
     @Override
     public io.opentracing.SpanContext context() {
-        return this.context;
+        return context;
     }
 
     @Override
     public void finish() {
-        this.finish(nowMicros());
+        finish(nowMicros());
     }
 
     @Override
     public void finish(long finishTimeMicros) {
-        synchronized (this.mutex) {
-            this.record.setYoungest_micros(finishTimeMicros);
-            this.tracer.addSpan(record);
+        synchronized (mutex) {
+            record.setYoungest_micros(finishTimeMicros);
+            tracer.addSpan(record);
         }
     }
 
     @Override
     public Span setTag(String key, String value) {
         if (key == null || value == null) {
-            this.tracer.debug("key (" + key + ") or value (" + value + ") is null, ignoring");
+            tracer.debug("key (" + key + ") or value (" + value + ") is null, ignoring");
             return this;
         }
-        synchronized (this.mutex) {
+        synchronized (mutex) {
             if (isJoinKey(key)) {
-                this.record.addToJoin_ids(new TraceJoinId(key, value));
+                record.addToJoin_ids(new TraceJoinId(key, value));
             } else {
-                this.record.addToAttributes(new KeyValue(key, value));
+                record.addToAttributes(new KeyValue(key, value));
             }
         }
         return this;
@@ -61,11 +61,11 @@ public class Span implements io.opentracing.Span {
 
     @Override
     public Span setTag(String key, boolean value) {
-        synchronized (this.mutex) {
+        synchronized (mutex) {
             if (isJoinKey(key)) {
-                this.record.addToJoin_ids(new TraceJoinId(key, value ? "true" : "false"));
+                record.addToJoin_ids(new TraceJoinId(key, value ? "true" : "false"));
             } else {
-                this.record.addToAttributes(new KeyValue(key, value ? "true" : "false"));
+                record.addToAttributes(new KeyValue(key, value ? "true" : "false"));
             }
         }
         return this;
@@ -74,14 +74,14 @@ public class Span implements io.opentracing.Span {
     @Override
     public Span setTag(String key, Number value) {
         if (key == null || value == null) {
-            this.tracer.debug("key (" + key + ") or value (" + value + ") is null, ignoring");
+            tracer.debug("key (" + key + ") or value (" + value + ") is null, ignoring");
             return this;
         }
-        synchronized (this.mutex) {
+        synchronized (mutex) {
             if (isJoinKey(key)) {
-                this.record.addToJoin_ids(new TraceJoinId(key, value.toString()));
+                record.addToJoin_ids(new TraceJoinId(key, value.toString()));
             } else {
-                this.record.addToAttributes(new KeyValue(key, value.toString()));
+                record.addToAttributes(new KeyValue(key, value.toString()));
             }
         }
         return this;
@@ -89,22 +89,22 @@ public class Span implements io.opentracing.Span {
 
     @Override
     public synchronized String getBaggageItem(String key) {
-        return this.context.getBaggageItem(key);
+        return context.getBaggageItem(key);
     }
 
     @Override
     public synchronized Span setBaggageItem(String key, String value) {
-        this.context = this.context.withBaggageItem(key, value);
+        context = context.withBaggageItem(key, value);
         return this;
     }
 
     public synchronized io.opentracing.Span setOperationName(String operationName) {
-        this.record.setSpan_name(operationName);
+        record.setSpan_name(operationName);
         return this;
     }
 
     public void close() {
-        this.finish();
+        finish();
     }
 
     private static boolean isJoinKey(String key) {
@@ -112,11 +112,11 @@ public class Span implements io.opentracing.Span {
     }
 
     public AbstractTracer getTracer() {
-        return this.tracer;
+        return tracer;
     }
 
     public final Span log(Map<String, ?> fields) {
-        return log(this.nowMicros(), fields);
+        return log(nowMicros(), fields);
     }
 
     public final Span log(long timestampMicros, Map<String, ?> fields) {
@@ -142,20 +142,20 @@ public class Span implements io.opentracing.Span {
         if (message == null) {
             message = "" + payload.size() + " key-value pair" + (payload.size() == 1 ? "" : "s");
         }
-        return this.log(timestampMicros, message, payload);
+        return log(timestampMicros, message, payload);
     }
 
     public Span log(String message) {
-        return this.log(this.nowMicros(), message, null);
+        return log(nowMicros(), message, null);
     }
 
     public Span log(long timestampMicroseconds, String message) {
-        return this.log(timestampMicroseconds, message, null);
+        return log(timestampMicroseconds, message, null);
     }
 
     @Override
     public Span log(String message, /* @Nullable */ Object payload) {
-        return log(this.nowMicros(), message, payload);
+        return log(nowMicros(), message, payload);
     }
 
     @Override
@@ -169,26 +169,26 @@ public class Span implements io.opentracing.Span {
             log.setPayload_json(Span.stringToJSONValue(payload.toString()));
         }
 
-        synchronized (this.mutex) {
-            this.record.addToLog_records(log);
+        synchronized (mutex) {
+            record.addToLog_records(log);
         }
         return this;
     }
 
     public String generateTraceURL() {
-        synchronized (this.mutex) {
+        synchronized (mutex) {
             return "https://app.lightstep.com/" + tracer.getAccessToken() +
-                    "/trace?span_guid=" + this.context.getSpanId() +
+                    "/trace?span_guid=" + context.getSpanId() +
                     "&at_micros=" + (System.currentTimeMillis() * 1000);
         }
     }
 
     private long nowMicros() {
-        // Note that this.startTimestampRelativeNanos will be -1 if the user
+        // Note that startTimestampRelativeNanos will be -1 if the user
         // provided an explicit start timestamp in the SpanBuilder.
-        if (this.startTimestampRelativeNanos > 0) {
-            long durationMicros = (System.nanoTime() - this.startTimestampRelativeNanos) / 1000;
-            return this.record.getOldest_micros() + durationMicros;
+        if (startTimestampRelativeNanos > 0) {
+            long durationMicros = (System.nanoTime() - startTimestampRelativeNanos) / 1000;
+            return record.getOldest_micros() + durationMicros;
         } else {
             return System.currentTimeMillis() * 1000;
         }

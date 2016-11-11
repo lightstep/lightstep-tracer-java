@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-        this.tracer = new com.lightstep.tracer.android.Tracer(
+        tracer = new com.lightstep.tracer.android.Tracer(
                 this,
                 new Options("{your_access_token}"));
 
