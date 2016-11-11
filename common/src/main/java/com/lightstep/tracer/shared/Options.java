@@ -11,6 +11,31 @@ import static com.lightstep.tracer.shared.AbstractTracer.COMPONENT_NAME_KEY;
 public final class Options implements Cloneable {
 
     /**
+     * all internal log statements, including debugging details
+     */
+    public static final int VERBOSITY_DEBUG = 4;
+
+    /**
+     * all errors, warnings, and info statements are echoed locally
+     */
+    public static final int VERBOSITY_INFO = 3;
+
+    /**
+     * all errors are echoed locally
+     */
+    public static final int VERBOSITY_ERRORS_ONLY = 2;
+
+    /**
+     * only the first error encountered will be echoed locally
+     */
+    public static final int VERBOSITY_FIRST_ERROR_ONLY = 1;
+
+    /**
+     * never produce local output
+     */
+    public static final int VERBOSITY_NONE = 0;
+
+    /**
      * The unique identifier for this application.
      */
     String accessToken;
