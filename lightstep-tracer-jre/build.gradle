@@ -110,7 +110,7 @@ install {
 if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}) {
     gradle.taskGraph.whenReady { taskGraph ->
         taskGraph.getAllTasks().find {
-            it.path == ":generatePomFileForMavenPublication"
+            it.path == ":lightstep-tracer-jre:generatePomFileForMavenPublication"
         }.doLast {
             file("build/publications/maven/pom-default.xml").delete()
             println 'Overriding pom-file to make sure we can sync to maven central!'

@@ -18,7 +18,7 @@ targetCompatibility = '1.7'
 sourceCompatibility = '1.7'
 
 jar {
-    baseName 'common'
+    baseName 'java-common'
     version = current_version
 }
 
@@ -111,14 +111,14 @@ install {
 if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}) {
     gradle.taskGraph.whenReady { taskGraph ->
         taskGraph.getAllTasks().find {
-            it.path == ":generatePomFileForMavenPublication"
+            it.path == ":common:generatePomFileForMavenPublication"
         }.doLast {
             file("build/publications/maven/pom-default.xml").delete()
             println 'Overriding pom-file to make sure we can sync to maven central!'
             pom {
                 //noinspection GroovyAssignabilityCheck
                 project {
-                    name 'lightstep-tracer-java'
+                    name 'java-common'
                     groupId 'com.lightstep.tracer'
                     artifactId 'java-common'
                     packaging 'jar'
@@ -160,7 +160,7 @@ bintray {
     publications = ['maven']
     pkg {
         repo = 'maven'
-        name = 'lightstep-tracer-java'
+        name = 'java-common'
         userOrg = 'lightstep'
         licenses = ['MIT']
         vcsUrl = 'https://github.com/lightstep/lightstep-tracer-java.git'

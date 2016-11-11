@@ -21,8 +21,7 @@ publish: pre-publish build test inc-version
 	git tag `awk 'BEGIN { FS = "=" }; { printf("%s", $$2) }' gradle.properties`
 	git push
 	git push --tags
-	make -C lightstep-tracer-jre publish
-	make -C lightstep-tracer-android publish
+	./gradlew bintrayUpload
 	@echo
 	@echo "\033[92mSUCCESS: published v`awk 'BEGIN { FS = "=" }; { printf("%s", $$2) }' gradle.properties` \033[0m"
 	@echo
