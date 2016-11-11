@@ -32,6 +32,9 @@ import io.opentracing.propagation.TextMap;
 
 import static com.lightstep.tracer.shared.AbstractTracer.InternalLogLevel.DEBUG;
 import static com.lightstep.tracer.shared.AbstractTracer.InternalLogLevel.ERROR;
+import static com.lightstep.tracer.shared.Options.VERBOSITY_DEBUG;
+import static com.lightstep.tracer.shared.Options.VERBOSITY_FIRST_ERROR_ONLY;
+import static com.lightstep.tracer.shared.Options.VERBOSITY_INFO;
 import static io.opentracing.References.CHILD_OF;
 import static io.opentracing.References.FOLLOWS_FROM;
 
@@ -57,12 +60,6 @@ public abstract class AbstractTracer implements Tracer {
 
     @SuppressWarnings("WeakerAccess")
     public static final String GUID_KEY = "lightstep.guid";
-
-    protected static final int VERBOSITY_DEBUG = 4;
-    protected static final int VERBOSITY_INFO = 3;
-    protected static final int VERBOSITY_ERRORS_ONLY = 2;
-    protected static final int VERBOSITY_FIRST_ERROR_ONLY = 1;
-    protected static final int VERBOSITY_NONE = 0;
 
     /**
      * For mapping internal logs to Android log levels without importing Android
@@ -759,14 +756,14 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * Internal logging.
      */
-    private void warn(String s) {
+    protected void warn(String s) {
         this.warn(s, null);
     }
 
     /**
      * Internal warning.
      */
-    private void warn(String msg, Object payload) {
+    protected void warn(String msg, Object payload) {
         if (this.verbosity < VERBOSITY_INFO) {
             return;
         }
