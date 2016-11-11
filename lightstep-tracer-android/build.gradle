@@ -19,10 +19,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-// Make sure the library is Java 7 compatible
-targetCompatibility = '1.7'
-sourceCompatibility = '1.7'
-
 group = "com.lightstep.tracer"
 
 def siteUrl = 'https://github.com/lightstep/lightstep-tracer-java'
@@ -45,6 +41,11 @@ android {
 
     lintOptions {
         lintConfig file("lightstep-tracer-android/lint.xml")
+    }
+
+    compileOptions {
+        targetCompatibility = '1.7'
+        sourceCompatibility = '1.7'
     }
 }
 

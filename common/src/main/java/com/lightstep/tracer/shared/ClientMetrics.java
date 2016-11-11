@@ -1,6 +1,7 @@
 package com.lightstep.tracer.shared;
 
 import java.util.ArrayList;
+
 import com.lightstep.tracer.thrift.Metrics;
 import com.lightstep.tracer.thrift.MetricsSample;
 
@@ -8,14 +9,14 @@ public class ClientMetrics {
 
     // For capacity allocation purposes, keep this in sync with the number of
     // counts actually being tracked.
-    private final int NUMBER_OF_COUNTS = 1;
+    private static final int NUMBER_OF_COUNTS = 1;
 
     public long spansDropped;
 
     public ClientMetrics() {
         this.spansDropped = 0;
     }
-    
+
     public ClientMetrics(ClientMetrics that) {
         this.spansDropped = that.spansDropped;
     }
@@ -28,7 +29,7 @@ public class ClientMetrics {
     }
 
     public Metrics toThrift() {
-        ArrayList<MetricsSample> counts = new ArrayList<MetricsSample>(NUMBER_OF_COUNTS);
+        ArrayList<MetricsSample> counts = new ArrayList<>(NUMBER_OF_COUNTS);
         counts.add(new MetricsSample("spans.dropped").setInt64_value(spansDropped));
         return new Metrics().setCounts(counts);
     }

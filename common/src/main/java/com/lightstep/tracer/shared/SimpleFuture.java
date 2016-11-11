@@ -5,8 +5,6 @@ package com.lightstep.tracer.shared;
  *
  * Acts as a simple wrapper on Object wait() / notify() - avoiding the
  * complex future interfaces in Java 7/8.
- *
- * @param <T>
  */
 public class SimpleFuture<T> {
     private boolean resolved;
@@ -15,13 +13,14 @@ public class SimpleFuture<T> {
     public SimpleFuture() {
         this.resolved = false;
     }
+
     public SimpleFuture(T value) {
         this.value = value;
         this.resolved = true;
     }
 
     public void set(T value) {
-        synchronized(this) {
+        synchronized (this) {
             this.value = value;
             this.resolved = true;
             this.notifyAll();
@@ -30,7 +29,7 @@ public class SimpleFuture<T> {
 
     public T get() throws InterruptedException {
         if (!resolved) {
-            synchronized(this) {
+            synchronized (this) {
                 this.wait();
             }
         }
@@ -39,7 +38,7 @@ public class SimpleFuture<T> {
 
     public T getWithTimeout(long millis) throws InterruptedException {
         if (!resolved) {
-            synchronized(this) {
+            synchronized (this) {
                 this.wait(millis);
             }
         }

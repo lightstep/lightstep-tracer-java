@@ -1,10 +1,13 @@
 package com.lightstep.tracer.jre;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.lightstep.tracer.shared.AbstractTracer;
+import com.lightstep.tracer.shared.Options;
+import com.lightstep.tracer.shared.SimpleFuture;
+import com.lightstep.tracer.shared.Version;
 
-import com.lightstep.tracer.shared.*;
-import com.lightstep.tracer.thrift.KeyValue;
+import java.util.HashMap;
+
+import static com.lightstep.tracer.shared.Version.LIGHTSTEP_TRACER_VERSION;
 
 public class JRETracer extends AbstractTracer {
 
@@ -16,7 +19,8 @@ public class JRETracer extends AbstractTracer {
 
     /**
      * Returns the singleton Tracer instance that can be utilized to record logs and spans.
-     * @return  tracer instance
+     *
+     * @return tracer instance
      */
     public static JRETracer getInstance() {
         return JavaTracerHolder.INSTANCE;
@@ -29,27 +33,27 @@ public class JRETracer extends AbstractTracer {
 
     // Flush any data stored in the log and span buffers
     protected SimpleFuture<Boolean> flushInternal(boolean explicitRequest) {
-        return new SimpleFuture<Boolean>(sendReport(explicitRequest));
+        return new SimpleFuture<>(sendReport(explicitRequest));
     }
 
     protected void printLogToConsole(InternalLogLevel level, String msg, Object payload) {
         String s;
         switch (level) {
-        case DEBUG:
-            s = "[Lightstep:DEBUG] ";
-            break;
-        case INFO:
-            s = "[Lightstep:INFO] ";
-            break;
-        case WARN:
-            s = "[Lightstep:WARN] ";
-            break;
-        case ERROR:
-            s = "[Lightstep:ERROR] ";
-            break;
-        default:
-            s = "[Lightstep:???] ";
-            break;
+            case DEBUG:
+                s = "[Lightstep:DEBUG] ";
+                break;
+            case INFO:
+                s = "[Lightstep:INFO] ";
+                break;
+            case WARN:
+                s = "[Lightstep:WARN] ";
+                break;
+            case ERROR:
+                s = "[Lightstep:ERROR] ";
+                break;
+            default:
+                s = "[Lightstep:???] ";
+                break;
         }
         s += msg;
         if (payload != null) {
@@ -71,6 +75,6 @@ public class JRETracer extends AbstractTracer {
         // differentiate this library from the Android version
         this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_KEY, "jre");
         this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY, System.getProperty("java.version"));
-        this.addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, Version.LIGHTSTEP_TRACER_VERSION);
+        this.addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, LIGHTSTEP_TRACER_VERSION);
     }
 }
