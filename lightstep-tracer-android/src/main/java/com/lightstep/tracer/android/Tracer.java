@@ -9,7 +9,8 @@ import android.util.Log;
 import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.shared.SimpleFuture;
-import com.lightstep.tracer.shared.Version;
+
+import static com.lightstep.tracer.shared.Version.LIGHTSTEP_TRACER_VERSION;
 
 public class Tracer extends AbstractTracer {
     private final Context ctx;
@@ -77,12 +78,12 @@ public class Tracer extends AbstractTracer {
     /**
      * Adds standard tags set by all LightStep client libraries.
      */
-    protected void addStandardTracerTags() {
+    private void addStandardTracerTags() {
         // The platform is called "jre" rather than "Java" to clearly
         // differentiate this library from the Android version
         this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_KEY, "android");
         this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY, String.valueOf(android.os.Build.VERSION.SDK_INT));
-        this.addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, Version.LIGHTSTEP_TRACER_VERSION);
+        this.addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, LIGHTSTEP_TRACER_VERSION);
 
         // Check to see if component name is set and, if not, use the app process
         // or package name.

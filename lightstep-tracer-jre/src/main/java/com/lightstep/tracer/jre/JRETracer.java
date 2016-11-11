@@ -3,7 +3,6 @@ package com.lightstep.tracer.jre;
 import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.shared.SimpleFuture;
-import com.lightstep.tracer.shared.Version;
 
 import java.util.HashMap;
 
@@ -22,6 +21,7 @@ public class JRETracer extends AbstractTracer {
      *
      * @return tracer instance
      */
+    @SuppressWarnings("unused")
     public static JRETracer getInstance() {
         return JavaTracerHolder.INSTANCE;
     }
@@ -62,15 +62,10 @@ public class JRETracer extends AbstractTracer {
         System.err.println(s);
     }
 
-    protected HashMap<String, String> retrieveDeviceInfo() {
-        // TODO: Implement for Java Desktop Applications
-        return null;
-    }
-
     /**
      * Adds standard tags set by all LightStep client libraries.
      */
-    protected void addStandardTracerTags() {
+    private void addStandardTracerTags() {
         // The platform is called "jre" rather than "Java" to clearly
         // differentiate this library from the Android version
         this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_KEY, "jre");

@@ -27,14 +27,14 @@ public class SpanContext implements io.opentracing.SpanContext {
         return this.traceId;
     }
 
-    public String getBaggageItem(String key) {
+    String getBaggageItem(String key) {
         if (this.baggage == null) {
             return null;
         }
         return this.baggage.get(key);
     }
 
-    public SpanContext withBaggageItem(String key, String value) {
+    SpanContext withBaggageItem(String key, String value) {
         Map<String, String> baggageCopy;
         if (baggage == null) {
             baggageCopy = new HashMap<>();

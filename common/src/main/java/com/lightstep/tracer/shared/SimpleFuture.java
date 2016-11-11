@@ -36,6 +36,7 @@ public class SimpleFuture<T> {
         return this.value;
     }
 
+    @SuppressWarnings("unused")
     public T getWithTimeout(long millis) throws InterruptedException {
         if (!resolved) {
             synchronized (this) {

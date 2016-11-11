@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import static java.lang.Long.MAX_VALUE;
 
-public class ClockState {
+class ClockState {
     /**
      * How many updates before a sample is considered old. This happens to
      * be one less than the number of samples in our buffer but that's
