@@ -39,11 +39,6 @@ public class MainActivityFragment extends Fragment {
 
     private static final String TAG = "LightStep Example";
 
-    // If not null, append to API requests
-    static final String AUTH = null;
-    // If not null, replace standard host in GitHub API requests
-    static final String PROXY = null;
-
     private Tracer tracer;
 
     public MainActivityFragment() {
