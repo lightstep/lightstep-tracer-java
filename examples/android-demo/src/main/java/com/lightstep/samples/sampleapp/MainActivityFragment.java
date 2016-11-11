@@ -48,7 +48,7 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Initialize tracer
-        this.tracer = new com.lightstep.tracer.android.Tracer(
+        tracer = new com.lightstep.tracer.android.Tracer(
                 getContext(),
                 new Options("{your_access_token}").withVerbosity(4));
         Log.d(TAG, "Tracer successfully initialized!");
@@ -173,18 +173,18 @@ public class MainActivityFragment extends Fragment {
             try {
                 StringBuilder output = new StringBuilder();
                 output.append("User: ");
-                output.append(this.user.getString("login"));
+                output.append(user.getString("login"));
                 output.append("\nType: ");
-                output.append(this.user.getString("type"));
+                output.append(user.getString("type"));
 
-                JSONArray repos = new JSONArray(this.reposResponse);
+                JSONArray repos = new JSONArray(reposResponse);
                 output.append("\nPublic repositories: ");
                 output.append(repos.length());
                 for (int i = 0; i < repos.length(); i++) {
                     output.append("\n\t");
                     output.append(repos.getJSONObject(i).getString("name"));
                 }
-                JSONArray events = new JSONArray(this.eventsResponse);
+                JSONArray events = new JSONArray(eventsResponse);
                 int eventTotal = 0;
                 HashMap<String, Integer> eventCounts = new HashMap<>();
                 for (int i = 0; i < events.length(); i++) {
@@ -259,7 +259,7 @@ public class MainActivityFragment extends Fragment {
                             errorListener.onErrorResponse(error);
                         }
                     });
-            this.setRetryPolicy(new DefaultRetryPolicy(3000, 2, 1.0f));
+            setRetryPolicy(new DefaultRetryPolicy(3000, 2, 1.0f));
             this.span = (com.lightstep.tracer.shared.Span) span;
         }
 

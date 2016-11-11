@@ -30,14 +30,14 @@ class ClockState {
     ClockState() {
         // The last eight samples, computed from timing information in
         // RPCs.
-        this.samples = new LinkedList<>();
-        this.currentOffsetMicros = 0;
+        samples = new LinkedList<>();
+        currentOffsetMicros = 0;
 
         // How many updates since we've updated currentOffsetMicros.
-        this.currentOffsetAge = maxOffsetAge + 1;
+        currentOffsetAge = maxOffsetAge + 1;
 
         // Update the current offset based on these data.
-        this.update();
+        update();
     }
 
     /**
@@ -59,14 +59,14 @@ class ClockState {
                     (transmitMicros - destinationMicros)) / 2;
         }
 
-        synchronized (this.mutex) {
+        synchronized (mutex) {
             // Discard the oldest sample and push the new one.
-            if (this.samples.size() == maxOffsetAge + 1) {
-                this.samples.removeFirst();
+            if (samples.size() == maxOffsetAge + 1) {
+                samples.removeFirst();
             }
-            this.samples.push(new Sample(latestDelayMicros, latestOffsetMicros));
-            this.currentOffsetAge++;
-            this.update();
+            samples.push(new Sample(latestDelayMicros, latestOffsetMicros));
+            currentOffsetAge++;
+            update();
         }
     }
 
@@ -98,7 +98,7 @@ class ClockState {
         // the "best" one.
         long minDelayMicros = MAX_VALUE;
         long bestOffsetMicros = 0;
-        for (Sample sample : this.samples) {
+        for (Sample sample : samples) {
             if (sample.delayMicros < minDelayMicros) {
                 minDelayMicros = sample.delayMicros;
                 bestOffsetMicros = sample.offsetMicros;
@@ -106,26 +106,26 @@ class ClockState {
         }
 
         // No update.
-        if (bestOffsetMicros == this.currentOffsetMicros) {
+        if (bestOffsetMicros == currentOffsetMicros) {
             return;
         }
 
         // Now compute the jitter, i.e. the error relative to the new offset were
         // we to use it.
         long jitter = 0;
-        for (Sample sample : this.samples) {
+        for (Sample sample : samples) {
             jitter += Math.pow(bestOffsetMicros - sample.offsetMicros, 2);
         }
-        jitter = (long) Math.sqrt(jitter / this.samples.size());
+        jitter = (long) Math.sqrt(jitter / samples.size());
 
         // Ignore spikes: only use the new offset if the change is not too
         // large... unless the current offset is too old. The "too old" condition
         // is also triggered when update() is called from the constructor.
         long SGATE = 3; // See RFC 5905
-        if (this.currentOffsetAge > maxOffsetAge ||
-                Math.abs(this.currentOffsetMicros - bestOffsetMicros) < SGATE * jitter) {
-            this.currentOffsetMicros = bestOffsetMicros;
-            this.currentOffsetAge = 0;
+        if (currentOffsetAge > maxOffsetAge ||
+                Math.abs(currentOffsetMicros - bestOffsetMicros) < SGATE * jitter) {
+            currentOffsetMicros = bestOffsetMicros;
+            currentOffsetAge = 0;
         }
     }
 
@@ -136,8 +136,8 @@ class ClockState {
      * ahead of the server's.
      */
     long offsetMicros() {
-        synchronized (this.mutex) {
-            return this.currentOffsetMicros;
+        synchronized (mutex) {
+            return currentOffsetMicros;
         }
     }
 
@@ -146,14 +146,14 @@ class ClockState {
      * in the current offset.
      */
     boolean isReady() {
-        synchronized (this.mutex) {
-            return this.samples.size() > 3;
+        synchronized (mutex) {
+            return samples.size() > 3;
         }
     }
 
     int activeSampleCount() {
-        synchronized (this.mutex) {
-            return this.samples.size();
+        synchronized (mutex) {
+            return samples.size();
         }
     }
 }

@@ -112,19 +112,19 @@ public abstract class AbstractTracer implements Tracer {
 
     public AbstractTracer(Options options) {
         // Set verbosity first so debug logs from the constructor take effect
-        this.verbosity = options.verbosity;
+        verbosity = options.verbosity;
 
         // TODO sanity check options
-        this.maxBufferedSpans = options.maxBufferedSpans > 0 ?
+        maxBufferedSpans = options.maxBufferedSpans > 0 ?
                 options.maxBufferedSpans : DEFAULT_MAX_BUFFERED_SPANS;
-        this.lastNewSpanMillis = new AtomicLong(System.currentTimeMillis());
-        this.spans = new ArrayList<>(maxBufferedSpans);
+        lastNewSpanMillis = new AtomicLong(System.currentTimeMillis());
+        spans = new ArrayList<>(maxBufferedSpans);
 
-        this.clockState = new ClockState();
-        this.clientMetrics = new ClientMetrics();
-        this.visibleErrorCount = 0;
+        clockState = new ClockState();
+        clientMetrics = new ClientMetrics();
+        visibleErrorCount = 0;
 
-        this.auth = new Auth();
+        auth = new Auth();
         auth.setAccess_token(options.accessToken);
 
         // Set some default attributes if not found in options
@@ -149,16 +149,16 @@ public abstract class AbstractTracer implements Tracer {
             guid = options.tags.get(GUID_KEY).toString();
         }
 
-        this.runtime = new Runtime();
-        this.runtime.setGuid(guid);
+        runtime = new Runtime();
+        runtime.setGuid(guid);
         // Unfortunately Java7 has no way to generate a timestamp that's both
         // precise (a la System.nanoTime()) and absolute (a la
         // System.currentTimeMillis()). We store an absolute start timestamp but at
         // least get a precise duration at Span.finish() time via
         // startTimestampRelativeNanos (search for it below).
-        this.runtime.setStart_micros(this.nowMicrosApproximate());
+        runtime.setStart_micros(nowMicrosApproximate());
         for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
-            this.addTracerTag(entry.getKey(), entry.getValue().toString());
+            addTracerTag(entry.getKey(), entry.getValue().toString());
         }
 
         String host = options.collectorHost != null ? options.collectorHost : DEFAULT_HOST;
@@ -171,11 +171,11 @@ public abstract class AbstractTracer implements Tracer {
             port = options.collectorPort > 0 ? options.collectorPort : DEFAULT_SECURE_PORT;
         }
         try {
-            this.collectorURL = new URL(scheme, host, port, COLLECTOR_PATH);
+            collectorURL = new URL(scheme, host, port, COLLECTOR_PATH);
         } catch (MalformedURLException e) {
-            this.error("Collector URL malformed. Disabling tracer.", e);
+            error("Collector URL malformed. Disabling tracer.", e);
             // Preemptively disable this tracer.
-            this.disable();
+            disable();
             return;
         }
 
@@ -183,18 +183,18 @@ public abstract class AbstractTracer implements Tracer {
             long intervalMillis = options.maxReportingIntervalMillis > 0 ?
                     options.maxReportingIntervalMillis :
                     DEFAULT_REPORTING_INTERVAL_MILLIS;
-            this.reportingLoop = new ReportingLoop(intervalMillis);
+            reportingLoop = new ReportingLoop(intervalMillis);
         }
 
         if (!options.disableReportOnExit) {
             java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
-                    AbstractTracer.this.debug("Running shutdown hook");
-                    AbstractTracer.this.shutdown();
+                    debug("Running shutdown hook");
+                    shutdown();
                 }
             });
         } else {
-            this.debug("Report at exit is disabled");
+            debug("Report at exit is disabled");
         }
     }
 
@@ -207,11 +207,11 @@ public abstract class AbstractTracer implements Tracer {
             // reporting loops from running simultaneously.  It's possible
             // for one to start before another one exits, which is safe
             // because flushInternal() is itself synchronized.
-            if (this.reportingThread == null) {
+            if (reportingThread == null) {
                 return;
             }
-            this.reportingThread.interrupt();
-            this.reportingThread = null;
+            reportingThread.interrupt();
+            reportingThread = null;
         }
     }
 
@@ -219,15 +219,15 @@ public abstract class AbstractTracer implements Tracer {
      * This call is synchronized
      */
     private void maybeStartReporting() {
-        if (this.reportingThread != null) {
+        if (reportingThread != null) {
             return;
         }
-        this.reportingThread = new Thread(this.reportingLoop);
-        this.reportingThread.start();
+        reportingThread = new Thread(reportingLoop);
+        reportingThread.start();
     }
 
     public String getAccessToken() {
-        synchronized (this.mutex) {
+        synchronized (mutex) {
             return auth.getAccess_token();
         }
     }
@@ -262,13 +262,13 @@ public abstract class AbstractTracer implements Tracer {
         private int consecutiveFailures = 0;
 
         ReportingLoop(long interval) {
-            this.reportingIntervalMillis = interval;
+            reportingIntervalMillis = interval;
         }
 
         @Override
         public void run() {
-            AbstractTracer.this.debug("Reporting thread started");
-            long nextReportMillis = this.computeNextReportMillis();
+            debug("Reporting thread started");
+            long nextReportMillis = computeNextReportMillis();
 
             // Run until the reporting loop has been explicitly told to stop.
             while (!Thread.interrupted()) {
@@ -278,39 +278,39 @@ public abstract class AbstractTracer implements Tracer {
                 // not have a wireless connection.
                 long nowMillis = System.currentTimeMillis();
                 if (nowMillis >= nextReportMillis) {
-                    SimpleFuture<Boolean> result = AbstractTracer.this.flushInternal(false);
+                    SimpleFuture<Boolean> result = flushInternal(false);
                     boolean reportSucceeded = false;
                     try {
                         reportSucceeded = result.get();
                     } catch (InterruptedException e) {
-                        AbstractTracer.this.warn("Future timed out");
+                        warn("Future timed out");
                     }
 
                     // Check consecutive failures for back off purposes
                     if (!reportSucceeded) {
-                        this.consecutiveFailures++;
+                        consecutiveFailures++;
                     } else {
-                        this.consecutiveFailures = 0;
+                        consecutiveFailures = 0;
                     }
-                    nextReportMillis = this.computeNextReportMillis();
+                    nextReportMillis = computeNextReportMillis();
                 }
 
                 // If the tracer hasn't received new data in a while, stop the
                 // reporting loop. It will be restarted when the next span is finished.
-                boolean hasUnreportedSpans = (AbstractTracer.this.unreportedSpanCount() > 0);
+                boolean hasUnreportedSpans = (unreportedSpanCount() > 0);
                 long lastSpanAgeMillis = System.currentTimeMillis() - lastNewSpanMillis.get();
-                if ((!hasUnreportedSpans || this.consecutiveFailures >= 2) &&
+                if ((!hasUnreportedSpans || consecutiveFailures >= 2) &&
                         lastSpanAgeMillis > THREAD_TIMEOUT_MILLIS) {
-                    AbstractTracer.this.doStopReporting();
+                    doStopReporting();
                 } else {
                     try {
                         Thread.sleep(POLL_INTERVAL_MILLIS);
                     } catch (InterruptedException e) {
-                        AbstractTracer.this.warn("Exception trying to sleep in reporting thread");
+                        warn("Exception trying to sleep in reporting thread");
                     }
                 }
             }
-            AbstractTracer.this.debug("Reporting thread stopped");
+            debug("Reporting thread stopped");
         }
 
         /**
@@ -320,21 +320,21 @@ public abstract class AbstractTracer implements Tracer {
          */
         long computeNextReportMillis() {
             double base;
-            if (!AbstractTracer.this.clockState.isReady()) {
+            if (!clockState.isReady()) {
                 base = (double) DEFAULT_CLOCK_STATE_INTERVAL_MILLIS;
             } else {
-                base = (double) this.reportingIntervalMillis;
+                base = (double) reportingIntervalMillis;
             }
 
             // Exponential back off based on number of consecutive errors, up to 8x the normal
             // interval
-            int backOff = 1 + Math.min(7, this.consecutiveFailures);
+            int backOff = 1 + Math.min(7, consecutiveFailures);
             base *= (double) backOff;
 
             // Add +/- 10% jitter to the regular reporting interval
-            final double delta = base * (0.9 + 0.2 * this.rng.nextDouble());
+            final double delta = base * (0.9 + 0.2 * rng.nextDouble());
             final long nextMillis = System.currentTimeMillis() + (long) Math.ceil(delta);
-            AbstractTracer.this.debug(String.format("Next report: %d (%f) [%d]", nextMillis, delta, AbstractTracer.this.clockState.activeSampleCount()));
+            debug(String.format("Next report: %d (%f) [%d]", nextMillis, delta, clockState.activeSampleCount()));
             return nextMillis;
         }
     }
@@ -351,8 +351,8 @@ public abstract class AbstractTracer implements Tracer {
             return;
         }
 
-        this.debug("shutdown() called");
-        this.doStopReporting();
+        debug("shutdown() called");
+        doStopReporting();
         flush();
         disable();
     }
@@ -362,29 +362,29 @@ public abstract class AbstractTracer implements Tracer {
      * subsequent method invocations into no-ops.
      */
     public void disable() {
-        this.info("Disabling client library");
-        this.doStopReporting();
+        info("Disabling client library");
+        doStopReporting();
 
-        synchronized (this.mutex) {
-            if (this.transport != null) {
-                this.transport.close();
-                this.transport = null;
+        synchronized (mutex) {
+            if (transport != null) {
+                transport.close();
+                transport = null;
             }
 
-            this.isDisabled = true;
+            isDisabled = true;
 
             // The code makes various assumptions about this field never being
             // null, so replace it with an empty list rather than nulling it out.
-            this.spans = new ArrayList<>(0);
+            spans = new ArrayList<>(0);
         }
     }
 
     public boolean isDisabled() {
-        return this.isDisabled;
+        return isDisabled;
     }
 
     public Tracer.SpanBuilder buildSpan(String operationName) {
-        return this.new SpanBuilder(operationName);
+        return new SpanBuilder(operationName);
     }
 
     public <C> void inject(io.opentracing.SpanContext spanContext, Format<C> format, C carrier) {
@@ -394,11 +394,11 @@ public abstract class AbstractTracer implements Tracer {
         } else if (format == Format.Builtin.HTTP_HEADERS) {
             Propagator.HTTP_HEADERS.inject(lightstepSpanContext, (TextMap) carrier);
         } else if (format == Format.Builtin.BINARY) {
-            this.warn("LightStep-java does not yet support binary carriers. " +
+            warn("LightStep-java does not yet support binary carriers. " +
                     "SpanContext: " + spanContext.toString());
             Propagator.BINARY.inject(lightstepSpanContext, (ByteBuffer) carrier);
         } else {
-            this.info("Unsupported carrier type: " + carrier.getClass());
+            info("Unsupported carrier type: " + carrier.getClass());
         }
     }
 
@@ -408,10 +408,10 @@ public abstract class AbstractTracer implements Tracer {
         } else if (format == Format.Builtin.HTTP_HEADERS) {
             return Propagator.HTTP_HEADERS.extract((TextMap) carrier);
         } else if (format == Format.Builtin.BINARY) {
-            this.warn("LightStep-java does not yet support binary carriers.");
+            warn("LightStep-java does not yet support binary carriers.");
             return Propagator.BINARY.extract((ByteBuffer) carrier);
         } else {
-            this.info("Unsupported carrier type: " + carrier.getClass());
+            info("Unsupported carrier type: " + carrier.getClass());
             return null;
         }
     }
@@ -419,7 +419,7 @@ public abstract class AbstractTracer implements Tracer {
     public void flush() {
         // TODO: flush() likely needs some form of synchronization mechanism to notify the caller
         // when the flush is complete. For example, a promise, a callback, etc.
-        this.flushInternal(true);
+        flushInternal(true);
     }
 
     protected abstract SimpleFuture<Boolean> flushInternal(boolean explicitRequest);
@@ -435,25 +435,25 @@ public abstract class AbstractTracer implements Tracer {
      */
     protected boolean sendReport(boolean explicitRequest) {
 
-        synchronized (this.mutex) {
-            if (this.reportInProgress) {
-                this.debug("Report in progress. Skipping.");
+        synchronized (mutex) {
+            if (reportInProgress) {
+                debug("Report in progress. Skipping.");
                 return true;
             }
-            if (this.spans.size() == 0 && this.clockState.isReady()) {
-                this.debug("Skipping report. No new data.");
+            if (spans.size() == 0 && clockState.isReady()) {
+                debug("Skipping report. No new data.");
                 return true;
             }
 
             // Make sure other threads don't try to start sending a report.
-            this.reportInProgress = true;
+            reportInProgress = true;
         }
 
         try {
             return sendReportWorker(explicitRequest);
         } finally {
-            synchronized (this.mutex) {
-                this.reportInProgress = false;
+            synchronized (mutex) {
+                reportInProgress = false;
             }
         }
     }
@@ -465,8 +465,8 @@ public abstract class AbstractTracer implements Tracer {
      * lock is already acquired, calling spans.size() directly should suffice.
      */
     private int unreportedSpanCount() {
-        synchronized (this.mutex) {
-            return this.spans.size();
+        synchronized (mutex) {
+            return spans.size();
         }
     }
 
@@ -482,88 +482,88 @@ public abstract class AbstractTracer implements Tracer {
         ArrayList<SpanRecord> spans;
         ClientMetrics clientMetrics = null;
 
-        synchronized (this.mutex) {
-            if (this.clockState.isReady() || explicitRequest) {
+        synchronized (mutex) {
+            if (clockState.isReady() || explicitRequest) {
                 // Copy the reference to the spans and make a new array for other spans.
                 spans = this.spans;
                 clientMetrics = this.clientMetrics;
-                this.spans = new ArrayList<>(this.maxBufferedSpans);
+                this.spans = new ArrayList<>(maxBufferedSpans);
                 this.clientMetrics = new ClientMetrics();
-                this.debug(String.format("Sending report, %d spans", spans.size()));
+                debug(String.format("Sending report, %d spans", spans.size()));
             } else {
                 // Otherwise, if the clock state is not ready, we'll send an empty
                 // report.
-                this.debug("Sending empty report to prime clock state");
-                spans = new ArrayList<SpanRecord>();
+                debug("Sending empty report to prime clock state");
+                spans = new ArrayList<>();
             }
 
-            if (this.transport == null) {
-                this.debug("Creating transport");
+            if (transport == null) {
+                debug("Creating transport");
                 try {
                     // TODO add support for cookies (for load balancer sessions)
-                    THttpClient client = new THttpClient(this.collectorURL.toString());
-                    client.setConnectTimeout(DEFAULT_REPORT_TIMEOUT_MILLIS);
-                    this.transport = client;
-                    this.transport.open();
-                    TBinaryProtocol protocol = new TBinaryProtocol(this.transport);
-                    this.client = new ReportingService.Client(protocol);
+                    THttpClient tHttpClient = new THttpClient(collectorURL.toString());
+                    tHttpClient.setConnectTimeout(DEFAULT_REPORT_TIMEOUT_MILLIS);
+                    transport = tHttpClient;
+                    transport.open();
+                    TBinaryProtocol protocol = new TBinaryProtocol(transport);
+                    client = new ReportingService.Client(protocol);
                 } catch (TException e) {
-                    this.error("Exception creating Thrift client. Disabling tracer.", e);
-                    this.disable();
+                    error("Exception creating Thrift client. Disabling tracer.", e);
+                    disable();
                     return false;
                 }
             }
         }
 
         ReportRequest req = new ReportRequest();
-        req.setRuntime(this.runtime);
+        req.setRuntime(runtime);
         req.setSpan_records(spans);
-        req.setTimestamp_offset_micros(this.clockState.offsetMicros());
+        req.setTimestamp_offset_micros(clockState.offsetMicros());
 
         if (clientMetrics != null) {
             req.setInternal_metrics(clientMetrics.toThrift());
         }
 
         try {
-            long originMicros = this.nowMicrosApproximate();
+            long originMicros = nowMicrosApproximate();
             long originRelativeNanos = System.nanoTime();
-            ReportResponse resp = this.client.Report(this.auth, req);
+            ReportResponse resp = client.Report(auth, req);
 
             if (resp.isSetTiming()) {
                 long deltaMicros = (System.nanoTime() - originRelativeNanos) / 1000;
                 long destinationMicros = originMicros + deltaMicros;
-                this.clockState.addSample(originMicros,
+                clockState.addSample(originMicros,
                         resp.getTiming().getReceive_micros(),
                         resp.getTiming().getTransmit_micros(),
                         destinationMicros);
             } else {
-                this.warn("Collector response did not include timing info");
+                warn("Collector response did not include timing info");
             }
 
             // Check whether or not to disable the tracer
             if (resp.isSetCommands()) {
                 for (Command command : resp.commands) {
                     if (command.disable) {
-                        this.disable();
+                        disable();
                     }
                 }
             }
 
-            this.debug(String.format("Report sent successfully (%d spans)", spans.size()));
+            debug(String.format("Report sent successfully (%d spans)", spans.size()));
             return true;
 
         } catch (TApplicationException e) {
             // Log as this probably indicates malformed spans
-            this.error("TApplicationException: error from collector", e);
+            error("TApplicationException: error from collector", e);
             return false;
         } catch (TException x) {
             // This may include exceptions like connection timeouts, which are expected during
             // normal operation.
-            this.debug("Report failed with exception", x);
+            debug("Report failed with exception", x);
 
             // The request failed, add any data that was supposed to be sent back to the
             // client local buffers.
-            synchronized (this.mutex) {
+            synchronized (mutex) {
                 this.clientMetrics.merge(clientMetrics);
             }
 
@@ -581,13 +581,13 @@ public abstract class AbstractTracer implements Tracer {
      * @param span the span to be added
      */
     void addSpan(SpanRecord span) {
-        this.lastNewSpanMillis.set(System.currentTimeMillis());
+        lastNewSpanMillis.set(System.currentTimeMillis());
 
-        synchronized (this.mutex) {
-            if (this.spans.size() >= this.maxBufferedSpans) {
-                this.clientMetrics.spansDropped++;
+        synchronized (mutex) {
+            if (spans.size() >= maxBufferedSpans) {
+                clientMetrics.spansDropped++;
             } else {
-                this.spans.add(span);
+                spans.add(span);
             }
 
             maybeStartReporting();
@@ -620,8 +620,8 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     protected void addTracerTag(String key, String value) {
-        this.debug("Adding tracer tag: " + key + " => " + value);
-        this.runtime.addToAttrs(new KeyValue(key, value));
+        debug("Adding tracer tag: " + key + " => " + value);
+        runtime.addToAttrs(new KeyValue(key, value));
     }
 
     private class SpanBuilder implements Tracer.SpanBuilder {
@@ -632,41 +632,41 @@ public abstract class AbstractTracer implements Tracer {
 
         SpanBuilder(String operationName) {
             this.operationName = operationName;
-            this.tags = new HashMap<>();
+            tags = new HashMap<>();
         }
 
         public Tracer.SpanBuilder asChildOf(io.opentracing.Span parent) {
-            return this.asChildOf(parent.context());
+            return asChildOf(parent.context());
         }
 
         public Tracer.SpanBuilder asChildOf(io.opentracing.SpanContext parent) {
-            return this.addReference(CHILD_OF, parent);
+            return addReference(CHILD_OF, parent);
         }
 
         public Tracer.SpanBuilder addReference(String type, io.opentracing.SpanContext referredTo) {
             if (CHILD_OF.equals(type) || FOLLOWS_FROM.equals(type)) {
-                this.parent = (SpanContext) referredTo;
+                parent = (SpanContext) referredTo;
             }
             return this;
         }
 
         public Tracer.SpanBuilder withTag(String key, String value) {
-            this.tags.put(key, value);
+            tags.put(key, value);
             return this;
         }
 
         public Tracer.SpanBuilder withTag(String key, boolean value) {
-            this.tags.put(key, value ? "true" : "false");
+            tags.put(key, value ? "true" : "false");
             return this;
         }
 
         public Tracer.SpanBuilder withTag(String key, Number value) {
-            this.tags.put(key, value.toString());
+            tags.put(key, value.toString());
             return this;
         }
 
         public Tracer.SpanBuilder withStartTimestamp(long microseconds) {
-            this.startTimestampMicros = microseconds;
+            startTimestampMicros = microseconds;
             return this;
         }
 
@@ -679,28 +679,28 @@ public abstract class AbstractTracer implements Tracer {
         }
 
         public io.opentracing.Span start() {
-            synchronized (AbstractTracer.this.mutex) {
-                if (AbstractTracer.this.isDisabled) {
+            synchronized (mutex) {
+                if (isDisabled) {
                     return NoopSpan.INSTANCE;
                 }
             }
 
             long startTimestampRelativeNanos = -1;
-            if (this.startTimestampMicros == 0) {
+            if (startTimestampMicros == 0) {
                 startTimestampRelativeNanos = System.nanoTime();
-                this.startTimestampMicros = AbstractTracer.this.nowMicrosApproximate();
+                startTimestampMicros = nowMicrosApproximate();
             }
 
             SpanRecord record = new SpanRecord();
-            record.setSpan_name(this.operationName);
-            record.setOldest_micros(this.startTimestampMicros);
+            record.setSpan_name(operationName);
+            record.setOldest_micros(startTimestampMicros);
 
             String traceId = null;
-            if (this.parent != null) {
-                traceId = this.parent.getTraceId();
+            if (parent != null) {
+                traceId = parent.getTraceId();
                 record.addToAttributes(new KeyValue(
                         PARENT_SPAN_GUID_KEY,
-                        this.parent.getSpanId()));
+                        parent.getSpanId()));
             }
             SpanContext newSpanContext = new SpanContext(traceId); // traceId may be null
             // Record the eventual TraceId and SpanId in the SpanRecord.
@@ -708,14 +708,14 @@ public abstract class AbstractTracer implements Tracer {
             record.setSpan_guid(newSpanContext.getSpanId());
 
             Span span = new Span(AbstractTracer.this, newSpanContext, record, startTimestampRelativeNanos);
-            for (Map.Entry<String, String> pair : this.tags.entrySet()) {
+            for (Map.Entry<String, String> pair : tags.entrySet()) {
                 span.setTag(pair.getKey(), pair.getValue());
             }
             return span;
         }
 
         public io.opentracing.Span start(long microseconds) {
-            return this.withStartTimestamp(microseconds).start();
+            return withStartTimestamp(microseconds).start();
         }
     }
 
@@ -723,72 +723,72 @@ public abstract class AbstractTracer implements Tracer {
      * Internal logging.
      */
     protected void debug(String s) {
-        this.debug(s, null);
+        debug(s, null);
     }
 
     /**
      * Internal logging.
      */
     protected void debug(String msg, Object payload) {
-        if (this.verbosity < VERBOSITY_DEBUG) {
+        if (verbosity < VERBOSITY_DEBUG) {
             return;
         }
-        this.printLogToConsole(DEBUG, msg, payload);
+        printLogToConsole(DEBUG, msg, payload);
     }
 
     /**
      * Internal logging.
      */
     protected void info(String s) {
-        this.info(s, null);
+        info(s, null);
     }
 
     /**
      * Internal logging.
      */
     protected void info(String msg, Object payload) {
-        if (this.verbosity < VERBOSITY_INFO) {
+        if (verbosity < VERBOSITY_INFO) {
             return;
         }
-        this.printLogToConsole(InternalLogLevel.INFO, msg, payload);
+        printLogToConsole(InternalLogLevel.INFO, msg, payload);
     }
 
     /**
      * Internal logging.
      */
     protected void warn(String s) {
-        this.warn(s, null);
+        warn(s, null);
     }
 
     /**
      * Internal warning.
      */
     protected void warn(String msg, Object payload) {
-        if (this.verbosity < VERBOSITY_INFO) {
+        if (verbosity < VERBOSITY_INFO) {
             return;
         }
-        this.printLogToConsole(InternalLogLevel.WARN, msg, payload);
+        printLogToConsole(InternalLogLevel.WARN, msg, payload);
     }
 
     /**
      * Internal logging.
      */
     protected void error(String s) {
-        this.error(s, null);
+        error(s, null);
     }
 
     /**
      * Internal error.
      */
     protected void error(String msg, Object payload) {
-        if (this.verbosity < VERBOSITY_FIRST_ERROR_ONLY) {
+        if (verbosity < VERBOSITY_FIRST_ERROR_ONLY) {
             return;
         }
-        if (this.verbosity == VERBOSITY_FIRST_ERROR_ONLY && this.visibleErrorCount > 0) {
+        if (verbosity == VERBOSITY_FIRST_ERROR_ONLY && visibleErrorCount > 0) {
             return;
         }
-        this.visibleErrorCount++;
-        this.printLogToConsole(ERROR, msg, payload);
+        visibleErrorCount++;
+        printLogToConsole(ERROR, msg, payload);
     }
 
     protected abstract void printLogToConsole(InternalLogLevel level, String msg, Object payload);
@@ -802,7 +802,7 @@ public abstract class AbstractTracer implements Tracer {
         ClientMetrics clientMetrics;
 
         public Status() {
-            this.tags = new HashMap<>();
+            tags = new HashMap<>();
         }
     }
 
@@ -815,11 +815,11 @@ public abstract class AbstractTracer implements Tracer {
      */
     public Status status() {
         Status status = new Status();
-        synchronized (this.mutex) {
-            for (KeyValue pair : this.runtime.getAttrs()) {
+        synchronized (mutex) {
+            for (KeyValue pair : runtime.getAttrs()) {
                 status.tags.put(pair.getKey(), pair.getValue());
             }
-            status.clientMetrics = new ClientMetrics(this.clientMetrics);
+            status.clientMetrics = new ClientMetrics(clientMetrics);
         }
         return status;
     }

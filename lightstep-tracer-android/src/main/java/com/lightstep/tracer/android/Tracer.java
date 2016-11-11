@@ -29,7 +29,7 @@ public class Tracer extends AbstractTracer {
         super(AbstractTracer.setDefaultReportingIntervalMillis(options, DEFAULT_REPORTING_INTERVAL_MILLIS));
 
         this.ctx = ctx;
-        this.addStandardTracerTags();
+        addStandardTracerTags();
     }
 
     /**
@@ -37,15 +37,15 @@ public class Tracer extends AbstractTracer {
      */
     @Override
     protected SimpleFuture<Boolean> flushInternal(boolean explicitRequest) {
-        synchronized (this.mutex) {
-            if (isDisabled() || this.ctx == null) {
+        synchronized (mutex) {
+            if (isDisabled() || ctx == null) {
                 return new SimpleFuture<>(false);
             }
 
             SimpleFuture<Boolean> future = new SimpleFuture<>();
 
             ConnectivityManager connMgr = (ConnectivityManager)
-                    this.ctx.getApplicationContext()
+                    ctx.getApplicationContext()
                             .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
             if (networkInfo != null && networkInfo.isConnected()) {
@@ -69,8 +69,8 @@ public class Tracer extends AbstractTracer {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            boolean ok = sendReport(this.explicitRequest);
-            this.future.set(ok);
+            boolean ok = sendReport(explicitRequest);
+            future.set(ok);
             return null;
         }
     }
@@ -81,9 +81,9 @@ public class Tracer extends AbstractTracer {
     private void addStandardTracerTags() {
         // The platform is called "jre" rather than "Java" to clearly
         // differentiate this library from the Android version
-        this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_KEY, "android");
-        this.addTracerTag(LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY, String.valueOf(android.os.Build.VERSION.SDK_INT));
-        this.addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, LIGHTSTEP_TRACER_VERSION);
+        addTracerTag(LIGHTSTEP_TRACER_PLATFORM_KEY, "android");
+        addTracerTag(LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY, String.valueOf(android.os.Build.VERSION.SDK_INT));
+        addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, LIGHTSTEP_TRACER_VERSION);
 
         // Check to see if component name is set and, if not, use the app process
         // or package name.

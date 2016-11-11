@@ -118,9 +118,9 @@ public class RuntimeTest {
         span.setTag(testStr, "my_value2");
         span.finish();
 
-        this.assertSpanHasTag(span, "my_key", "my_value");
-        this.assertSpanHasTag(span, "key2", testStr);
-        this.assertSpanHasTag(span, testStr, "my_value2");
+        assertSpanHasTag(span, "my_key", "my_value");
+        assertSpanHasTag(span, "key2", testStr);
+        assertSpanHasTag(span, testStr, "my_value2");
     }
 
     @Test
@@ -134,7 +134,7 @@ public class RuntimeTest {
                 .start();
         span.finish();
 
-        this.assertSpanHasTag(span, "my_key", "my_value");
+        assertSpanHasTag(span, "my_key", "my_value");
     }
 
     @Test
