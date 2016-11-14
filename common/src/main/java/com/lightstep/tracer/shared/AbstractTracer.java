@@ -343,7 +343,7 @@ public abstract class AbstractTracer implements Tracer {
      * Gracefully stops the tracer.
      *
      * NOTE: this can optionally be called by the consumer of the library and,
-     * if the consumer has not alreayd called it, *must* be called internally by
+     * if the consumer has not already called it, *must* be called internally by
      * the library to cancel the timer.
      */
     private void shutdown() {
