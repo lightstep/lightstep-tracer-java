@@ -10,13 +10,15 @@ import com.lightstep.tracer.thrift.TraceJoinId;
 
 public class Span implements io.opentracing.Span {
 
+    static final String LOG_KEY_EVENT = "event";
+    static final String LOG_KEY_MESSAGE = "message";
+
     private final Object mutex = new Object();
     private final AbstractTracer tracer;
-    private SpanContext context;
     private final SpanRecord record;
     private final long startTimestampRelativeNanos;
-    private static final String LOG_KEY_EVENT = "event";
-    private static final String LOG_KEY_MESSAGE = "message";
+
+    private SpanContext context;
 
     Span(AbstractTracer tracer, SpanContext context, SpanRecord record, long startTimestampRelativeNanos) {
         this.context = context;
@@ -61,6 +63,10 @@ public class Span implements io.opentracing.Span {
 
     @Override
     public Span setTag(String key, boolean value) {
+        if (key == null) {
+            tracer.debug("key is null, ignoring");
+            return this;
+        }
         synchronized (mutex) {
             if (isJoinKey(key)) {
                 record.addToJoin_ids(new TraceJoinId(key, value ? "true" : "false"));
@@ -98,7 +104,7 @@ public class Span implements io.opentracing.Span {
         return this;
     }
 
-    public synchronized io.opentracing.Span setOperationName(String operationName) {
+    public synchronized Span setOperationName(String operationName) {
         record.setSpan_name(operationName);
         return this;
     }
@@ -107,8 +113,8 @@ public class Span implements io.opentracing.Span {
         finish();
     }
 
-    private static boolean isJoinKey(String key) {
-        return key.startsWith("join:");
+    static boolean isJoinKey(String key) {
+        return key != null && key.startsWith("join:");
     }
 
     public AbstractTracer getTracer() {
@@ -199,7 +205,7 @@ public class Span implements io.opentracing.Span {
      *
      * Adapted from https://android.googlesource.com/platform/dalvik/libcore/json/src/main/java/org/json/JSONStringer.java
      */
-    private static String stringToJSONValue(String value) {
+    static String stringToJSONValue(String value) {
         StringBuffer out = new StringBuffer(value.length() + 2);
         out.append("\"");
         for (int i = 0, length = value.length(); i < length; i++) {
