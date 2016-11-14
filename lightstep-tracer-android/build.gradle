@@ -20,6 +20,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 group = "com.lightstep.tracer"
+project.version = current_version
 
 def siteUrl = 'https://github.com/lightstep/lightstep-tracer-java'
 def gitUrl = 'https://github.com/lightstep/lightstep-tracer-java.git'
