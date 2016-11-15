@@ -88,7 +88,7 @@ public class Simple {
 
         parentSpan.finish();
 
-        ((com.lightstep.tracer.jre.JRETracer) tracer).flush();
+        ((com.lightstep.tracer.jre.JRETracer) tracer).flush(20000);
         System.out.println("Done!");
     }
 

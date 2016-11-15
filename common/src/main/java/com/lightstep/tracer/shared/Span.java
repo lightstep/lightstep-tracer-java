@@ -28,7 +28,7 @@ public class Span implements io.opentracing.Span {
     }
 
     @Override
-    public io.opentracing.SpanContext context() {
+    public SpanContext context() {
         return context;
     }
 
@@ -248,5 +248,19 @@ public class Span implements io.opentracing.Span {
         }
         out.append("\"");
         return out.toString();
+    }
+
+    /**
+     * For unit testing only.
+     */
+    SpanRecord getRecord() {
+        return record;
+    }
+
+    /**
+     * For unit testing only.
+     */
+    long getStartTimestampRelativeNanos() {
+        return startTimestampRelativeNanos;
     }
 }

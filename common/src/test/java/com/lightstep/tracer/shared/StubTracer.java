@@ -8,6 +8,7 @@ import java.util.List;
  */
 class StubTracer extends AbstractTracer {
     private final List<LogCall> consoleLogCalls;
+    SimpleFuture<Boolean> flushResult = null;
 
     StubTracer(Options options) {
         super(options);
@@ -16,7 +17,7 @@ class StubTracer extends AbstractTracer {
 
     @Override
     protected SimpleFuture<Boolean> flushInternal(boolean explicitRequest) {
-        return null;
+        return flushResult;
     }
 
     @Override

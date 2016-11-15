@@ -8,6 +8,8 @@ import static com.lightstep.tracer.shared.Options.VERBOSITY_FIRST_ERROR_ONLY;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_INFO;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_NONE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class AbstractTracerTest {
@@ -88,5 +90,26 @@ public class AbstractTracerTest {
         undertest.info(TEST_MSG);
         undertest.warn(TEST_MSG);
         undertest.error(TEST_MSG);
+    }
+
+    @Test
+    public void testFlush_timeoutOccurs() {
+        StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
+        undertest.flushResult = new SimpleFuture<>();
+        assertNull(undertest.flush(1L));
+    }
+
+    @Test
+    public void testFlush_noTimeoutSuccess() {
+        StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
+        undertest.flushResult = new SimpleFuture<>(true);
+        assertTrue(undertest.flush(20000L));
+    }
+
+    @Test
+    public void testFlush_noTimeoutFailure() {
+        StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
+        undertest.flushResult = new SimpleFuture<>(false);
+        assertFalse(undertest.flush(20000L));
     }
 }

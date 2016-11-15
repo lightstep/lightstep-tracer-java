@@ -19,8 +19,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
@@ -35,8 +33,6 @@ import static com.lightstep.tracer.shared.AbstractTracer.InternalLogLevel.ERROR;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_DEBUG;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_FIRST_ERROR_ONLY;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_INFO;
-import static io.opentracing.References.CHILD_OF;
-import static io.opentracing.References.FOLLOWS_FROM;
 
 public abstract class AbstractTracer implements Tracer {
     // Maximum interval between reports
@@ -71,12 +67,6 @@ public abstract class AbstractTracer implements Tracer {
         WARN,
         ERROR
     }
-
-    /**
-     * The tag key used to record the relationship between child and parent
-     * spans.
-     */
-    private static final String PARENT_SPAN_GUID_KEY = "parent_span_guid";
 
     // copied from options
     private final int maxBufferedSpans;
@@ -184,17 +174,6 @@ public abstract class AbstractTracer implements Tracer {
                     options.maxReportingIntervalMillis :
                     DEFAULT_REPORTING_INTERVAL_MILLIS;
             reportingLoop = new ReportingLoop(intervalMillis);
-        }
-
-        if (!options.disableReportOnExit) {
-            java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                    debug("Running shutdown hook");
-                    shutdown();
-                }
-            });
-        } else {
-            debug("Report at exit is disabled");
         }
     }
 
@@ -340,28 +319,10 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     /**
-     * Gracefully stops the tracer.
-     *
-     * NOTE: this can optionally be called by the consumer of the library and,
-     * if the consumer has not alreayd called it, *must* be called internally by
-     * the library to cancel the timer.
-     */
-    private void shutdown() {
-        if (isDisabled) {
-            return;
-        }
-
-        debug("shutdown() called");
-        doStopReporting();
-        flush();
-        disable();
-    }
-
-    /**
      * Disable the tracer, stopping any further reports and turning all
      * subsequent method invocations into no-ops.
      */
-    public void disable() {
+    private void disable() {
         info("Disabling client library");
         doStopReporting();
 
@@ -380,11 +341,13 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     public boolean isDisabled() {
-        return isDisabled;
+        synchronized (mutex) {
+            return isDisabled;
+        }
     }
 
     public Tracer.SpanBuilder buildSpan(String operationName) {
-        return new SpanBuilder(operationName);
+        return new com.lightstep.tracer.shared.SpanBuilder(operationName, this);
     }
 
     public <C> void inject(io.opentracing.SpanContext spanContext, Format<C> format, C carrier) {
@@ -416,10 +379,20 @@ public abstract class AbstractTracer implements Tracer {
         }
     }
 
-    public void flush() {
-        // TODO: flush() likely needs some form of synchronization mechanism to notify the caller
-        // when the flush is complete. For example, a promise, a callback, etc.
-        flushInternal(true);
+    /**
+     * Initiates a flush of data to the collectors. Method does not return until the flush is
+     * complete, or has timed out.
+     *
+     * @param timeoutMillis The amount of time, in milliseconds, to allow for the flush to complete
+     * @return True if the flush completed within the time allotted, false otherwise.
+     */
+    public Boolean flush(long timeoutMillis) {
+        SimpleFuture<Boolean> flushFuture = flushInternal(true);
+        try {
+            return flushFuture.getWithTimeout(timeoutMillis);
+        } catch (InterruptedException e) {
+            return false;
+        }
     }
 
     protected abstract SimpleFuture<Boolean> flushInternal(boolean explicitRequest);
@@ -624,101 +597,6 @@ public abstract class AbstractTracer implements Tracer {
         runtime.addToAttrs(new KeyValue(key, value));
     }
 
-    private class SpanBuilder implements Tracer.SpanBuilder {
-        private String operationName;
-        private SpanContext parent;
-        private Map<String, String> tags;
-        private long startTimestampMicros;
-
-        SpanBuilder(String operationName) {
-            this.operationName = operationName;
-            tags = new HashMap<>();
-        }
-
-        public Tracer.SpanBuilder asChildOf(io.opentracing.Span parent) {
-            return asChildOf(parent.context());
-        }
-
-        public Tracer.SpanBuilder asChildOf(io.opentracing.SpanContext parent) {
-            return addReference(CHILD_OF, parent);
-        }
-
-        public Tracer.SpanBuilder addReference(String type, io.opentracing.SpanContext referredTo) {
-            if (CHILD_OF.equals(type) || FOLLOWS_FROM.equals(type)) {
-                parent = (SpanContext) referredTo;
-            }
-            return this;
-        }
-
-        public Tracer.SpanBuilder withTag(String key, String value) {
-            tags.put(key, value);
-            return this;
-        }
-
-        public Tracer.SpanBuilder withTag(String key, boolean value) {
-            tags.put(key, value ? "true" : "false");
-            return this;
-        }
-
-        public Tracer.SpanBuilder withTag(String key, Number value) {
-            tags.put(key, value.toString());
-            return this;
-        }
-
-        public Tracer.SpanBuilder withStartTimestamp(long microseconds) {
-            startTimestampMicros = microseconds;
-            return this;
-        }
-
-        public Iterable<Map.Entry<String, String>> baggageItems() {
-            if (parent == null) {
-                return Collections.emptySet();
-            } else {
-                return parent.baggageItems();
-            }
-        }
-
-        public io.opentracing.Span start() {
-            synchronized (mutex) {
-                if (isDisabled) {
-                    return NoopSpan.INSTANCE;
-                }
-            }
-
-            long startTimestampRelativeNanos = -1;
-            if (startTimestampMicros == 0) {
-                startTimestampRelativeNanos = System.nanoTime();
-                startTimestampMicros = nowMicrosApproximate();
-            }
-
-            SpanRecord record = new SpanRecord();
-            record.setSpan_name(operationName);
-            record.setOldest_micros(startTimestampMicros);
-
-            String traceId = null;
-            if (parent != null) {
-                traceId = parent.getTraceId();
-                record.addToAttributes(new KeyValue(
-                        PARENT_SPAN_GUID_KEY,
-                        parent.getSpanId()));
-            }
-            SpanContext newSpanContext = new SpanContext(traceId); // traceId may be null
-            // Record the eventual TraceId and SpanId in the SpanRecord.
-            record.setTrace_guid(newSpanContext.getTraceId());
-            record.setSpan_guid(newSpanContext.getSpanId());
-
-            Span span = new Span(AbstractTracer.this, newSpanContext, record, startTimestampRelativeNanos);
-            for (Map.Entry<String, String> pair : tags.entrySet()) {
-                span.setTag(pair.getKey(), pair.getValue());
-            }
-            return span;
-        }
-
-        public io.opentracing.Span start(long microseconds) {
-            return withStartTimestamp(microseconds).start();
-        }
-    }
-
     /**
      * Internal logging.
      */
@@ -793,37 +671,6 @@ public abstract class AbstractTracer implements Tracer {
 
     protected abstract void printLogToConsole(InternalLogLevel level, String msg, Object payload);
 
-    /**
-     * Internal class used primarily for unit testing and debugging. This is not
-     * part of the OpenTracing API and is not a supported API.
-     */
-    public class Status {
-        public Map<String, String> tags;
-        ClientMetrics clientMetrics;
-
-        public Status() {
-            tags = new HashMap<>();
-        }
-    }
-
-    /**
-     * Internal method used primarily for unit testing and debugging. This is not
-     * part of the OpenTracing API and is not a supported API.
-     *
-     * Copies the internal state/status into an object that's easier to check
-     * against in unit tests.
-     */
-    public Status status() {
-        Status status = new Status();
-        synchronized (mutex) {
-            for (KeyValue pair : runtime.getAttrs()) {
-                status.tags.put(pair.getKey(), pair.getValue());
-            }
-            status.clientMetrics = new ClientMetrics(clientMetrics);
-        }
-        return status;
-    }
-
     protected boolean isComponentNameSet() {
         for (KeyValue keyValue : runtime.attrs) {
             if (COMPONENT_NAME_KEY.equals(keyValue.getKey())) {
@@ -838,7 +685,7 @@ public abstract class AbstractTracer implements Tracer {
                 new KeyValue(COMPONENT_NAME_KEY, componentName));
     }
 
-    private long nowMicrosApproximate() {
+    static long nowMicrosApproximate() {
         return System.currentTimeMillis() * 1000;
     }
 }
