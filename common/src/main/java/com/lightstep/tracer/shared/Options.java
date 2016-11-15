@@ -112,16 +112,10 @@ public final class Options implements Cloneable {
      */
     boolean disableReportingLoop;
 
-    /**
-     * If true, the library will *not* attempt an automatic report at process exit.
-     */
-    boolean disableReportOnExit;
-
     public Options(String accessToken) {
         this.accessToken = accessToken;
         verbosity = 1;
         disableReportingLoop = false;
-        disableReportOnExit = false;
     }
 
     @SuppressWarnings("unused")
@@ -172,12 +166,6 @@ public final class Options implements Cloneable {
     @SuppressWarnings("unused")
     public Options withDisableReportingLoop(boolean disable) {
         this.disableReportingLoop = true;
-        return this;
-    }
-
-    @SuppressWarnings("unused")
-    public Options withDisableReportOnExit(boolean disable) {
-        disableReportOnExit = true;
         return this;
     }
 

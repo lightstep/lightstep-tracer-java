@@ -19,7 +19,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
@@ -176,17 +175,6 @@ public abstract class AbstractTracer implements Tracer {
                     DEFAULT_REPORTING_INTERVAL_MILLIS;
             reportingLoop = new ReportingLoop(intervalMillis);
         }
-
-        if (!options.disableReportOnExit) {
-            java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                    debug("Running shutdown hook");
-                    shutdown();
-                }
-            });
-        } else {
-            debug("Report at exit is disabled");
-        }
     }
 
     /**
@@ -331,28 +319,10 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     /**
-     * Gracefully stops the tracer.
-     *
-     * NOTE: this can optionally be called by the consumer of the library and,
-     * if the consumer has not already called it, *must* be called internally by
-     * the library to cancel the timer.
-     */
-    private void shutdown() {
-        if (isDisabled) {
-            return;
-        }
-
-        debug("shutdown() called");
-        doStopReporting();
-        flush();
-        disable();
-    }
-
-    /**
      * Disable the tracer, stopping any further reports and turning all
      * subsequent method invocations into no-ops.
      */
-    public void disable() {
+    private void disable() {
         info("Disabling client library");
         doStopReporting();
 
@@ -705,7 +675,7 @@ public abstract class AbstractTracer implements Tracer {
                 new KeyValue(COMPONENT_NAME_KEY, componentName));
     }
 
-    public static long nowMicrosApproximate() {
+    static long nowMicrosApproximate() {
         return System.currentTimeMillis() * 1000;
     }
 }
