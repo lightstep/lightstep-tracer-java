@@ -1,48 +1,49 @@
 package com.lightstep.benchmark;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.shared.Options;
-
-import io.opentracing.NoopTracer;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
+import io.opentracing.NoopTracer;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+
 class BenchmarkClient {
-    static final String clientName = "java";
+    private static final long PRIME_WORK = 982451653;
 
-    BenchmarkClient(JRETracer testTracer, String baseUrl) {
-        this.baseUrl = baseUrl;
-        this.testTracer = testTracer;
-        this.objectMapper = new ObjectMapper();
-    }
-
-    String baseUrl;
-    JRETracer testTracer;
-    ObjectMapper objectMapper;
-
-    static String logPayloadStr;
+    private static final String LOG_PAYLOAD_STR;
 
     static {
         StringBuilder b = new StringBuilder();
         for (long i = 0; i < 1 << 20; i++) {
             b.append('A');
         }
-        logPayloadStr = b.toString();
+        LOG_PAYLOAD_STR = b.toString();
     }
 
-    static class Control {
+    private final String baseUrl;
+    private final JRETracer testTracer;
+    private final ObjectMapper objectMapper;
+
+    private BenchmarkClient(JRETracer testTracer, String baseUrl) {
+        this.baseUrl = baseUrl;
+        this.testTracer = testTracer;
+        this.objectMapper = new ObjectMapper();
+    }
+
+    /**
+     * Members must be public for Jackson.
+     */
+    @SuppressWarnings("WeakerAccess")
+    private static class Control {
         public int Concurrent;
         public long Work;
         public long Repeat;
@@ -52,28 +53,21 @@ class BenchmarkClient {
         public long NumLogs;
         public boolean Trace;
         public boolean Exit;
-        public boolean Profile;
     }
 
-    ;
-
-    static class Result {
+    private static class Result {
         double runTime;
         double flushTime;
         long sleepNanos;
         long answer;
     }
 
-    ;
-
-    static class OneThreadResult {
+    private static class OneThreadResult {
         long sleepNanos;
         long answer;
     }
 
-    ;
-
-    InputStream getUrlReader(String path) {
+    private InputStream getUrlReader(String path) {
         try {
             URL u = new URL(baseUrl + path);
             URLConnection c = u.openConnection();
@@ -81,14 +75,12 @@ class BenchmarkClient {
             c.setDoInput(true);
             c.getOutputStream().close();
             return c.getInputStream();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    <T> T postGetJson(String path, Class<T> cl) {
+    private <T> T postGetJson(String path, Class<T> cl) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(getUrlReader(path)))) {
             return objectMapper.readValue(br, cl);
         } catch (IOException e) {
@@ -96,11 +88,11 @@ class BenchmarkClient {
         }
     }
 
-    Control getControl() {
+    private Control getControl() {
         return postGetJson("/control", Control.class);
     }
 
-    void postResult(Result r) {
+    private void postResult(Result r) {
         StringBuilder rurl = new StringBuilder("/result?timing=");
         rurl.append(r.runTime);
         rurl.append("&flush=");
@@ -115,17 +107,15 @@ class BenchmarkClient {
         }
     }
 
-    static final long primeWork = 982451653;
-
-    long work(long n) {
-        long x = primeWork;
+    private long work(long n) {
+        long x = PRIME_WORK;
         for (; n != 0; --n) {
-            x *= primeWork;
+            x *= PRIME_WORK;
         }
         return x;
     }
 
-    OneThreadResult testBody(Control c, Tracer t) {
+    private OneThreadResult testBody(Control c, Tracer t) {
         OneThreadResult r = new OneThreadResult();
         r.sleepNanos = 0;
 
@@ -136,7 +126,7 @@ class BenchmarkClient {
             r.answer = work(c.Work);
 
             for (long l = 0; l < c.NumLogs; l++) {
-                span.log("testlog", logPayloadStr.substring(0, (int) c.BytesPerLog));
+                span.log("testlog", LOG_PAYLOAD_STR.substring(0, (int) c.BytesPerLog));
             }
 
             span.finish();
@@ -151,6 +141,7 @@ class BenchmarkClient {
                 long millis = sleepDebt / 1000000;
                 Thread.sleep(millis);
             } catch (InterruptedException e) {
+                // do nothing
             }
 
             long endSleep = System.nanoTime();
@@ -162,8 +153,8 @@ class BenchmarkClient {
         return r;
     }
 
-    Result runTest(Control c) {
-        Tracer tracer;
+    private Result runTest(final Control c) {
+        final Tracer tracer;
         if (c.Trace) {
             tracer = testTracer;
         } else {
@@ -175,13 +166,13 @@ class BenchmarkClient {
         Result res = new Result();
         int conc = c.Concurrent;
 
-        ArrayList<OneThreadResult> results = new ArrayList<OneThreadResult>();
+        final ArrayList<OneThreadResult> results = new ArrayList<>();
         long beginTest = System.nanoTime();
 
         if (conc == 1) {
             results.add(testBody(c, tracer));
         } else {
-            ArrayList<Thread> threads = new ArrayList<Thread>();
+            ArrayList<Thread> threads = new ArrayList<>();
             for (int i = 0; i < conc; i++) {
                 Thread th = new Thread() {
                     public void run() {
@@ -204,7 +195,7 @@ class BenchmarkClient {
         }
         long endTest = System.nanoTime();
         if (c.Trace) {
-            ((JRETracer) tracer).flush();
+            ((JRETracer) tracer).flush(Long.MAX_VALUE);
             res.flushTime = (System.nanoTime() - endTest) / 1e9;
         }
 
@@ -217,7 +208,7 @@ class BenchmarkClient {
         return res;
     }
 
-    void loop() {
+    private void loop() {
         while (true) {
             Control c = getControl();
 
@@ -230,13 +221,15 @@ class BenchmarkClient {
     }
 
     public static void main(String[] args) {
+        String collectorHost = "localhost";
+        int collectorPort = 8000;
         Options opts = new Options("notUsed").
-                withCollectorHost("localhost").
-                withCollectorPort(8000).
+                withCollectorHost(collectorHost).
+                withCollectorPort(collectorPort).
                 withCollectorEncryption(Options.Encryption.NONE).
                 withVerbosity(3);
         BenchmarkClient bc = new BenchmarkClient(new JRETracer(opts),
-                "http://" + opts.collectorHost + ":" + opts.collectorPort + "/");
+                "http://" + collectorHost + ":" + collectorPort + "/");
         bc.loop();
     }
 }
