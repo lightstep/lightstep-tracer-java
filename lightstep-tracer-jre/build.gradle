@@ -17,9 +17,31 @@ apply plugin: 'java'
 targetCompatibility = '1.7'
 sourceCompatibility = '1.7'
 
+configurations {
+    benchmarkCompile
+}
+
+sourceSets {
+    main {
+        java {
+        }
+    }
+    benchmark {
+        compileClasspath = configurations.benchmarkCompile
+    }
+}
+
 jar {
     baseName 'lightstep-tracer-jre'
     version = current_version
+    from sourceSets.main.output
+}
+
+task benchmarkJar(type: Jar) {
+    baseName 'lightstep-benchmark'
+    version = current_version
+    from sourceSets.benchmark.output
+    from { configurations.benchmarkCompile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -35,6 +57,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourcesJar
     archives javadocJar
+    archives benchmarkJar
 }
 
 // Defines the repositories need for dependencies below
@@ -50,6 +73,10 @@ repositories {
 dependencies {
     compile project(':common')
     testCompile 'junit:junit:4.11'
+
+    benchmarkCompile project(':lightstep-tracer-jre')
+    benchmarkCompile 'io.opentracing:opentracing-impl:0.16.0'
+    benchmarkCompile 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
 }
 
 tasks.matching {it instanceof Test}.all {
