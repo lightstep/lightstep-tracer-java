@@ -380,7 +380,8 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     /**
-     * Initiates a flush of data to the collectors.
+     * Initiates a flush of data to the collectors. Method does not return until the flush is
+     * complete, or has timed out.
      *
      * @param timeoutMillis The amount of time, in milliseconds, to allow for the flush to complete
      * @return True if the flush completed within the time allotted, false otherwise.
