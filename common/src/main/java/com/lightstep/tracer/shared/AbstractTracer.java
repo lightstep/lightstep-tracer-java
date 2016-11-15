@@ -379,10 +379,19 @@ public abstract class AbstractTracer implements Tracer {
         }
     }
 
-    public void flush() {
-        // TODO: flush() likely needs some form of synchronization mechanism to notify the caller
-        // when the flush is complete. For example, a promise, a callback, etc.
-        flushInternal(true);
+    /**
+     * Initiates a flush of data to the collectors.
+     *
+     * @param timeoutMillis The amount of time, in milliseconds, to allow for the flush to complete
+     * @return True if the flush completed within the time allotted, false otherwise.
+     */
+    public Boolean flush(long timeoutMillis) {
+        SimpleFuture<Boolean> flushFuture = flushInternal(true);
+        try {
+            return flushFuture.getWithTimeout(timeoutMillis);
+        } catch (InterruptedException e) {
+            return false;
+        }
     }
 
     protected abstract SimpleFuture<Boolean> flushInternal(boolean explicitRequest);
