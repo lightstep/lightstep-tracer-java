@@ -691,37 +691,6 @@ public abstract class AbstractTracer implements Tracer {
 
     protected abstract void printLogToConsole(InternalLogLevel level, String msg, Object payload);
 
-    /**
-     * Internal class used primarily for unit testing and debugging. This is not
-     * part of the OpenTracing API and is not a supported API.
-     */
-    public class Status {
-        public Map<String, String> tags;
-        ClientMetrics clientMetrics;
-
-        public Status() {
-            tags = new HashMap<>();
-        }
-    }
-
-    /**
-     * Internal method used primarily for unit testing and debugging. This is not
-     * part of the OpenTracing API and is not a supported API.
-     *
-     * Copies the internal state/status into an object that's easier to check
-     * against in unit tests.
-     */
-    public Status status() {
-        Status status = new Status();
-        synchronized (mutex) {
-            for (KeyValue pair : runtime.getAttrs()) {
-                status.tags.put(pair.getKey(), pair.getValue());
-            }
-            status.clientMetrics = new ClientMetrics(clientMetrics);
-        }
-        return status;
-    }
-
     protected boolean isComponentNameSet() {
         for (KeyValue keyValue : runtime.attrs) {
             if (COMPONENT_NAME_KEY.equals(keyValue.getKey())) {
