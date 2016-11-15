@@ -162,14 +162,9 @@ To then manually flush by using the LightStep tracer object directly:
 ((com.lightstep.tracer.android.Tracer)tracer).flush();
 ```
 
-### Disabling the report at exit
+### Flushing the report at exit
 
-By default, the library will send a final report of any remaining buffered data at process exit. To disable this behavior, set the following option:
-
-```java
-options = new com.lightstep.tracer.shared.Options("{your_access_token}")
-    .withDisableReportAtExit(true);
-```
+In order to send a final flush of the data prior to exit, clients should manually flush by using the LightStep tracer object as described above.
 
 ## Development info
 
