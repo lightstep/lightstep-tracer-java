@@ -80,9 +80,9 @@ public abstract class AbstractTracer implements Tracer {
     // Timestamp of the last recorded span. Used to terminate the reporting
     // loop thread if no new data has come in (which is necessary for clean
     // shutdown).
-    private AtomicLong lastNewSpanMillis;
+    private final AtomicLong lastNewSpanMillis;
     private ArrayList<SpanRecord> spans;
-    private ClockState clockState;
+    private final ClockState clockState;
     private ClientMetrics clientMetrics;
 
     // Should *NOT* attempt to take a span's lock while holding this lock.
