@@ -1,3 +1,6 @@
+import com.lightstep.tracer.shared.Options;
+
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,13 +15,15 @@ import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
 
 public class Simple {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, MalformedURLException {
         System.out.println("Starting Simple example...");
 
         final Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
-                new com.lightstep.tracer.shared.Options("{your_access_token}")
+                new Options.OptionsBuilder()
+                        .withAccessToken("{your_access_token}")
                         .withComponentName("JRE Simple")
                         .withVerbosity(4)
+                        .build()
         );
 
         // Create a simple span and delay for a while to ensure the reporting

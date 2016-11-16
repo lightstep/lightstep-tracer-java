@@ -220,14 +220,16 @@ class BenchmarkClient {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String collectorHost = "localhost";
         int collectorPort = 8000;
-        Options opts = new Options("notUsed").
+        Options opts = new Options.OptionsBuilder().
+                withAccessToken("notUsed").
                 withCollectorHost(collectorHost).
                 withCollectorPort(collectorPort).
-                withCollectorEncryption(Options.Encryption.NONE).
-                withVerbosity(3);
+                withCollectorProtocol("http").
+                withVerbosity(3).
+                build();
         BenchmarkClient bc = new BenchmarkClient(new JRETracer(opts),
                 "http://" + collectorHost + ":" + collectorPort + "/");
         bc.loop();

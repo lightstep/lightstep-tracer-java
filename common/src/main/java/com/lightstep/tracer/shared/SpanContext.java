@@ -10,8 +10,8 @@ public class SpanContext implements io.opentracing.SpanContext {
     private Map<String, String> baggage;
 
     SpanContext(String traceId, String spanId, Map<String, String> baggage) {
-        this.traceId = traceId == null ? AbstractTracer.generateGUID() : traceId;
-        this.spanId = spanId == null ? AbstractTracer.generateGUID() : spanId;
+        this.traceId = traceId == null ? RandomUtil.generateGUID() : traceId;
+        this.spanId = spanId == null ? RandomUtil.generateGUID() : spanId;
         this.baggage = baggage;
     }
 
