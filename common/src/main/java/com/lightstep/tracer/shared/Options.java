@@ -301,4 +301,30 @@ public final class Options {
             return new URL(collectorProtocol, collectorHost, port, COLLECTOR_PATH);
         }
     }
+
+    /**
+     * If this instance of Options has an overridden maxReportingIntervalMillis, returns this
+     * instance of Options with that value.
+     *
+     * If this instance of Options is using the default {@code DEFAULT_REPORTING_INTERVAL_MILLIS}
+     * then creates a new instance of Options and overrides maxReportingIntervalMillis with the
+     * provided value.
+     *
+     * @param value A new value for maxReportingIntervalMillis. Will only be used if this Options
+     *              object is current set to the default value for maxReportingIntervalMillis.
+     * @throws IllegalArgumentException If this Options object has an malformed collector url.
+     */
+    public Options setDefaultReportingIntervalMillis(int value) {
+        if (maxReportingIntervalMillis != DEFAULT_REPORTING_INTERVAL_MILLIS) {
+            return this;
+        }
+        try {
+            return new Options.OptionsBuilder(this).withMaxReportingIntervalMillis(value).build();
+        } catch (MalformedURLException e) {
+            // not possible given that we are constructing Options from a valid set of Options
+            throw new IllegalArgumentException("Unexpected error when building a new set of" +
+                    "options from a valid set of existing options. collectorUrl=" +
+                    this.collectorUrl);
+        }
+    }
 }

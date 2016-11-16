@@ -8,7 +8,7 @@ import static com.lightstep.tracer.shared.Version.LIGHTSTEP_TRACER_VERSION;
 
 public class JRETracer extends AbstractTracer {
 
-    private static final int DEFAULT_REPORTING_INTERVAL_MILLIS = 2500;
+    private static final int JRE_DEFAULT_REPORTING_INTERVAL_MILLIS = 2500;
 
     private static class JavaTracerHolder {
         private static final JRETracer INSTANCE = new JRETracer(null);
@@ -25,7 +25,7 @@ public class JRETracer extends AbstractTracer {
     }
 
     public JRETracer(Options options) {
-        super(AbstractTracer.setDefaultReportingIntervalMillis(options, DEFAULT_REPORTING_INTERVAL_MILLIS));
+        super(options.setDefaultReportingIntervalMillis(JRE_DEFAULT_REPORTING_INTERVAL_MILLIS));
         addStandardTracerTags();
     }
 

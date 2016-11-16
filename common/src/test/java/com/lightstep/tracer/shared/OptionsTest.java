@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class OptionsTest {
@@ -128,6 +129,22 @@ public class OptionsTest {
         String guid = options.getGuid();
         assertNotNull(guid);
         assertFalse(guid.isEmpty());
+    }
+
+    @Test
+    public void testSetDefaultReportingIntervalMillis_alreadySet() throws Exception {
+        Options oldOptions = createFullyPopulatedOptions();
+        Options newOptions = oldOptions.setDefaultReportingIntervalMillis(111);
+        assertSame(oldOptions, newOptions);
+        assertEquals(MAX_REPORTING_INTERVAL_MILLIS, newOptions.maxReportingIntervalMillis);
+    }
+
+    @Test
+    public void testSetDefaultReportingIntervalMillis_notSet() throws Exception {
+        Options oldOptions = new Options.OptionsBuilder().build();
+        Options newOptions = oldOptions.setDefaultReportingIntervalMillis(111);
+        assertNotSame(oldOptions, newOptions);
+        assertEquals(111, newOptions.maxReportingIntervalMillis);
     }
 
     private Options createFullyPopulatedOptions() throws Exception {

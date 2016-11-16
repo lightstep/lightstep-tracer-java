@@ -151,24 +151,6 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     /**
-     * setDefaultReportingIntervalMillis modifies the Options' maximum
-     * reporting interval if the user has not specified a value.
-     */
-    protected static Options setDefaultReportingIntervalMillis(Options input, int value) {
-        if (input.maxReportingIntervalMillis != 0) {
-            return input;
-        }
-        try {
-            return new Options.OptionsBuilder(input).withMaxReportingIntervalMillis(value).build();
-        } catch (MalformedURLException e) {
-            // not possible given that we are constructing Options from a valid set of Options
-            throw new IllegalArgumentException("Unexpected error when building a new set of" +
-                    "options from a valid set of existing options. collectorUrl=" +
-                    input.collectorUrl);
-        }
-    }
-
-    /**
      * Runs a relatively frequent loop in a separate thread to check if the
      * library should flush its current buffer or if the loop should stop.
      *
