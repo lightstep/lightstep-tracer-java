@@ -576,20 +576,6 @@ public abstract class AbstractTracer implements Tracer {
 
     protected abstract void printLogToConsole(InternalLogLevel level, String msg, Object payload);
 
-    protected boolean isComponentNameSet() {
-        for (KeyValue keyValue : runtime.attrs) {
-            if (COMPONENT_NAME_KEY.equals(keyValue.getKey())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected void setComponentName(String componentName) {
-        runtime.addToAttrs(
-                new KeyValue(COMPONENT_NAME_KEY, componentName));
-    }
-
     static long nowMicrosApproximate() {
         return System.currentTimeMillis() * 1000;
     }

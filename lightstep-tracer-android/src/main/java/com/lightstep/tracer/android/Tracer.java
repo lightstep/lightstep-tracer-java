@@ -84,13 +84,6 @@ public class Tracer extends AbstractTracer {
         addTracerTag(LIGHTSTEP_TRACER_PLATFORM_KEY, "android");
         addTracerTag(LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY, String.valueOf(android.os.Build.VERSION.SDK_INT));
         addTracerTag(LIGHTSTEP_TRACER_VERSION_KEY, LIGHTSTEP_TRACER_VERSION);
-
-        // Check to see if component name is set and, if not, use the app process
-        // or package name.
-        boolean found = isComponentNameSet();
-        if (!found) {
-            setComponentName(ctx.getApplicationInfo().processName);
-        }
     }
 
     protected void printLogToConsole(InternalLogLevel level, String msg, Object payload) {
