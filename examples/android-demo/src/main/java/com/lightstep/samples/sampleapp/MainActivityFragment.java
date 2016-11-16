@@ -39,13 +39,14 @@ import io.opentracing.Tracer;
 public class MainActivityFragment extends Fragment {
 
     private static final String TAG = "LightStep Example";
+    public static final String ACCESS_TOKEN = "{your_access_token}";
 
     private Tracer tracer;
     private final Options options;
 
     public MainActivityFragment() throws MalformedURLException {
         options = new Options.OptionsBuilder().
-                withAccessToken("{your_access_token}").
+                withAccessToken(ACCESS_TOKEN).
                 withVerbosity(4).
                 build();
     }
@@ -275,7 +276,7 @@ public class MainActivityFragment extends Fragment {
             Map<String, String> map = new HashMap<>();
             map.put("LightStep-Trace-GUID", ctxImp.getTraceId());
             map.put("LightStep-Parent-GUID", ctxImp.getSpanId());
-            map.put("LightStep-Access-Token", span.getTracer().getAccessToken());
+            map.put("LightStep-Access-Token", span.generateTraceURL());
             return map;
         }
     }

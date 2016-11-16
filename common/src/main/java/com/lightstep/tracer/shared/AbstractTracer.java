@@ -150,12 +150,6 @@ public abstract class AbstractTracer implements Tracer {
         reportingThread.start();
     }
 
-    public String getAccessToken() {
-        synchronized (mutex) {
-            return auth.getAccess_token();
-        }
-    }
-
     /**
      * setDefaultReportingIntervalMillis modifies the Options' maximum
      * reporting interval if the user has not specified a value.
@@ -616,5 +610,11 @@ public abstract class AbstractTracer implements Tracer {
 
     static long nowMicrosApproximate() {
         return System.currentTimeMillis() * 1000;
+    }
+
+    String generateTraceURL(String spanId) {
+        return "https://app.lightstep.com/" + auth.access_token +
+                "/trace?span_guid=" + spanId +
+                "&at_micros=" + (System.currentTimeMillis() * 1000);
     }
 }

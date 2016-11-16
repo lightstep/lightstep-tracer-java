@@ -114,4 +114,14 @@ public class AbstractTracerTest {
         undertest.flushResult = new SimpleFuture<>(false);
         assertFalse(undertest.flush(20000L));
     }
+
+    @Test
+    public void testGenerateTraceURL() throws Exception {
+        String spanId = "span789";
+        StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
+        String result = undertest.generateTraceURL(spanId);
+        String expectedUrlStart = "https://app.lightstep.com/" + ACCESS_TOKEN + "/trace?span_guid="
+                + spanId + "&at_micros=";
+        assertTrue("Unexpected trace url: " + result, result.startsWith(expectedUrlStart));
+    }
 }
