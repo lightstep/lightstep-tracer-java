@@ -26,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,10 +39,16 @@ import io.opentracing.Tracer;
 public class MainActivityFragment extends Fragment {
 
     private static final String TAG = "LightStep Example";
+    public static final String ACCESS_TOKEN = "{your_access_token}";
 
     private Tracer tracer;
+    private final Options options;
 
-    public MainActivityFragment() {
+    public MainActivityFragment() throws MalformedURLException {
+        options = new Options.OptionsBuilder().
+                withAccessToken(ACCESS_TOKEN).
+                withVerbosity(4).
+                build();
     }
 
     @Override
@@ -50,7 +57,7 @@ public class MainActivityFragment extends Fragment {
         // Initialize tracer
         tracer = new com.lightstep.tracer.android.Tracer(
                 getContext(),
-                new Options("{your_access_token}").withVerbosity(4));
+                options);
         Log.d(TAG, "Tracer successfully initialized!");
 
         View fragmentView = (View) inflater.inflate(R.layout.fragment_main, container, false);
@@ -269,7 +276,7 @@ public class MainActivityFragment extends Fragment {
             Map<String, String> map = new HashMap<>();
             map.put("LightStep-Trace-GUID", ctxImp.getTraceId());
             map.put("LightStep-Parent-GUID", ctxImp.getSpanId());
-            map.put("LightStep-Access-Token", span.getTracer().getAccessToken());
+            map.put("LightStep-Access-Token", span.generateTraceURL());
             return map;
         }
     }

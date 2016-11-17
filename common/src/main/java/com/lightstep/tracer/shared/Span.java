@@ -182,11 +182,7 @@ public class Span implements io.opentracing.Span {
     }
 
     public String generateTraceURL() {
-        synchronized (mutex) {
-            return "https://app.lightstep.com/" + tracer.getAccessToken() +
-                    "/trace?span_guid=" + context.getSpanId() +
-                    "&at_micros=" + (System.currentTimeMillis() * 1000);
-        }
+        return tracer.generateTraceURL(context.getSpanId());
     }
 
     private long nowMicros() {

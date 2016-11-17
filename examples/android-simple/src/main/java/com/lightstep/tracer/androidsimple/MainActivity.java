@@ -11,21 +11,29 @@ import android.view.View;
 
 import com.lightstep.tracer.shared.Options;
 
+import java.net.MalformedURLException;
+
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 
 public class MainActivity extends AppCompatActivity {
 
     private Tracer tracer;
+    private final Options options;
+
+    public MainActivity() throws MalformedURLException {
+        options = new Options.OptionsBuilder().
+                withAccessToken("{your_access_token}").
+                build();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         tracer = new com.lightstep.tracer.android.Tracer(
                 this,
-                new Options("{your_access_token}"));
+                options);
 
         final Span span = tracer.buildSpan("showing button").start();
 

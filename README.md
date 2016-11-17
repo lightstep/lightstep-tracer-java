@@ -60,7 +60,10 @@ protected void onCreate(Bundle savedInstanceState) {
     // (or anywhere with a valid android.content.Context).
     this.tracer = new com.lightstep.tracer.android.Tracer(
          this,
-         new com.lightstep.tracer.shared.Options("{your_access_token}"));
+         new com.lightstep.tracer.shared.Options.OptionsBuilder()
+            .withAccessToken("{your_access_token}")
+            .build()
+    );
 
     // Start and finish a Span
     Span span = this.tracer.buildSpan("my_span").start();
@@ -113,7 +116,9 @@ import io.opentracing.Tracer;
 
 // Initialize the OpenTracing Tracer with LightStep's implementation
 Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
-    new com.lightstep.tracer.shared.Options("{your_access_token}")
+         new com.lightstep.tracer.shared.Options.OptionsBuilder()
+            .withAccessToken("{your_access_token}")
+            .build()
 );
 
 // Start and finish a Span
@@ -139,11 +144,14 @@ For reference, the generated LightStep documentation is also available:
 
 ### Setting a custom component name
 
-To set the name used in the LightStep UI for this instance of the Tracer, call `withComponentName()` on the `Options` object:
+To set the name used in the LightStep UI for this instance of the Tracer, call `withComponentName()` on the `OptionsBuilder` object:
 
 ```java
-options = new com.lightstep.tracer.shared.Options("{your_access_token}")
-    .withComponentName("your_custom_name");
+options = new com.lightstep.tracer.shared.Options.OptionsBuilder()
+                      .withAccessToken("{your_access_token}")
+                      .withComponentName("your_custom_name")
+                      .build();
+
 ```
 
 ### Disabling the reporting loop
@@ -151,8 +159,10 @@ options = new com.lightstep.tracer.shared.Options("{your_access_token}")
 By default, the Java library does a report of any buffered data on a fairly regular interval. To disable this behavior and rely only on explicit calls to `flush()` to report data, initialize with:
 
 ```java
-options = new com.lightstep.tracer.shared.Options("{your_access_token}")
-    .withDisableReportingLoop(true);
+options = new com.lightstep.tracer.shared.Options.OptionsBuilder()
+                      .withAccessToken("{your_access_token}")
+                      .withDisableReportingLoop(true)
+                      .build();
 ```
 
 To then manually flush by using the LightStep tracer object directly:

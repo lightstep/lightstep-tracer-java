@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SpanTest {
-    private static final String ACCESS_TOKEN = "access123";
     private static final String TRACE_ID = "trace456";
     private static final String SPAN_ID = "span789";
 
@@ -44,8 +43,6 @@ public class SpanTest {
 
     @Before
     public void setup() {
-        when(abstractTracer.getAccessToken()).thenReturn(ACCESS_TOKEN);
-
         spanContext = new SpanContext(TRACE_ID, SPAN_ID, null);
         spanRecord = new SpanRecord();
         undertest = new Span(abstractTracer, spanContext, spanRecord, 0L);
@@ -385,10 +382,12 @@ public class SpanTest {
 
     @Test
     public void testGenerateTraceURL() {
+        String expecteResult = "https://something.com/";
+        when(abstractTracer.generateTraceURL(SPAN_ID)).thenReturn(expecteResult);
+
         String result = undertest.generateTraceURL();
-        assertTrue("Unexpected trace url: " + result,
-                result.startsWith("https://app.lightstep.com/" + ACCESS_TOKEN + "/trace?span_guid="
-                        + SPAN_ID + "&at_micros="));
+
+        assertEquals(expecteResult, result);
     }
 
     @Test

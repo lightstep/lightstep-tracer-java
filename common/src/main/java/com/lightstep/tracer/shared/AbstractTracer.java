@@ -15,13 +15,11 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.THttpClient;
 import org.apache.thrift.transport.TTransport;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
-import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicLong;
 
 import io.opentracing.Tracer;
@@ -35,27 +33,15 @@ import static com.lightstep.tracer.shared.Options.VERBOSITY_FIRST_ERROR_ONLY;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_INFO;
 
 public abstract class AbstractTracer implements Tracer {
+    private static final int DEFAULT_MAX_BUFFERED_SPANS = 1000;
+
     // Maximum interval between reports
     private static final long DEFAULT_CLOCK_STATE_INTERVAL_MILLIS = 500;
-    private static final int DEFAULT_MAX_BUFFERED_SPANS = 1000;
     private static final int DEFAULT_REPORT_TIMEOUT_MILLIS = 10 * 1000;
-    private static final long DEFAULT_REPORTING_INTERVAL_MILLIS = 3000;
-
-    private static final String DEFAULT_HOST = "collector.lightstep.com";
-    private static final int DEFAULT_SECURE_PORT = 443;
-    private static final int DEFAULT_PLAINTEXT_PORT = 80;
-    private static final String COLLECTOR_PATH = "/_rpc/v1/reports/binary";
 
     protected static final String LIGHTSTEP_TRACER_PLATFORM_KEY = "lightstep.tracer_platform";
     protected static final String LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY = "lightstep.tracer_platform_version";
     protected static final String LIGHTSTEP_TRACER_VERSION_KEY = "lightstep.tracer_version";
-    private static final String LEGACY_COMPONENT_NAME_KEY = "component_name";
-
-    @SuppressWarnings("WeakerAccess")
-    public static final String COMPONENT_NAME_KEY = "lightstep.component_name";
-
-    @SuppressWarnings("WeakerAccess")
-    public static final String GUID_KEY = "lightstep.guid";
 
     /**
      * For mapping internal logs to Android log levels without importing Android
@@ -68,21 +54,23 @@ public abstract class AbstractTracer implements Tracer {
         ERROR
     }
 
-    // copied from options
-    private final int maxBufferedSpans;
     private final int verbosity;
-    private int visibleErrorCount;
-
     private final Auth auth;
     private final Runtime runtime;
+
+    /**
+     * False, until the first error has been logged, after which it is true, and if verbosity says
+     * not to log more than one error, no more errors will be logged.
+     */
+    private boolean firstErrorLogged = false;
     private URL collectorURL;
 
     // Timestamp of the last recorded span. Used to terminate the reporting
     // loop thread if no new data has come in (which is necessary for clean
     // shutdown).
-    private AtomicLong lastNewSpanMillis;
+    private final AtomicLong lastNewSpanMillis;
     private ArrayList<SpanRecord> spans;
-    private ClockState clockState;
+    private final ClockState clockState;
     private ClientMetrics clientMetrics;
 
     // Should *NOT* attempt to take a span's lock while holding this lock.
@@ -105,75 +93,33 @@ public abstract class AbstractTracer implements Tracer {
         verbosity = options.verbosity;
 
         // TODO sanity check options
-        maxBufferedSpans = options.maxBufferedSpans > 0 ?
-                options.maxBufferedSpans : DEFAULT_MAX_BUFFERED_SPANS;
         lastNewSpanMillis = new AtomicLong(System.currentTimeMillis());
-        spans = new ArrayList<>(maxBufferedSpans);
+        spans = new ArrayList<>(DEFAULT_MAX_BUFFERED_SPANS);
 
         clockState = new ClockState();
         clientMetrics = new ClientMetrics();
-        visibleErrorCount = 0;
 
         auth = new Auth();
         auth.setAccess_token(options.accessToken);
 
-        // Set some default attributes if not found in options
-        if (options.tags.get(COMPONENT_NAME_KEY) == null) {
-            // TODO: support other ways of setting component name by default
-            String s = System.getProperty("sun.java.command");
-            if (s != null) {
-                StringTokenizer st = new StringTokenizer(s);
-                if (st.hasMoreTokens()) {
-                    String name = st.nextToken();
-                    options.tags.put(COMPONENT_NAME_KEY, name);
-                    options.tags.put(LEGACY_COMPONENT_NAME_KEY, name);
-                }
-            }
-        }
-
-        String guid;
-        if (options.tags.get(GUID_KEY) == null) {
-            guid = generateGUID();
-            options.tags.put(GUID_KEY, guid);
-        } else {
-            guid = options.tags.get(GUID_KEY).toString();
-        }
-
         runtime = new Runtime();
-        runtime.setGuid(guid);
+        runtime.setGuid(options.getGuid());
+
         // Unfortunately Java7 has no way to generate a timestamp that's both
         // precise (a la System.nanoTime()) and absolute (a la
         // System.currentTimeMillis()). We store an absolute start timestamp but at
         // least get a precise duration at Span.finish() time via
         // startTimestampRelativeNanos (search for it below).
         runtime.setStart_micros(nowMicrosApproximate());
+
         for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
             addTracerTag(entry.getKey(), entry.getValue().toString());
         }
 
-        String host = options.collectorHost != null ? options.collectorHost : DEFAULT_HOST;
-        int port;
-        String scheme = "https";
-        if (options.collectorEncryption == Options.Encryption.NONE) {
-            scheme = "http";
-            port = options.collectorPort > 0 ? options.collectorPort : DEFAULT_PLAINTEXT_PORT;
-        } else {
-            port = options.collectorPort > 0 ? options.collectorPort : DEFAULT_SECURE_PORT;
-        }
-        try {
-            collectorURL = new URL(scheme, host, port, COLLECTOR_PATH);
-        } catch (MalformedURLException e) {
-            error("Collector URL malformed. Disabling tracer.", e);
-            // Preemptively disable this tracer.
-            disable();
-            return;
-        }
+        collectorURL = options.collectorUrl;
 
         if (!options.disableReportingLoop) {
-            long intervalMillis = options.maxReportingIntervalMillis > 0 ?
-                    options.maxReportingIntervalMillis :
-                    DEFAULT_REPORTING_INTERVAL_MILLIS;
-            reportingLoop = new ReportingLoop(intervalMillis);
+            reportingLoop = new ReportingLoop(options.maxReportingIntervalMillis);
         }
     }
 
@@ -203,23 +149,6 @@ public abstract class AbstractTracer implements Tracer {
         }
         reportingThread = new Thread(reportingLoop);
         reportingThread.start();
-    }
-
-    public String getAccessToken() {
-        synchronized (mutex) {
-            return auth.getAccess_token();
-        }
-    }
-
-    /**
-     * setDefaultReportingIntervalMillis modifies the Options' maximum
-     * reporting interval if the user has not specified a value.
-     */
-    protected static Options setDefaultReportingIntervalMillis(Options input, int value) {
-        if (input.maxReportingIntervalMillis != 0) {
-            return input;
-        }
-        return input.clone().withMaxReportingIntervalMillis(value);
     }
 
     /**
@@ -460,7 +389,7 @@ public abstract class AbstractTracer implements Tracer {
                 // Copy the reference to the spans and make a new array for other spans.
                 spans = this.spans;
                 clientMetrics = this.clientMetrics;
-                this.spans = new ArrayList<>(maxBufferedSpans);
+                this.spans = new ArrayList<>(DEFAULT_MAX_BUFFERED_SPANS);
                 this.clientMetrics = new ClientMetrics();
                 debug(String.format("Sending report, %d spans", spans.size()));
             } else {
@@ -557,7 +486,7 @@ public abstract class AbstractTracer implements Tracer {
         lastNewSpanMillis.set(System.currentTimeMillis());
 
         synchronized (mutex) {
-            if (spans.size() >= maxBufferedSpans) {
+            if (spans.size() >= DEFAULT_MAX_BUFFERED_SPANS) {
                 clientMetrics.spansDropped++;
             } else {
                 spans.add(span);
@@ -565,31 +494,6 @@ public abstract class AbstractTracer implements Tracer {
 
             maybeStartReporting();
         }
-    }
-
-    /**
-     * Thread-specific random number generators. Each is seeded with the thread
-     * ID, so the sequence of pseudo-random numbers are unique between threads.
-     *
-     * See http://stackoverflow.com/questions/2546078/java-random-long-number-in-0-x-n-range
-     */
-    private static ThreadLocal<Random> random = new ThreadLocal<Random>() {
-        @Override
-        protected Random initialValue() {
-            // It'd be nice to get the process ID into the mix, but there's no clear
-            // cross-platform, Java 6-compatible way to determine that
-            return new Random(
-                    System.currentTimeMillis() *
-                            (System.nanoTime() % 1000000) *
-                            Thread.currentThread().getId() *
-                            (long) (1024 * Math.random()));
-        }
-    };
-
-    static String generateGUID() {
-        // Note that ThreadLocalRandom is a singleton, thread safe Random Generator
-        long guid = AbstractTracer.random.get().nextLong();
-        return Long.toHexString(guid);
     }
 
     protected void addTracerTag(String key, String value) {
@@ -634,6 +538,7 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * Internal logging.
      */
+    @SuppressWarnings("WeakerAccess")
     protected void warn(String s) {
         warn(s, null);
     }
@@ -641,6 +546,7 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * Internal warning.
      */
+    @SuppressWarnings("WeakerAccess")
     protected void warn(String msg, Object payload) {
         if (verbosity < VERBOSITY_INFO) {
             return;
@@ -662,30 +568,22 @@ public abstract class AbstractTracer implements Tracer {
         if (verbosity < VERBOSITY_FIRST_ERROR_ONLY) {
             return;
         }
-        if (verbosity == VERBOSITY_FIRST_ERROR_ONLY && visibleErrorCount > 0) {
+        if (verbosity == VERBOSITY_FIRST_ERROR_ONLY && firstErrorLogged) {
             return;
         }
-        visibleErrorCount++;
+        firstErrorLogged = true;
         printLogToConsole(ERROR, msg, payload);
     }
 
     protected abstract void printLogToConsole(InternalLogLevel level, String msg, Object payload);
 
-    protected boolean isComponentNameSet() {
-        for (KeyValue keyValue : runtime.attrs) {
-            if (COMPONENT_NAME_KEY.equals(keyValue.getKey())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected void setComponentName(String componentName) {
-        runtime.addToAttrs(
-                new KeyValue(COMPONENT_NAME_KEY, componentName));
-    }
-
     static long nowMicrosApproximate() {
         return System.currentTimeMillis() * 1000;
+    }
+
+    String generateTraceURL(String spanId) {
+        return "https://app.lightstep.com/" + auth.access_token +
+                "/trace?span_guid=" + spanId +
+                "&at_micros=" + (System.currentTimeMillis() * 1000);
     }
 }

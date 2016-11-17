@@ -21,9 +21,11 @@ public class AbstractTracerTest {
      * Provides an implementation of AbstractTracer (for use in testing) that is configured to
      * the provided verbosity level.
      */
-    private StubTracer createTracer(int verbosity) {
-        Options options = new Options(ACCESS_TOKEN);
-        options.withVerbosity(verbosity);
+    private StubTracer createTracer(int verbosity) throws Exception {
+        Options options = new Options.OptionsBuilder()
+                .withAccessToken(ACCESS_TOKEN)
+                .withVerbosity(verbosity)
+                .build();
         return createTracer(options);
     }
 
@@ -36,7 +38,7 @@ public class AbstractTracerTest {
     }
 
     @Test
-    public void testVerbosityDebug() {
+    public void testVerbosityDebug() throws Exception {
         StubTracer undertest = createTracer(VERBOSITY_DEBUG);
         callAllLogMethods(undertest);
 
@@ -45,7 +47,7 @@ public class AbstractTracerTest {
     }
 
     @Test
-    public void testVerbosityInfo() {
+    public void testVerbosityInfo() throws Exception {
         StubTracer undertest = createTracer(VERBOSITY_INFO);
         callAllLogMethods(undertest);
 
@@ -54,7 +56,7 @@ public class AbstractTracerTest {
     }
 
     @Test
-    public void testVerbosityErrorsOnly() {
+    public void testVerbosityErrorsOnly() throws Exception {
         StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
         callAllLogMethods(undertest);
         undertest.error(TEST_MSG); // make an extra call to error, all error calls should be logged
@@ -64,7 +66,7 @@ public class AbstractTracerTest {
     }
 
     @Test
-    public void testVerbosityNone() {
+    public void testVerbosityNone() throws Exception {
         StubTracer undertest = createTracer(VERBOSITY_NONE);
         callAllLogMethods(undertest);
 
@@ -73,7 +75,7 @@ public class AbstractTracerTest {
     }
 
     @Test
-    public void testVerbosityFirstErrorOnly() {
+    public void testVerbosityFirstErrorOnly() throws Exception {
         StubTracer undertest = createTracer(VERBOSITY_FIRST_ERROR_ONLY);
         callAllLogMethods(undertest);
         undertest.error(TEST_MSG); // make a second call to error
@@ -93,23 +95,33 @@ public class AbstractTracerTest {
     }
 
     @Test
-    public void testFlush_timeoutOccurs() {
+    public void testFlush_timeoutOccurs() throws Exception {
         StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
         undertest.flushResult = new SimpleFuture<>();
         assertNull(undertest.flush(1L));
     }
 
     @Test
-    public void testFlush_noTimeoutSuccess() {
+    public void testFlush_noTimeoutSuccess() throws Exception {
         StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
         undertest.flushResult = new SimpleFuture<>(true);
         assertTrue(undertest.flush(20000L));
     }
 
     @Test
-    public void testFlush_noTimeoutFailure() {
+    public void testFlush_noTimeoutFailure() throws Exception {
         StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
         undertest.flushResult = new SimpleFuture<>(false);
         assertFalse(undertest.flush(20000L));
+    }
+
+    @Test
+    public void testGenerateTraceURL() throws Exception {
+        String spanId = "span789";
+        StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
+        String result = undertest.generateTraceURL(spanId);
+        String expectedUrlStart = "https://app.lightstep.com/" + ACCESS_TOKEN + "/trace?span_guid="
+                + spanId + "&at_micros=";
+        assertTrue("Unexpected trace url: " + result, result.startsWith(expectedUrlStart));
     }
 }
