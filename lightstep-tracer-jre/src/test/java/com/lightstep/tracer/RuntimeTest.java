@@ -1,4 +1,4 @@
-package com.lightstep.tracer.jre;
+package com.lightstep.tracer;
 
 import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.shared.Options;
