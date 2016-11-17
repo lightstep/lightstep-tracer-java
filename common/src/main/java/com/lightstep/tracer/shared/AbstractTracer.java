@@ -15,7 +15,6 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.THttpClient;
 import org.apache.thrift.transport.TTransport;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ import io.opentracing.propagation.TextMap;
 
 import static com.lightstep.tracer.shared.AbstractTracer.InternalLogLevel.DEBUG;
 import static com.lightstep.tracer.shared.AbstractTracer.InternalLogLevel.ERROR;
-import static com.lightstep.tracer.shared.Options.COMPONENT_NAME_KEY;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_DEBUG;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_FIRST_ERROR_ONLY;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_INFO;
@@ -60,7 +58,11 @@ public abstract class AbstractTracer implements Tracer {
     private final Auth auth;
     private final Runtime runtime;
 
-    private int visibleErrorCount;
+    /**
+     * False, until the first error has been logged, after which it is true, and if verbosity says
+     * not to log more than one error, no more errors will be logged.
+     */
+    private boolean firstErrorLogged = false;
     private URL collectorURL;
 
     // Timestamp of the last recorded span. Used to terminate the reporting
@@ -96,7 +98,6 @@ public abstract class AbstractTracer implements Tracer {
 
         clockState = new ClockState();
         clientMetrics = new ClientMetrics();
-        visibleErrorCount = 0;
 
         auth = new Auth();
         auth.setAccess_token(options.accessToken);
@@ -567,10 +568,10 @@ public abstract class AbstractTracer implements Tracer {
         if (verbosity < VERBOSITY_FIRST_ERROR_ONLY) {
             return;
         }
-        if (verbosity == VERBOSITY_FIRST_ERROR_ONLY && visibleErrorCount > 0) {
+        if (verbosity == VERBOSITY_FIRST_ERROR_ONLY && firstErrorLogged) {
             return;
         }
-        visibleErrorCount++;
+        firstErrorLogged = true;
         printLogToConsole(ERROR, msg, payload);
     }
 
