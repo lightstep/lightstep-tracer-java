@@ -1,3 +1,4 @@
+import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.shared.Options;
 
 import java.net.MalformedURLException;
@@ -18,13 +19,12 @@ public class Simple {
     public static void main(String[] args) throws InterruptedException, MalformedURLException {
         System.out.println("Starting Simple example...");
 
-        final Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
-                new Options.OptionsBuilder()
-                        .withAccessToken("{your_access_token}")
-                        .withComponentName("JRE Simple")
-                        .withVerbosity(4)
-                        .build()
-        );
+        Options options = new Options.OptionsBuilder()
+                .withAccessToken("{your_access_token}")
+                .withComponentName("JRE Simple")
+                .withVerbosity(4)
+                .build();
+        final Tracer tracer = new JRETracer(options);
 
         // Create a simple span and delay for a while to ensure the reporting
         // loop works as expected

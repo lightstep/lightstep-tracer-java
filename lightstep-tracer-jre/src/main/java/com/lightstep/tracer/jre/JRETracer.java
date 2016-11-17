@@ -13,7 +13,7 @@ public class JRETracer extends AbstractTracer {
 
     private static final int JRE_DEFAULT_REPORTING_INTERVAL_MILLIS = 2500;
 
-    private final Logger logger = LoggerFactory.getLogger(JRETracer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JRETracer.class);
 
     private static class JavaTracerHolder {
         private static final JRETracer INSTANCE = new JRETracer(null);
@@ -46,16 +46,16 @@ public class JRETracer extends AbstractTracer {
         }
         switch (level) {
             case DEBUG:
-                logger.debug(s);
+                LOGGER.debug(s);
                 break;
             case INFO:
-                logger.info(s);
+                LOGGER.info(s);
                 break;
             case WARN:
-                logger.warn(s);
+                LOGGER.warn(s);
                 break;
             case ERROR:
-                logger.error(s);
+                LOGGER.error(s);
                 break;
         }
     }
