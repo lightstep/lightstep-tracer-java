@@ -3,7 +3,7 @@
 
 ### BREAKING CHANGES
 
-* *withDisableReportOnExit* method has been removed from Options. Clients should instead call *AbstractTracer.flush()* on exit.
+* *withDisableReportOnExit* method has been removed from Options. The standard behavior now is NOT to disable report on exit. Clients should instead call *AbstractTracer.flush()* on exit.
 * Options can no longer be constructed directly by clients. You must use the Options.OptionsBuilder which will ensure your settings are valid and will set defaults where needed.
  
 ```java
