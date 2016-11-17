@@ -1,7 +1,8 @@
 package com.lightstep.tracer.jre;
 
-import com.lightstep.tracer.jre.JRETracer;
+import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.shared.Options;
+import com.lightstep.tracer.shared.Status;
 import com.lightstep.tracer.thrift.KeyValue;
 import com.lightstep.tracer.thrift.SpanRecord;
 
@@ -14,56 +15,61 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
-import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapExtractAdapter;
 
-import static com.lightstep.tracer.shared.Options.Encryption.NONE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static com.lightstep.tracer.shared.AbstractTracer.DEFAULT_MAX_BUFFERED_SPANS;
 import static io.opentracing.propagation.Format.Builtin.HTTP_HEADERS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class RuntimeTest {
 
     @Test
     public void tracerHasStandardTags() throws Exception {
         JRETracer tracer = new JRETracer(
-                new Options("{your_access_token}"));
+                new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
 
-        JRETracer.Status status = tracer.status();
+        Status status = tracer.status();
 
         // Check standard tags
-        assertEquals(status.tags.containsKey("lightstep.component_name"), true);
-        assertEquals(status.tags.containsKey("lightstep.guid"), true);
-        assertEquals(status.tags.get("lightstep.tracer_platform"), "jre");
-        assertEquals(status.tags.containsKey("lightstep.tracer_platform_version"), true);
-        assertEquals(status.tags.containsKey("lightstep.tracer_version"), true);
-        assertEquals(status.tags.containsKey("lightstep.this_doesnt_exist"), false);
+        assertTrue(status.hasTag("lightstep.component_name"));
+        assertTrue(status.hasTag("lightstep.guid"));
+        assertEquals("jre", status.getTag("lightstep.tracer_platform"));
+        assertTrue(status.hasTag("lightstep.tracer_platform_version"));
+        assertTrue(status.hasTag("lightstep.tracer_version"));
+        assertFalse(status.hasTag("lightstep.this_doesnt_exist"));
     }
 
     @Test
     public void tracerSupportsWithComponentName() throws Exception {
-        JRETracer tracer = new JRETracer(
-                new Options("{your_access_token}")
-                        .withComponentName("my_component"));
+        Options options = new Options.OptionsBuilder()
+                .withAccessToken("{your_access_token}")
+                .withComponentName("my_component")
+                .build();
+        JRETracer tracer = new JRETracer(options);
 
-        JRETracer.Status status = tracer.status();
-        assertEquals(status.tags.get("lightstep.component_name"), "my_component");
+        Status status = tracer.status();
+        assertEquals("my_component", status.getTag("lightstep.component_name"));
     }
 
     @Test
-    public void tracerOptionsAreSupported() {
+    public void tracerOptionsAreSupported() throws Exception {
         // Ensure all the expected option methods are there and support
         // chaining.
         Options options =
-                new Options("{your_access_token}")
+                new Options.OptionsBuilder()
+                        .withAccessToken("{your_access_token}")
                         .withCollectorHost("localhost")
                         .withCollectorPort(4321)
-                        .withCollectorEncryption(NONE)
+                        .withCollectorProtocol("https")
                         .withVerbosity(2)
                         .withTag("my_tracer_tag", "zebra_stripes")
-                        .withMaxReportingIntervalMillis(30000);
+                        .withMaxReportingIntervalMillis(30000)
+                        .build();
 
-        JRETracer tracer = new JRETracer(options);
+        new JRETracer(options);
     }
 
     /**
@@ -73,11 +79,11 @@ public class RuntimeTest {
      * is not totally broken.
      */
     @Test
-    public void spanUniqueGUIDsTestt() {
-        final Tracer tracer = new JRETracer(
-                new Options("{your_access_token}"));
+    public void spanUniqueGUIDsTestt() throws Exception {
+        final JRETracer tracer = new JRETracer(
+                new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
 
-        final ConcurrentHashMap m = new ConcurrentHashMap();
+        final ConcurrentHashMap<String, Boolean> m = new ConcurrentHashMap<>();
         Thread[] t = new Thread[8];
         for (int j = 0; j < 8; j++) {
             t[j] = new Thread() {
@@ -106,11 +112,11 @@ public class RuntimeTest {
     }
 
     @Test
-    public void spanSetTagTest() {
+    public void spanSetTagTest() throws Exception {
         final String testStr = ")/forward\\back+%20/<operation>|⅕⚜±♈ 🌠🍕/%%%20%14\n\'\"@+!=#$%$^%   &^() '";
 
         Tracer tracer = new JRETracer(
-                new Options("{your_access_token}"));
+                new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
 
         Span span = tracer.buildSpan("test_span").start();
         span.setTag("my_key", "my_value");
@@ -124,9 +130,9 @@ public class RuntimeTest {
     }
 
     @Test
-    public void spanBuilderWithTagTest() {
+    public void spanBuilderWithTagTest() throws Exception {
         Tracer tracer = new JRETracer(
-                new Options("{your_access_token}"));
+                new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
 
         Span span = tracer
                 .buildSpan("test_span")
@@ -138,33 +144,34 @@ public class RuntimeTest {
     }
 
     @Test
-    public void spansDroppedCounterTest() {
+    public void spansDroppedCounterTest() throws Exception {
         JRETracer tracer = new JRETracer(
-                new Options("{your_access_token}")
-                        .withMaxBufferedSpans(10));
+                new Options.OptionsBuilder()
+                        .withAccessToken("{your_access_token}")
+                        .build());
 
-        JRETracer.Status status = tracer.status();
-        assertEquals(status.clientMetrics.spansDropped, 0);
+        Status status = tracer.status();
+        assertEquals(status.getSpansDropped(), 0);
+        for (int i = 0; i < DEFAULT_MAX_BUFFERED_SPANS; i++) {
+            Span span = tracer.buildSpan("test_span").start();
+            span.finish();
+        }
+        status = tracer.status();
+        assertEquals(status.getSpansDropped(), 0);
         for (int i = 0; i < 10; i++) {
             Span span = tracer.buildSpan("test_span").start();
             span.finish();
         }
         status = tracer.status();
-        assertEquals(status.clientMetrics.spansDropped, 0);
-        for (int i = 0; i < 10; i++) {
-            Span span = tracer.buildSpan("test_span").start();
-            span.finish();
-        }
-        status = tracer.status();
-        assertEquals(status.clientMetrics.spansDropped, 10);
+        assertEquals(status.getSpansDropped(), 10);
     }
 
     @Test
-    public void extractOnOpenTracingTracer() {
-        final io.opentracing.Tracer tracer = new JRETracer(
-                new Options("{your_access_token}"));
+    public void extractOnOpenTracingTracer() throws Exception {
+        JRETracer tracer = new JRETracer(
+                new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
 
-        Map<String, String> headerMap = new HashMap<String, String>();
+        Map<String, String> headerMap = new HashMap<>();
         SpanContext parentCtx = tracer.extract(HTTP_HEADERS, new TextMapExtractAdapter(headerMap));
 
         Span span = tracer.buildSpan("test_span")
@@ -173,15 +180,15 @@ public class RuntimeTest {
         span.finish();
     }
 
-    protected void assertSpanHasTag(Span span, String key, String value) {
+    private void assertSpanHasTag(Span span, String key, String value) {
         com.lightstep.tracer.shared.Span lsSpan = (com.lightstep.tracer.shared.Span) span;
-        SpanRecord record = lsSpan.thriftRecord();
+        SpanRecord record = lsSpan.getRecord();
 
         assertNotNull("Tags are currently written the attributes", record.attributes);
 
         boolean found = false;
         for (KeyValue pair : record.attributes) {
-            if (pair.Key == key && pair.Value == value) {
+            if (pair.Key.equals(key) && pair.Value.equals(value)) {
                 found = true;
             }
         }
