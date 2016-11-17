@@ -17,6 +17,8 @@ dependencies {
     // explicitly included here.
     compile project(':lightstep-tracer-jre')
     compile 'io.opentracing:opentracing-api:0.16.0'
+
+    compile 'org.slf4j:slf4j-simple:1.7.21'
 }
 
 task runSample(type: JavaExec, dependsOn: 'classes') {

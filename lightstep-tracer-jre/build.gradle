@@ -72,6 +72,7 @@ repositories {
 // Dependencies to build this JAR archive
 dependencies {
     compile project(':common')
+    compile 'org.slf4j:slf4j-api:1.7.21'
     testCompile 'junit:junit:4.11'
 
     benchmarkCompile project(':lightstep-tracer-jre')
