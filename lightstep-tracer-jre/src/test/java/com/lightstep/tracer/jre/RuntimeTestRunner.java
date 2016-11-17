@@ -1,6 +1,4 @@
-package com.lightstep.tracer;
-
-import com.lightstep.tracer.RuntimeTest;
+package com.lightstep.tracer.jre;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;

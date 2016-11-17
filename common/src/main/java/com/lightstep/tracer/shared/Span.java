@@ -1,12 +1,12 @@
 package com.lightstep.tracer.shared;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.lightstep.tracer.thrift.KeyValue;
 import com.lightstep.tracer.thrift.LogRecord;
 import com.lightstep.tracer.thrift.SpanRecord;
 import com.lightstep.tracer.thrift.TraceJoinId;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Span implements io.opentracing.Span {
 
@@ -249,7 +249,7 @@ public class Span implements io.opentracing.Span {
     /**
      * For unit testing only.
      */
-    SpanRecord getRecord() {
+    public SpanRecord getRecord() {
         return record;
     }
 

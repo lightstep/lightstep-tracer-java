@@ -33,7 +33,7 @@ import static com.lightstep.tracer.shared.Options.VERBOSITY_FIRST_ERROR_ONLY;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_INFO;
 
 public abstract class AbstractTracer implements Tracer {
-    private static final int DEFAULT_MAX_BUFFERED_SPANS = 1000;
+    public static final int DEFAULT_MAX_BUFFERED_SPANS = 1000;
 
     // Maximum interval between reports
     private static final long DEFAULT_CLOCK_STATE_INTERVAL_MILLIS = 500;
@@ -585,5 +585,18 @@ public abstract class AbstractTracer implements Tracer {
         return "https://app.lightstep.com/" + auth.access_token +
                 "/trace?span_guid=" + spanId +
                 "&at_micros=" + (System.currentTimeMillis() * 1000);
+    }
+
+    /**
+     * Internal method used primarily for unit testing and debugging. This is not
+     * part of the OpenTracing API and is not a supported API.
+     *
+     * Copies the internal state/status into an object that's easier to check
+     * against in unit tests.
+     */
+    public Status status() {
+        synchronized (mutex) {
+            return new Status(runtime.getAttrs(), new ClientMetrics(clientMetrics));
+        }
     }
 }
