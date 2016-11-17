@@ -4,11 +4,16 @@ import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.shared.SimpleFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static com.lightstep.tracer.shared.Version.LIGHTSTEP_TRACER_VERSION;
 
 public class JRETracer extends AbstractTracer {
 
     private static final int JRE_DEFAULT_REPORTING_INTERVAL_MILLIS = 2500;
+
+    private final Logger logger = LoggerFactory.getLogger(JRETracer.class);
 
     private static class JavaTracerHolder {
         private static final JRETracer INSTANCE = new JRETracer(null);
@@ -35,29 +40,24 @@ public class JRETracer extends AbstractTracer {
     }
 
     protected void printLogToConsole(InternalLogLevel level, String msg, Object payload) {
-        String s;
-        switch (level) {
-            case DEBUG:
-                s = "[Lightstep:DEBUG] ";
-                break;
-            case INFO:
-                s = "[Lightstep:INFO] ";
-                break;
-            case WARN:
-                s = "[Lightstep:WARN] ";
-                break;
-            case ERROR:
-                s = "[Lightstep:ERROR] ";
-                break;
-            default:
-                s = "[Lightstep:???] ";
-                break;
-        }
-        s += msg;
+        String s = msg;
         if (payload != null) {
             s += " " + payload.toString();
         }
-        System.err.println(s);
+        switch (level) {
+            case DEBUG:
+                logger.debug(s);
+                break;
+            case INFO:
+                logger.info(s);
+                break;
+            case WARN:
+                logger.warn(s);
+                break;
+            case ERROR:
+                logger.error(s);
+                break;
+        }
     }
 
     /**
