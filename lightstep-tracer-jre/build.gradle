@@ -178,7 +178,7 @@ if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload'
 }
 
 
-// Bintray configuration so we can publish publically.  Requires the environment
+// Bintray configuration so we can publish publicly.  Requires the environment
 // variables below be set.
 // https://github.com/bintray/gradle-bintray-plugin
 bintray {
