@@ -1,5 +1,8 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.9.20)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.9.25)
+
+<a name="0.9.25"></a>
+## [0.9.25](https://github.com/lightstep/lightstep-tracer-java/compare/0.9.25...0.9.21) (2016-11-18)
 
 ### BREAKING CHANGES
 
