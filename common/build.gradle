@@ -115,7 +115,7 @@ install {
 if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}) {
     gradle.taskGraph.whenReady { taskGraph ->
         taskGraph.getAllTasks().find {
-            it.path == ":common:generatePomFileForMavenPublication"
+            it.path == ":java-common:generatePomFileForMavenPublication"
         }.doLast {
             file("build/publications/maven/pom-default.xml").delete()
             println 'Overriding pom-file to make sure we can sync to maven central!'
