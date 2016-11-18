@@ -71,7 +71,7 @@ repositories {
 
 // Dependencies to build this JAR archive
 dependencies {
-    compile project(':common')
+    compile project(':java-common')
     compile 'org.slf4j:slf4j-api:1.7.21'
     testCompile 'junit:junit:4.11'
 
@@ -178,7 +178,7 @@ if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload'
 }
 
 
-// Bintray configuration so we can publish publically.  Requires the environment
+// Bintray configuration so we can publish publicly.  Requires the environment
 // variables below be set.
 // https://github.com/bintray/gradle-bintray-plugin
 bintray {

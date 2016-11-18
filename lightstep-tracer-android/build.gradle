@@ -128,7 +128,7 @@ repositories {
 }
 
 dependencies {
-    compile(project(':common')) {
+    compile(project(':java-common')) {
         // Not needed on Android
         exclude module: 'httpclient'
     }

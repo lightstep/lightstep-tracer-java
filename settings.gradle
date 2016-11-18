@@ -2,7 +2,8 @@ rootProject.name = 'lightstep-tracer-java'
 
 include 'lightstep-tracer-jre'
 include 'lightstep-tracer-android'
-include 'common'
+include "java-common"
+project(":java-common").projectDir = file("common")
 include 'examples:jre-simple'
 include 'examples:android-demo'
 include 'examples:android-simple'

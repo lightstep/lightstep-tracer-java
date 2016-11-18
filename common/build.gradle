@@ -17,6 +17,9 @@ apply plugin: 'java'
 targetCompatibility = '1.7'
 sourceCompatibility = '1.7'
 
+project.version = current_version
+project.group = "com.lightstep.tracer"
+
 jar {
     baseName 'java-common'
     version = current_version
