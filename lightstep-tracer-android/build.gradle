@@ -26,8 +26,8 @@ def siteUrl = 'https://github.com/lightstep/lightstep-tracer-java'
 def gitUrl = 'https://github.com/lightstep/lightstep-tracer-java.git'
 
 android {
-    compileSdkVersion 18
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
     resourcePrefix "lightstep__"
 
     defaultConfig {
