@@ -1,6 +1,7 @@
 package com.lightstep.tracer.shared;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import io.opentracing.propagation.TextMap;
@@ -27,8 +28,9 @@ class TextMapPropagator implements Propagator<TextMap> {
         String traceId = null, spanId = null;
         Map<String, String> decodedBaggage = null;
 
+        Locale english = new Locale("en", "US");
         for (Map.Entry<String, String> entry : carrier) {
-            final String key = entry.getKey();
+            final String key = entry.getKey().toLowerCase(english);
             if (FIELD_NAME_TRACE_ID.equals(key)) {
                 requiredFieldCount++;
                 traceId = entry.getValue();
