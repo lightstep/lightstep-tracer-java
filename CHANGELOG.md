@@ -1,6 +1,9 @@
 <a name="Pending Release"></a>
 ## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.9.26)
 
+### BUG FIXES
+* Fixes issue where pom file for java-common and lightstep-tracer-jre (generated during local Maven publish) incorrectly referenced dependencies with 'runtime' scope when it should be 'compile' scope.
+
 <a name="0.9.26"></a>
 ## [0.9.26](https://github.com/lightstep/lightstep-tracer-java/compare/0.9.26...0.9.25)
 Bugfix: Handle when SpanContext keys have mixed case like: Ot-tracer-spanId
