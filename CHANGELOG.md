@@ -1,5 +1,8 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.9.25)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.9.26)
+
+<a name="0.9.26"></a>
+## [0.9.26](https://github.com/lightstep/lightstep-tracer-java/compare/0.9.26...0.9.25)
 Bugfix: Handle when SpanContext keys have mixed case like: Ot-tracer-spanId
 
 <a name="0.9.25"></a>
