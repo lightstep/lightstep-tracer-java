@@ -8,11 +8,11 @@ import io.opentracing.propagation.TextMap;
 
 class TextMapPropagator implements Propagator<TextMap> {
     private static final String PREFIX_TRACER_STATE = "ot-tracer-";
-    private static final String PREFIX_BAGGAGE = "ot-baggage-";
+    static final String PREFIX_BAGGAGE = "ot-baggage-";
 
-    private static final String FIELD_NAME_TRACE_ID = PREFIX_TRACER_STATE + "traceid";
-    private static final String FIELD_NAME_SPAN_ID = PREFIX_TRACER_STATE + "spanid";
-    private static final String FIELD_NAME_SAMPLED = PREFIX_TRACER_STATE + "sampled";
+    static final String FIELD_NAME_TRACE_ID = PREFIX_TRACER_STATE + "traceid";
+    static final String FIELD_NAME_SPAN_ID = PREFIX_TRACER_STATE + "spanid";
+    static final String FIELD_NAME_SAMPLED = PREFIX_TRACER_STATE + "sampled";
 
     public void inject(SpanContext spanContext, final TextMap carrier) {
         carrier.put(FIELD_NAME_TRACE_ID, spanContext.getTraceId());

@@ -280,6 +280,10 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     public <C> void inject(io.opentracing.SpanContext spanContext, Format<C> format, C carrier) {
+        if ( !(spanContext instanceof SpanContext) ) {
+            error("Unsupported SpanContext implementation: " + spanContext.getClass());
+            return;
+        }
         SpanContext lightstepSpanContext = (SpanContext) spanContext;
         if (format == Format.Builtin.TEXT_MAP) {
             Propagator.TEXT_MAP.inject(lightstepSpanContext, (TextMap) carrier);
