@@ -168,6 +168,25 @@ public class SpanBuilderTest {
         verifyResultingSpan(lsSpan);
     }
 
+    /**
+     * If start timestamp is provided, the span's start time should not be set and the record's
+     * oldest micros should be set to the value provided.
+     */
+    @Test
+    public void testStart_spanIdProvided() {
+        undertest.withSpanId(123L);
+
+        // start the span
+        io.opentracing.Span otSpan = undertest.start();
+        assertNotNull(otSpan);
+        assertTrue(otSpan instanceof Span);
+        Span lsSpan = (Span) otSpan;
+
+        assertEquals("123", lsSpan.context().getSpanId());
+
+        verifyResultingSpan(lsSpan);
+    }
+
     private void verifySettingsFromParent() {
         // verify that getBaggage returns baggage from parent
         Iterable<Map.Entry<String, String>> actualBaggageItems = undertest.baggageItems();

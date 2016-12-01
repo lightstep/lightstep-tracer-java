@@ -12,7 +12,7 @@ import io.opentracing.Tracer;
 import static io.opentracing.References.CHILD_OF;
 import static io.opentracing.References.FOLLOWS_FROM;
 
-class SpanBuilder implements Tracer.SpanBuilder {
+public class SpanBuilder implements Tracer.SpanBuilder {
     /**
      * The tag key used to record the relationship between child and parent
      * spans.
@@ -20,6 +20,7 @@ class SpanBuilder implements Tracer.SpanBuilder {
     static final String PARENT_SPAN_GUID_KEY = "parent_span_guid";
 
     private final String operationName;
+    private Long spanId = null;
     private final Map<String, String> tags;
     private final AbstractTracer tracer;
     private SpanContext parent;
@@ -66,6 +67,11 @@ class SpanBuilder implements Tracer.SpanBuilder {
         return this;
     }
 
+    public Tracer.SpanBuilder withSpanId(long spanId) {
+        this.spanId = spanId;
+        return this;
+    }
+
     public Iterable<Map.Entry<String, String>> baggageItems() {
         if (parent == null) {
             return Collections.emptySet();
@@ -96,7 +102,12 @@ class SpanBuilder implements Tracer.SpanBuilder {
                     PARENT_SPAN_GUID_KEY,
                     parent.getSpanId()));
         }
-        SpanContext newSpanContext = new SpanContext(traceId); // traceId may be null
+        SpanContext newSpanContext;
+        if (spanId != null) {
+            newSpanContext = new SpanContext(traceId, spanId.toString(), null); // traceId may be null
+        } else {
+            newSpanContext = new SpanContext(traceId); // traceId may be null
+        }
         // Record the eventual TraceId and SpanId in the SpanRecord.
         record.setTrace_guid(newSpanContext.getTraceId());
         record.setSpan_guid(newSpanContext.getSpanId());
