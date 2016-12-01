@@ -12,7 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-import io.opentracing.NoopTracer;
+import io.opentracing.NoopTracerFactory;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 
@@ -158,7 +158,7 @@ class BenchmarkClient {
         if (c.Trace) {
             tracer = testTracer;
         } else {
-            tracer = new NoopTracer();
+            tracer = NoopTracerFactory.create();
         }
 
         System.gc();
