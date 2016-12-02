@@ -17,7 +17,7 @@ test: ci_test
 publish: pre-publish build test inc-version
 	git add gradle.properties
 	git add common/src/main/java/com/lightstep/tracer/shared/Version.java
-	git commit -m "Update VERSION"
+	git commit -m "VERSION `awk 'BEGIN { FS = "=" }; { printf("%s", $$2) }' gradle.properties`"
 	git tag `awk 'BEGIN { FS = "=" }; { printf("%s", $$2) }' gradle.properties`
 	git push
 	git push --tags
