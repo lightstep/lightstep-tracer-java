@@ -1,8 +1,23 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.9.26)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.10.0)
+
+<a name="0.10.0"></a>
+## [0.10.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.10.0...0.9.28)
+
+### BREAKING CHANGES
+* Changed spanId and traceId from String to Long
+
+<a name="0.9.28"></a>
+## [0.9.28](https://github.com/lightstep/lightstep-tracer-java/compare/0.9.28...0.9.27)
+
+* Upgraded to io.opentracing 0.20.0
+
+<a name="0.9.27"></a>
+## [0.9.27](https://github.com/lightstep/lightstep-tracer-java/compare/0.9.27...0.9.26)
 
 ### BUG FIXES
 * Fixes issue where pom file for java-common and lightstep-tracer-jre (generated during local Maven publish) incorrectly referenced dependencies with 'runtime' scope when it should be 'compile' scope.
+* Handle potential for ClassCastException in SpanContext
 
 <a name="0.9.26"></a>
 ## [0.9.26](https://github.com/lightstep/lightstep-tracer-java/compare/0.9.26...0.9.25)
