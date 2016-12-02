@@ -1,5 +1,6 @@
 package com.lightstep.tracer.shared;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -37,10 +38,10 @@ class TextMapPropagator implements Propagator<TextMap> {
             final String key = entry.getKey().toLowerCase(english);
             if (FIELD_NAME_TRACE_ID.equals(key)) {
                 requiredFieldCount++;
-                traceId = Long.decode(entry.getValue());
+                traceId = unHex(entry.getValue());
             } else if (FIELD_NAME_SPAN_ID.equals(key)) {
                 requiredFieldCount++;
-                spanId = Long.decode(entry.getValue());
+                spanId = unHex(entry.getValue());
             } else {
                 if (key.startsWith(PREFIX_BAGGAGE)) {
                     if (decodedBaggage == null) {
@@ -59,5 +60,9 @@ class TextMapPropagator implements Propagator<TextMap> {
 
         // Success.
         return new SpanContext(traceId, spanId, decodedBaggage);
+    }
+
+    static long unHex(String hexString) throws NumberFormatException {
+        return new BigInteger(hexString, 16).longValue();
     }
 }
