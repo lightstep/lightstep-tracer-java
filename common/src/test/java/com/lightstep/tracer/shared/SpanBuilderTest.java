@@ -28,8 +28,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SpanBuilderTest {
     private static final String OPERATION_NAME = "myOperation";
-    private static final String TRACE_ID = "myTraceId";
-    private static final String SPAN_ID = "mySpanId";
+    private static final long TRACE_ID = 1;
+    private static final long SPAN_ID = 2;
 
     @Mock
     private AbstractTracer tracer;
@@ -169,12 +169,11 @@ public class SpanBuilderTest {
     }
 
     /**
-     * If start timestamp is provided, the span's start time should not be set and the record's
-     * oldest micros should be set to the value provided.
+     * If traceId and spanId are provided, they should be set on the span's context.
      */
     @Test
-    public void testStart_spanIdProvided() {
-        undertest.withSpanId(123L);
+    public void testStart_traceIdAndSpanIdProvided() {
+        undertest.withTraceIdAndSpanId(3, 4);
 
         // start the span
         io.opentracing.Span otSpan = undertest.start();
@@ -182,7 +181,8 @@ public class SpanBuilderTest {
         assertTrue(otSpan instanceof Span);
         Span lsSpan = (Span) otSpan;
 
-        assertEquals("123", lsSpan.context().getSpanId());
+        assertEquals(3, lsSpan.context().getTraceId());
+        assertEquals(4, lsSpan.context().getSpanId());
 
         verifyResultingSpan(lsSpan);
     }
@@ -205,7 +205,7 @@ public class SpanBuilderTest {
         // verify that record has span id set
         SpanRecord spanRecord = lsSpan.getRecord();
         List<KeyValue> attributes = spanRecord.getAttributes();
-        assertTrue(attributes.contains(new KeyValue(PARENT_SPAN_GUID_KEY, SPAN_ID)));
+        assertTrue(attributes.contains(new KeyValue(PARENT_SPAN_GUID_KEY, Long.toHexString(SPAN_ID))));
 
         verifyResultingSpan(lsSpan);
         assertEquals(TRACE_ID, context.getTraceId());
@@ -221,7 +221,7 @@ public class SpanBuilderTest {
         assertNotEquals(SPAN_ID, context.getSpanId());
 
         assertEquals(OPERATION_NAME, record.getSpan_name());
-        assertEquals(context.getTraceId(), record.getTrace_guid());
-        assertEquals(context.getSpanId(), record.getSpan_guid());
+        assertEquals(Long.toHexString(context.getTraceId()), record.getTrace_guid());
+        assertEquals(Long.toHexString(context.getSpanId()), record.getSpan_guid());
     }
 }

@@ -30,8 +30,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SpanTest {
-    private static final String TRACE_ID = "trace456";
-    private static final String SPAN_ID = "span789";
+    private static final long TRACE_ID = 1;
+    private static final long SPAN_ID = 2;
 
     private SpanContext spanContext;
     private SpanRecord spanRecord;

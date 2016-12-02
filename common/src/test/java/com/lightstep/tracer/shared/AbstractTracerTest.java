@@ -38,8 +38,8 @@ public class AbstractTracerTest {
 
     private static final String ACCESS_TOKEN = "abc123";
     private static final String TEST_MSG = "hello tracer";
-    private static final String TRACE_ID = "my-trace-id";
-    private static final String SPAN_ID = "my-span-id";
+    private static final long TRACE_ID = 1;
+    private static final long SPAN_ID = 2;
     private static final String BAGGAGE_KEY = "baggage-key";
     private static final String BAGGAGE_VALUE = "baggage-value";
 
@@ -166,11 +166,11 @@ public class AbstractTracerTest {
 
     @Test
     public void testGenerateTraceURL() throws Exception {
-        String spanId = "span789";
+        long spanId = 3;
         StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
         String result = undertest.generateTraceURL(spanId);
         String expectedUrlStart = "https://app.lightstep.com/" + ACCESS_TOKEN + "/trace?span_guid="
-                + spanId + "&at_micros=";
+                + Long.toHexString(spanId) + "&at_micros=";
         assertTrue("Unexpected trace url: " + result, result.startsWith(expectedUrlStart));
     }
 
@@ -189,8 +189,8 @@ public class AbstractTracerTest {
     public void testInject_textMap() throws Exception {
         StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
         undertest.inject(spanContext, TEXT_MAP, textMap);
-        verify(textMap).put(FIELD_NAME_TRACE_ID, TRACE_ID);
-        verify(textMap).put(FIELD_NAME_SPAN_ID, SPAN_ID);
+        verify(textMap).put(FIELD_NAME_TRACE_ID, Long.toHexString(TRACE_ID));
+        verify(textMap).put(FIELD_NAME_SPAN_ID, Long.toHexString(SPAN_ID));
         verify(textMap).put(FIELD_NAME_SAMPLED, "true");
         verify(textMap).put(PREFIX_BAGGAGE + BAGGAGE_KEY, BAGGAGE_VALUE);
     }
@@ -199,8 +199,8 @@ public class AbstractTracerTest {
     public void testInject_httpHeaders() throws Exception {
         StubTracer undertest = createTracer(VERBOSITY_ERRORS_ONLY);
         undertest.inject(spanContext, HTTP_HEADERS, httpHeaders);
-        verify(httpHeaders).put(FIELD_NAME_TRACE_ID, TRACE_ID);
-        verify(httpHeaders).put(FIELD_NAME_SPAN_ID, SPAN_ID);
+        verify(httpHeaders).put(FIELD_NAME_TRACE_ID, Long.toHexString(TRACE_ID));
+        verify(httpHeaders).put(FIELD_NAME_SPAN_ID, Long.toHexString(SPAN_ID));
         verify(httpHeaders).put(FIELD_NAME_SAMPLED, "true");
         verify(httpHeaders).put(PREFIX_BAGGAGE + BAGGAGE_KEY, BAGGAGE_VALUE);
     }

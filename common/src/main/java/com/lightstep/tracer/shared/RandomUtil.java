@@ -4,10 +4,9 @@ import java.util.Random;
 
 class RandomUtil {
 
-    static String generateGUID() {
+    static long generateGUID() {
         // Note that ThreadLocalRandom is a singleton, thread safe Random Generator
-        long guid = random.get().nextLong();
-        return Long.toHexString(guid);
+        return random.get().nextLong();
     }
 
     /**
