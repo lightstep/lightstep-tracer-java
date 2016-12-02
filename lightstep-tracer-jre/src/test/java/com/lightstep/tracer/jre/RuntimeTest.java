@@ -1,6 +1,5 @@
 package com.lightstep.tracer.jre;
 
-import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.shared.Status;
 import com.lightstep.tracer.thrift.KeyValue;
@@ -91,9 +90,9 @@ public class RuntimeTest {
                     for (int i = 0; i < 1024; i++) {
                         Span span = tracer.buildSpan("test_span").start();
                         SpanContext ctx = span.context();
-                        String id = ((com.lightstep.tracer.shared.SpanContext) ctx).getSpanId();
+                        long id = ((com.lightstep.tracer.shared.SpanContext) ctx).getSpanId();
                         assertEquals(m.containsKey(id), false);
-                        m.put(id, true);
+                        m.put(Long.toHexString(id), true);
                         span.finish();
                     }
                 }

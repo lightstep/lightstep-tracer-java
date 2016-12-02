@@ -5,29 +5,40 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class SpanContext implements io.opentracing.SpanContext {
-    private final String traceId;
-    private final String spanId;
+    private final long traceId;
+    private final long spanId;
     private Map<String, String> baggage;
 
-    public SpanContext(String traceId, String spanId) {
-        this.traceId = traceId == null ? RandomUtil.generateGUID() : traceId;
-        this.spanId = spanId == null ? RandomUtil.generateGUID() : spanId;
+    public SpanContext() {
+        this.traceId = RandomUtil.generateGUID();
+        this.spanId = RandomUtil.generateGUID();
     }
 
-    SpanContext(String traceId, String spanId, Map<String, String> baggage) {
+    public SpanContext(long traceId, long spanId) {
+        this.traceId = traceId;
+        this.spanId = spanId;
+    }
+
+    SpanContext(long traceId, long spanId, Map<String, String> baggage) {
         this(traceId, spanId);
         this.baggage = baggage;
     }
 
-    SpanContext(String traceId) {
-        this(traceId, null, null);
+    SpanContext(long traceId, Map<String, String> baggage) {
+        this.traceId = traceId;
+        this.spanId = RandomUtil.generateGUID();
+        this.baggage = baggage;
     }
 
-    public String getSpanId() {
+    SpanContext(long traceId) {
+        this(traceId, null);
+    }
+
+    public long getSpanId() {
         return spanId;
     }
 
-    public String getTraceId() {
+    public long getTraceId() {
         return traceId;
     }
 

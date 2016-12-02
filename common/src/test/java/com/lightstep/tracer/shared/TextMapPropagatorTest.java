@@ -12,8 +12,8 @@ public class TextMapPropagatorTest {
     public void testExtract_mixedCaseIsLowered() {
         Map<String, String> mixedCaseHeaders = new HashMap<>();
 
-        mixedCaseHeaders.put("Ot-tracer-spanid", "spanid");
-        mixedCaseHeaders.put("Ot-tracer-traceId", "traceid");
+        mixedCaseHeaders.put("Ot-tracer-spanid", Long.toHexString(1));
+        mixedCaseHeaders.put("Ot-tracer-traceId", Long.toHexString(2));
         mixedCaseHeaders.put("ot-Tracer-sampled", "true");
 
         TextMapPropagator subject = new TextMapPropagator();
@@ -21,7 +21,7 @@ public class TextMapPropagatorTest {
         SpanContext span = subject.extract(new TextMapExtractAdapter(mixedCaseHeaders));
 
         assertNotNull(span);
-        assertEquals(span.getSpanId(), "spanid");
-        assertEquals(span.getTraceId(), "traceid");
+        assertEquals(span.getSpanId(), 1);
+        assertEquals(span.getTraceId(), 2);
     }
 }

@@ -20,7 +20,8 @@ public class SpanBuilder implements Tracer.SpanBuilder {
     static final String PARENT_SPAN_GUID_KEY = "parent_span_guid";
 
     private final String operationName;
-    private String spanId = null;
+    private Long traceId = null;
+    private Long spanId = null;
     private final Map<String, String> tags;
     private final AbstractTracer tracer;
     private SpanContext parent;
@@ -67,7 +68,12 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         return this;
     }
 
-    public Tracer.SpanBuilder withSpanId(String spanId) {
+    /**
+     * Sets the traceId and the spanId for the span being created. If the span has a parent, the
+     * traceId of the parent will override this traceId value.
+     */
+    public Tracer.SpanBuilder withTraceIdAndSpanId(long traceId, long spanId) {
+        this.traceId = traceId;
         this.spanId = spanId;
         return this;
     }
@@ -95,22 +101,25 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         record.setSpan_name(operationName);
         record.setOldest_micros(startTimestampMicros);
 
-        String traceId = null;
+        Long traceId = this.traceId;
         if (parent != null) {
             traceId = parent.getTraceId();
             record.addToAttributes(new KeyValue(
                     PARENT_SPAN_GUID_KEY,
-                    parent.getSpanId()));
+                    Long.toHexString(parent.getSpanId())));
         }
         SpanContext newSpanContext;
-        if (spanId != null) {
-            newSpanContext = new SpanContext(traceId, spanId, null); // traceId may be null
-        } else {
-            newSpanContext = new SpanContext(traceId); // traceId may be null
+        if (traceId != null && spanId != null) {
+            newSpanContext = new SpanContext(traceId, spanId);
+        } else if (traceId != null) {
+            newSpanContext = new SpanContext(traceId);
+        }    else {
+            newSpanContext = new SpanContext();
         }
+
         // Record the eventual TraceId and SpanId in the SpanRecord.
-        record.setTrace_guid(newSpanContext.getTraceId());
-        record.setSpan_guid(newSpanContext.getSpanId());
+        record.setTrace_guid(Long.toHexString(newSpanContext.getTraceId()));
+        record.setSpan_guid(Long.toHexString(newSpanContext.getSpanId()));
 
         Span span = new Span(tracer, newSpanContext, record, startTimestampRelativeNanos);
         for (Map.Entry<String, String> pair : tags.entrySet()) {

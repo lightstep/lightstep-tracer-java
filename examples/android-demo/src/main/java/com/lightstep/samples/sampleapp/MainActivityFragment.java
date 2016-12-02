@@ -274,8 +274,8 @@ public class MainActivityFragment extends Fragment {
         public Map<String, String> getHeaders() {
             com.lightstep.tracer.shared.SpanContext ctxImp = (com.lightstep.tracer.shared.SpanContext) span.context();
             Map<String, String> map = new HashMap<>();
-            map.put("LightStep-Trace-GUID", ctxImp.getTraceId());
-            map.put("LightStep-Parent-GUID", ctxImp.getSpanId());
+            map.put("LightStep-Trace-GUID", Long.toHexString(ctxImp.getTraceId()));
+            map.put("LightStep-Parent-GUID", Long.toHexString(ctxImp.getSpanId()));
             map.put("LightStep-Access-Token", span.generateTraceURL());
             return map;
         }

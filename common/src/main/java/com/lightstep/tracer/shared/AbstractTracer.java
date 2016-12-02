@@ -585,9 +585,9 @@ public abstract class AbstractTracer implements Tracer {
         return System.currentTimeMillis() * 1000;
     }
 
-    String generateTraceURL(String spanId) {
+    String generateTraceURL(long spanId) {
         return "https://app.lightstep.com/" + auth.access_token +
-                "/trace?span_guid=" + spanId +
+                "/trace?span_guid=" + Long.toHexString(spanId) +
                 "&at_micros=" + (System.currentTimeMillis() * 1000);
     }
 

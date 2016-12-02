@@ -15,8 +15,8 @@ class TextMapPropagator implements Propagator<TextMap> {
     static final String FIELD_NAME_SAMPLED = PREFIX_TRACER_STATE + "sampled";
 
     public void inject(SpanContext spanContext, final TextMap carrier) {
-        carrier.put(FIELD_NAME_TRACE_ID, spanContext.getTraceId());
-        carrier.put(FIELD_NAME_SPAN_ID, spanContext.getSpanId());
+        carrier.put(FIELD_NAME_TRACE_ID, Long.toHexString(spanContext.getTraceId()));
+        carrier.put(FIELD_NAME_SPAN_ID, Long.toHexString(spanContext.getSpanId()));
         carrier.put(FIELD_NAME_SAMPLED, "true");
         for (Map.Entry<String, String> e : spanContext.baggageItems()) {
             carrier.put(PREFIX_BAGGAGE + e.getKey(), e.getValue());
@@ -25,7 +25,11 @@ class TextMapPropagator implements Propagator<TextMap> {
 
     public SpanContext extract(TextMap carrier) {
         int requiredFieldCount = 0;
-        String traceId = null, spanId = null;
+
+        // traceId and spanId initial values are guaranteed to be overwritten because of the
+        // requiredFieldCount check
+        long traceId = 0;
+        long spanId = 0;
         Map<String, String> decodedBaggage = null;
 
         Locale english = new Locale("en", "US");
@@ -33,10 +37,10 @@ class TextMapPropagator implements Propagator<TextMap> {
             final String key = entry.getKey().toLowerCase(english);
             if (FIELD_NAME_TRACE_ID.equals(key)) {
                 requiredFieldCount++;
-                traceId = entry.getValue();
+                traceId = Long.decode(entry.getValue());
             } else if (FIELD_NAME_SPAN_ID.equals(key)) {
                 requiredFieldCount++;
-                spanId = entry.getValue();
+                spanId = Long.decode(entry.getValue());
             } else {
                 if (key.startsWith(PREFIX_BAGGAGE)) {
                     if (decodedBaggage == null) {
