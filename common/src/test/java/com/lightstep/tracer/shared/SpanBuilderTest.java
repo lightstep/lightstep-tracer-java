@@ -174,7 +174,7 @@ public class SpanBuilderTest {
      */
     @Test
     public void testStart_spanIdProvided() {
-        undertest.withSpanId(123L);
+        undertest.withSpanId("123");
 
         // start the span
         io.opentracing.Span otSpan = undertest.start();

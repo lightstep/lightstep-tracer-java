@@ -20,7 +20,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
     static final String PARENT_SPAN_GUID_KEY = "parent_span_guid";
 
     private final String operationName;
-    private Long spanId = null;
+    private String spanId = null;
     private final Map<String, String> tags;
     private final AbstractTracer tracer;
     private SpanContext parent;
@@ -67,7 +67,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         return this;
     }
 
-    public Tracer.SpanBuilder withSpanId(long spanId) {
+    public Tracer.SpanBuilder withSpanId(String spanId) {
         this.spanId = spanId;
         return this;
     }
@@ -104,7 +104,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         }
         SpanContext newSpanContext;
         if (spanId != null) {
-            newSpanContext = new SpanContext(traceId, spanId.toString(), null); // traceId may be null
+            newSpanContext = new SpanContext(traceId, spanId, null); // traceId may be null
         } else {
             newSpanContext = new SpanContext(traceId); // traceId may be null
         }
