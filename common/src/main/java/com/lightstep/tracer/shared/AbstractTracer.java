@@ -33,8 +33,6 @@ import static com.lightstep.tracer.shared.Options.VERBOSITY_FIRST_ERROR_ONLY;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_INFO;
 
 public abstract class AbstractTracer implements Tracer {
-    public static final int DEFAULT_MAX_BUFFERED_SPANS = 1000;
-
     // Maximum interval between reports
     private static final long DEFAULT_CLOCK_STATE_INTERVAL_MILLIS = 500;
     private static final int DEFAULT_REPORT_TIMEOUT_MILLIS = 10 * 1000;
@@ -80,6 +78,8 @@ public abstract class AbstractTracer implements Tracer {
     // This is set to non-null if background reporting is enabled.
     private ReportingLoop reportingLoop;
 
+    private final int maxBufferedSpans;
+
     // This is set to non-null when a background Thread is actually reporting.
     private Thread reportingThread;
 
@@ -92,9 +92,12 @@ public abstract class AbstractTracer implements Tracer {
         // Set verbosity first so debug logs from the constructor take effect
         verbosity = options.verbosity;
 
+        // Save the maxBufferedSpans since we need it post-construction, too.
+        maxBufferedSpans = options.maxBufferedSpans;
+
         // TODO sanity check options
         lastNewSpanMillis = new AtomicLong(System.currentTimeMillis());
-        spans = new ArrayList<>(DEFAULT_MAX_BUFFERED_SPANS);
+        spans = new ArrayList<>(maxBufferedSpans);
 
         clockState = new ClockState();
         clientMetrics = new ClientMetrics();
@@ -393,7 +396,7 @@ public abstract class AbstractTracer implements Tracer {
                 // Copy the reference to the spans and make a new array for other spans.
                 spans = this.spans;
                 clientMetrics = this.clientMetrics;
-                this.spans = new ArrayList<>(DEFAULT_MAX_BUFFERED_SPANS);
+                this.spans = new ArrayList<>(maxBufferedSpans);
                 this.clientMetrics = new ClientMetrics();
                 debug(String.format("Sending report, %d spans", spans.size()));
             } else {
@@ -490,7 +493,7 @@ public abstract class AbstractTracer implements Tracer {
         lastNewSpanMillis.set(System.currentTimeMillis());
 
         synchronized (mutex) {
-            if (spans.size() >= DEFAULT_MAX_BUFFERED_SPANS) {
+            if (spans.size() >= maxBufferedSpans) {
                 clientMetrics.spansDropped++;
             } else {
                 spans.add(span);

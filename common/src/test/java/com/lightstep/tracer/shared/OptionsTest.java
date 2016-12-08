@@ -25,6 +25,7 @@ public class OptionsTest {
     private static final String HTTPS_PROTOCOL = "https";
     private static final String COMPONENT_NAME = "my-component";
     private static final int MAX_REPORTING_INTERVAL_MILLIS = 1001;
+    private static final int MAX_BUFFERED_SPANS = 999;
     private static final String TAG_KEY = "my-tag-key";
     private static final String TAG_VALUE = "my-tag-value";
     private static final Object GUID_VALUE = "abc123";
@@ -157,6 +158,7 @@ public class OptionsTest {
                 .withComponentName(COMPONENT_NAME)
                 .withDisableReportingLoop(true)
                 .withMaxReportingIntervalMillis(MAX_REPORTING_INTERVAL_MILLIS)
+                .withMaxBufferedSpans(MAX_BUFFERED_SPANS)
                 .withTag(TAG_KEY, TAG_VALUE)
                 .withTag(GUID_KEY, GUID_VALUE)
                 .build();
@@ -170,6 +172,7 @@ public class OptionsTest {
         assertEquals(COMPONENT_NAME, options.tags.get(COMPONENT_NAME_KEY));
         assertTrue(options.disableReportingLoop);
         assertEquals(MAX_REPORTING_INTERVAL_MILLIS, options.maxReportingIntervalMillis);
+        assertEquals(MAX_BUFFERED_SPANS, options.maxBufferedSpans);
         assertEquals(TAG_VALUE, options.tags.get(TAG_KEY));
         assertEquals(GUID_VALUE, options.getGuid());
     }

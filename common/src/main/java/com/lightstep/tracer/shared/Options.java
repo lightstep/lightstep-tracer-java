@@ -34,6 +34,11 @@ public final class Options {
     static final int DEFAULT_PLAINTEXT_PORT = 80;
 
     /**
+     * Default maximum number of Spans buffered locally (a protective mechanism)
+     */
+    public static final int DEFAULT_MAX_BUFFERED_SPANS = 1000;
+
+    /**
      * Default interval at which spans will be flushed
      */
     private static final long DEFAULT_REPORTING_INTERVAL_MILLIS = 3000;
@@ -88,14 +93,16 @@ public final class Options {
     final URL collectorUrl;
     final Map<String, Object> tags;
     final long maxReportingIntervalMillis;
+    final int maxBufferedSpans;
     final int verbosity;
     final boolean disableReportingLoop;
 
     private Options(String accessToken, URL collectorUrl, long maxReportingIntervalMillis,
-                    int verbosity, boolean disableReportingLoop, Map<String, Object> tags) {
+                    int maxBufferedSpans, int verbosity, boolean disableReportingLoop, Map<String, Object> tags) {
         this.accessToken = accessToken;
         this.collectorUrl = collectorUrl;
         this.maxReportingIntervalMillis = maxReportingIntervalMillis;
+        this.maxBufferedSpans = maxBufferedSpans;
         this.verbosity = verbosity;
         this.disableReportingLoop = disableReportingLoop;
         this.tags = tags;
@@ -112,6 +119,7 @@ public final class Options {
         private String collectorHost = DEFAULT_COLLECTOR_HOST;
         private int collectorPort = -1;
         private long maxReportingIntervalMillis;
+        private int maxBufferedSpans = -1;
         private int verbosity = 1;
         private boolean disableReportingLoop = false;
         private Map<String, Object> tags = new HashMap<>();
@@ -125,6 +133,7 @@ public final class Options {
             this.collectorHost = options.collectorUrl.getHost();
             this.collectorPort = options.collectorUrl.getPort();
             this.maxReportingIntervalMillis = options.maxReportingIntervalMillis;
+            this.maxBufferedSpans = options.maxBufferedSpans;
             this.verbosity = options.verbosity;
             this.disableReportingLoop = options.disableReportingLoop;
             this.tags = options.tags;
@@ -216,6 +225,17 @@ public final class Options {
         }
 
         /**
+         * Sets the maximum number of finished Spans buffered locally before flushing. This is a protective mechanism
+         * which bounds the memory usage of the LightStep library.
+         *
+         * @param maxBufferedSpans The maximum number of Spans buffered locally.
+         */
+        public OptionsBuilder withMaxBufferedSpans(int maxBufferedSpans) {
+            this.maxBufferedSpans = maxBufferedSpans;
+            return this;
+        }
+
+        /**
          * Controls the amount of local output produced by the tracer.  It does not
          * affect which spans are sent to the collector.  It is useful for
          * diagnosing problems in the tracer itself. The default value is 1.
@@ -252,14 +272,21 @@ public final class Options {
             defaultComponentName();
             defaultGuid();
             defaultMaxReportingIntervalMillis();
+            defaultMaxBufferedSpans();
 
-            return new Options(accessToken, getCollectorUrl(),maxReportingIntervalMillis, verbosity,
+            return new Options(accessToken, getCollectorUrl(), maxReportingIntervalMillis, maxBufferedSpans, verbosity,
                     disableReportingLoop, tags);
         }
 
         private void defaultMaxReportingIntervalMillis() {
             if (maxReportingIntervalMillis <= 0) {
                 maxReportingIntervalMillis = DEFAULT_REPORTING_INTERVAL_MILLIS;
+            }
+        }
+
+        private void defaultMaxBufferedSpans() {
+            if (maxBufferedSpans < 0) {
+                maxBufferedSpans = DEFAULT_MAX_BUFFERED_SPANS;
             }
         }
 
