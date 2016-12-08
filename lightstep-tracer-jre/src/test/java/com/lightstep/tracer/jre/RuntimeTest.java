@@ -16,7 +16,6 @@ import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.TextMapExtractAdapter;
 
-import static com.lightstep.tracer.shared.AbstractTracer.DEFAULT_MAX_BUFFERED_SPANS;
 import static io.opentracing.propagation.Format.Builtin.HTTP_HEADERS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -151,7 +150,7 @@ public class RuntimeTest {
 
         Status status = tracer.status();
         assertEquals(status.getSpansDropped(), 0);
-        for (int i = 0; i < DEFAULT_MAX_BUFFERED_SPANS; i++) {
+        for (int i = 0; i < Options.DEFAULT_MAX_BUFFERED_SPANS; i++) {
             Span span = tracer.buildSpan("test_span").start();
             span.finish();
         }
