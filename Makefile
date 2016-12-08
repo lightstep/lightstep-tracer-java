@@ -27,10 +27,10 @@ publish: pre-publish build test inc-version
 	@echo
 
 pre-publish:
-	@test -n "$$BINTRAY_USER" || echo "BINTRAY_USER must be defined to publish"
-	@test -n "$$BINTRAY_API_KEY" || echo "BINTRAY_API_KEY must be defined to publish"
-	@test -n "$$MAVEN_CENTRAL_USER_TOKEN" || echo "MAVEN_CENTRAL_USER_TOKEN must be defined to publish"
-	@test -n "$$MAVEN_CENTRAL_TOKEN_PASSWORD" || echo "MAVEN_CENTRAL_TOKEN_PASSWORD must be defined to publish"
+	@test -n "$$BINTRAY_USER" || (echo "BINTRAY_USER must be defined to publish" && false)
+	@test -n "$$BINTRAY_API_KEY" || (echo "BINTRAY_API_KEY must be defined to publish" && false)
+	@test -n "$$MAVEN_CENTRAL_USER_TOKEN" || (echo "MAVEN_CENTRAL_USER_TOKEN must be defined to publish" && false)
+	@test -n "$$MAVEN_CENTRAL_TOKEN_PASSWORD" || (echo "MAVEN_CENTRAL_TOKEN_PASSWORD must be defined to publish" && false)
 	@echo "\033[92mPublishing as $$BINTRAY_USER with key <HIDDEN> \033[0m"
 
 # CircleCI test
