@@ -125,36 +125,39 @@ public class Span implements io.opentracing.Span {
         return log(nowMicros(), fields);
     }
 
+    @Override
     public final Span log(long timestampMicros, Map<String, ?> fields) {
-        String message = null;
-        Map<String, String> payload = new HashMap<>(fields.size());
+        LogRecord log = new LogRecord();
+
+        log.setTimestamp_micros(timestampMicros);
         for (Map.Entry<String, ?> kv : fields.entrySet()) {
-            final String key = kv.getKey();
             final Object inValue = kv.getValue();
-            if (message == null &&
-                    (key.equals(LOG_KEY_EVENT) || key.equals(LOG_KEY_MESSAGE)) &&
-                    inValue instanceof String) {
-                message = (String) inValue;
-                continue;
-            }
-            String outValue;
-            if (inValue == null) {
-                outValue = "<null>";
+            final KeyValue outKV = new KeyValue();
+            outKV.setKey(kv.getKey());
+            if (inValue instanceof String) {
+                outKV.setValue((String)inValue);
+            } else if (inValue instanceof Number) {
+                outKV.setValue(((Number)inValue).toString());
+            } else if (inValue instanceof Boolean) {
+                outKV.setValue(((Boolean)inValue).toString());
             } else {
-                outValue = inValue.toString();
+                outKV.setValue(Span.stringToJSONValue(inValue.toString()));
             }
-            payload.put(key, outValue);
+            log.addToFields(outKV);
         }
-        if (message == null) {
-            message = "" + payload.size() + " key-value pair" + (payload.size() == 1 ? "" : "s");
+
+        synchronized (mutex) {
+            record.addToLog_records(log);
         }
-        return log(timestampMicros, message, payload);
+        return this;
     }
 
+    @Override
     public Span log(String message) {
         return log(nowMicros(), message, null);
     }
 
+    @Override
     public Span log(long timestampMicroseconds, String message) {
         return log(timestampMicroseconds, message, null);
     }
@@ -166,19 +169,12 @@ public class Span implements io.opentracing.Span {
 
     @Override
     public Span log(long timestampMicroseconds, String message, /* @Nullable */ Object payload) {
-        LogRecord log = new LogRecord();
-
-        log.setTimestamp_micros(timestampMicroseconds);
-        log.setMessage(message);
-
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("message", message);
         if (payload != null) {
-            log.setPayload_json(Span.stringToJSONValue(payload.toString()));
+            fields.put("payload", payload);
         }
-
-        synchronized (mutex) {
-            record.addToLog_records(log);
-        }
-        return this;
+        return log(timestampMicroseconds, fields);
     }
 
     public String generateTraceURL() {

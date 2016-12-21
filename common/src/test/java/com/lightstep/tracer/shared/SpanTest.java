@@ -242,6 +242,14 @@ public class SpanTest {
         assertTrue(Span.isJoinKey("join:"));
     }
 
+    private Map<String, String> getLogFieldMap(LogRecord rec) {
+        Map<String, String> rval = new HashMap<>();
+        for (KeyValue kv : rec.getFields()) {
+            rval.put(kv.getKey(), kv.getValue());
+        }
+        return rval;
+    }
+
     @Test
     public void testLog_fieldsOnly_eventProvided() {
         Map<String, String> fields = new HashMap<>();
@@ -253,8 +261,10 @@ public class SpanTest {
         assertSame(result, undertest);
         assertEquals(1, spanRecord.getLog_recordsSize());
         LogRecord logRecord = spanRecord.getLog_records().get(0);
-        assertEquals("my-key-event", logRecord.getMessage());
-        assertEquals("\"{foo=bar}\"", logRecord.getPayload_json());
+        Map<String, String> fieldMap = getLogFieldMap(logRecord);
+        assertEquals("my-key-event", fieldMap.get(LOG_KEY_EVENT));
+        assertEquals("bar", fieldMap.get("foo"));
+        assertNull(fieldMap.get("payload"));
         assertNotNull(logRecord.getTimestamp_micros());
     }
 
@@ -269,8 +279,9 @@ public class SpanTest {
         assertSame(result, undertest);
         assertEquals(1, spanRecord.getLog_recordsSize());
         LogRecord logRecord = spanRecord.getLog_records().get(0);
-        assertEquals("my-key-message", logRecord.getMessage());
-        assertEquals("\"{foo=bar}\"", logRecord.getPayload_json());
+        Map<String, String> fieldMap = getLogFieldMap(logRecord);
+        assertEquals("my-key-message", fieldMap.get(LOG_KEY_MESSAGE));
+        assertEquals("bar", fieldMap.get("foo"));
         assertNotNull(logRecord.getTimestamp_micros());
     }
 
@@ -284,8 +295,9 @@ public class SpanTest {
         assertSame(result, undertest);
         assertEquals(1, spanRecord.getLog_recordsSize());
         LogRecord logRecord = spanRecord.getLog_records().get(0);
-        assertEquals("1 key-value pair", logRecord.getMessage());
-        assertEquals("\"{foo=bar}\"", logRecord.getPayload_json());
+        Map<String, String> fieldMap = getLogFieldMap(logRecord);
+        assertNull(fieldMap.get(LOG_KEY_MESSAGE));
+        assertEquals("bar", fieldMap.get("foo"));
         assertNotNull(logRecord.getTimestamp_micros());
     }
 
@@ -300,8 +312,9 @@ public class SpanTest {
         assertSame(result, undertest);
         assertEquals(1, spanRecord.getLog_recordsSize());
         LogRecord logRecord = spanRecord.getLog_records().get(0);
-        assertEquals("my-key-event", logRecord.getMessage());
-        assertEquals("\"{foo=bar}\"", logRecord.getPayload_json());
+        Map<String, String> fieldMap = getLogFieldMap(logRecord);
+        assertEquals("my-key-event", fieldMap.get(LOG_KEY_EVENT));
+        assertEquals("bar", fieldMap.get("foo"));
         assertEquals(100L, logRecord.getTimestamp_micros());
     }
 
@@ -316,8 +329,9 @@ public class SpanTest {
         assertSame(result, undertest);
         assertEquals(1, spanRecord.getLog_recordsSize());
         LogRecord logRecord = spanRecord.getLog_records().get(0);
-        assertEquals("my-key-message", logRecord.getMessage());
-        assertEquals("\"{foo=bar}\"", logRecord.getPayload_json());
+        Map<String, String> fieldMap = getLogFieldMap(logRecord);
+        assertEquals("my-key-message", fieldMap.get(LOG_KEY_MESSAGE));
+        assertEquals("bar", fieldMap.get("foo"));
         assertEquals(100L, logRecord.getTimestamp_micros());
     }
 
@@ -331,8 +345,9 @@ public class SpanTest {
         assertSame(result, undertest);
         assertEquals(1, spanRecord.getLog_recordsSize());
         LogRecord logRecord = spanRecord.getLog_records().get(0);
-        assertEquals("1 key-value pair", logRecord.getMessage());
-        assertEquals("\"{foo=bar}\"", logRecord.getPayload_json());
+        Map<String, String> fieldMap = getLogFieldMap(logRecord);
+        assertNull(fieldMap.get(LOG_KEY_MESSAGE));
+        assertEquals("bar", fieldMap.get("foo"));
         assertEquals(100L, logRecord.getTimestamp_micros());
     }
 
@@ -342,8 +357,9 @@ public class SpanTest {
         assertSame(result, undertest);
         assertEquals(1, spanRecord.getLog_recordsSize());
         LogRecord logRecord = spanRecord.getLog_records().get(0);
-        assertEquals("my message", logRecord.getMessage());
-        assertNull(logRecord.getPayload_json());
+        Map<String, String> fieldMap = getLogFieldMap(logRecord);
+        assertEquals("my message", fieldMap.get("message"));
+        assertNull(fieldMap.get("payload"));
         assertNotNull(logRecord.getTimestamp_micros());
     }
 
@@ -353,8 +369,9 @@ public class SpanTest {
         assertSame(result, undertest);
         assertEquals(1, spanRecord.getLog_recordsSize());
         LogRecord logRecord = spanRecord.getLog_records().get(0);
-        assertEquals("my message", logRecord.getMessage());
-        assertNull(logRecord.getPayload_json());
+        Map<String, String> fieldMap = getLogFieldMap(logRecord);
+        assertEquals("my message", fieldMap.get("message"));
+        assertNull(fieldMap.get("payload"));
         assertEquals(100L, logRecord.getTimestamp_micros());
     }
 
@@ -364,8 +381,9 @@ public class SpanTest {
         assertSame(result, undertest);
         assertEquals(1, spanRecord.getLog_recordsSize());
         LogRecord logRecord = spanRecord.getLog_records().get(0);
-        assertEquals("my message", logRecord.getMessage());
-        assertEquals("\"{aKey:1}\"", logRecord.getPayload_json());
+        Map<String, String> fieldMap = getLogFieldMap(logRecord);
+        assertEquals("my message", fieldMap.get("message"));
+        assertEquals("{aKey:1}", fieldMap.get("payload"));
         assertNotNull(logRecord.getTimestamp_micros());
     }
 
@@ -375,8 +393,9 @@ public class SpanTest {
         assertSame(result, undertest);
         assertEquals(1, spanRecord.getLog_recordsSize());
         LogRecord logRecord = spanRecord.getLog_records().get(0);
-        assertEquals("my message", logRecord.getMessage());
-        assertEquals("\"{aKey:1}\"", logRecord.getPayload_json());
+        Map<String, String> fieldMap = getLogFieldMap(logRecord);
+        assertEquals("my message", fieldMap.get("message"));
+        assertEquals("{aKey:1}", fieldMap.get("payload"));
         assertEquals(100L, logRecord.getTimestamp_micros());
     }
 
