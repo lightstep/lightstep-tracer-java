@@ -24,6 +24,5 @@ thrift:
     ifndef LIGHTSTEP_HOME
         $(error LIGHTSTEP_HOME environment variable must be defined)
     endif
-	# thrift -r -gen java -out $(THRIFT_DIR) $(LIGHTSTEP_HOME)/go/src/crouton/crouton.thrift
 	docker run -v "$(THRIFT_DIR):/out" -v "$(LIGHTSTEP_HOME)/go/src/crouton:/data" --rm thrift:0.9.2 \
 		thrift -r --gen java -out /out /data/crouton.thrift
