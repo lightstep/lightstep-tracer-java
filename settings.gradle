@@ -5,5 +5,3 @@ include 'lightstep-tracer-android'
 include "java-common"
 project(":java-common").projectDir = file("common")
 include 'examples:jre-simple'
-include 'examples:android-demo'
-include 'examples:android-simple'
