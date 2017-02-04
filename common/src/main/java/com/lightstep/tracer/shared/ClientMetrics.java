@@ -1,12 +1,12 @@
 package com.lightstep.tracer.shared;
 
+import com.google.protobuf.Timestamp;
+import com.lightstep.tracer.grpc.InternalMetrics;
+import com.lightstep.tracer.grpc.MetricsSample;
 import java.util.ArrayList;
 
-import com.lightstep.tracer.thrift.Metrics;
-import com.lightstep.tracer.thrift.MetricsSample;
-
 /**
- * Tracks the number of spans dropped due to buffering limits.
+ * Tracks client metrics for internal purposes.
  */
 class ClientMetrics {
 
@@ -15,15 +15,18 @@ class ClientMetrics {
      * tracked.
      */
     private static final int NUMBER_OF_COUNTS = 1;
-
     long spansDropped;
+    final Timestamp startTime;
 
-    ClientMetrics() {
+
+    ClientMetrics(Timestamp startTime) {
         spansDropped = 0;
+        this.startTime = startTime;
     }
 
     ClientMetrics(ClientMetrics that) {
         spansDropped = that.spansDropped;
+        startTime = that.startTime;
     }
 
     void merge(ClientMetrics that) {
@@ -33,9 +36,11 @@ class ClientMetrics {
         spansDropped += that.spansDropped;
     }
 
-    Metrics toThrift() {
+    InternalMetrics toGrpc() {
         ArrayList<MetricsSample> counts = new ArrayList<>(NUMBER_OF_COUNTS);
-        counts.add(new MetricsSample("spans.dropped").setInt64_value(spansDropped));
-        return new Metrics().setCounts(counts);
+        counts.add(MetricsSample.newBuilder().setName("spans.dropped")
+            .setIntValue(spansDropped).build());
+        return InternalMetrics.newBuilder().addAllCounts(counts).build();
+
     }
 }

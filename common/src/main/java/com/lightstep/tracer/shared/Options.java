@@ -108,8 +108,8 @@ public final class Options {
         this.tags = tags;
     }
 
-    String getGuid() {
-        return tags.get(GUID_KEY).toString();
+    long getGuid() {
+        return (long) tags.get(GUID_KEY);
     }
 
     @SuppressWarnings({"WeakerAccess"})
@@ -292,7 +292,7 @@ public final class Options {
 
         private void defaultGuid() {
             if (tags.get(GUID_KEY) == null) {
-                withTag(GUID_KEY, RandomUtil.generateGUID());
+                withTag(GUID_KEY, Util.generateRandomGUID());
             }
         }
 
