@@ -30,13 +30,13 @@ class Util {
     };
 
     static long protoTimeToEpochMicros(Timestamp timestamp) {
-        return timestamp.getSeconds() * 1000 * 1000 + timestamp.getNanos() / 1000;
+        return timestamp.getSeconds() * 1000000 + timestamp.getNanos() / 1000;
     }
 
     static Timestamp epochTimeMicrosToProtoTime(long micros) {
         Timestamp.Builder builder = Timestamp.newBuilder();
-        builder.setSeconds(micros / 1000 / 1000);
-        builder.setNanos( (int) (micros % (1000 * 1000) * 1000));
+        builder.setSeconds(micros / 1000000);
+        builder.setNanos((int) (micros % 1000000) * 1000);
         return builder.build();
     }
 }

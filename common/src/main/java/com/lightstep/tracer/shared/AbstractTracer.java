@@ -7,8 +7,10 @@ import com.lightstep.tracer.grpc.ReportRequest;
 import com.lightstep.tracer.grpc.ReportResponse;
 import com.lightstep.tracer.grpc.Reporter;
 import com.lightstep.tracer.grpc.Span;
+import io.grpc.ManagedChannelProvider.ProviderNotFoundException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
@@ -47,7 +49,7 @@ public abstract class AbstractTracer implements Tracer {
     private final int verbosity;
     private final Auth.Builder auth;
     private final Reporter.Builder reporter;
-    private final CollectorClient client;
+    private CollectorClient client;
 
     /**
      * False, until the first error has been logged, after which it is true, and if verbosity says
@@ -97,18 +99,13 @@ public abstract class AbstractTracer implements Tracer {
         clockState = new ClockState();
         clientMetrics = new ClientMetrics(Util.epochTimeMicrosToProtoTime(nowMicrosApproximate()));
 
-        auth = Auth.newBuilder();
-        auth.setAccessToken(options.accessToken);
-
-        reporter = Reporter.newBuilder();
-        reporter.setReporterId(options.getGuid());
+        auth = Auth.newBuilder().setAccessToken(options.accessToken);
+        reporter = Reporter.newBuilder().setReporterId(options.getGuid());
         collectorURL = options.collectorUrl;
 
-        client = new CollectorClient(collectorURL.getHost(), collectorURL.getPort());
 
-        // TODO tags should support Map<String, Object> to type the value
         for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
-            addTracerTag(entry.getKey(), entry.getValue().toString());
+            addTracerTag(entry.getKey(), entry.getValue());
         }
 
         if (!options.disableReportingLoop) {
@@ -208,6 +205,7 @@ public abstract class AbstractTracer implements Tracer {
                         Thread.sleep(POLL_INTERVAL_MILLIS);
                     } catch (InterruptedException e) {
                         warn("Exception trying to sleep in reporting thread");
+                        Thread.currentThread().interrupt();
                     }
                 }
             }
@@ -249,13 +247,15 @@ public abstract class AbstractTracer implements Tracer {
         doStopReporting();
 
         synchronized (mutex) {
-            try {
-                client.shutdown();
-            } catch (InterruptedException e) {
-                warn("client interrupted during shutdown, force shutdown now.");
-                client.shutdownNow();
+            if (client != null ) {
+                try {
+                    client.shutdown();
+                } catch (InterruptedException e) {
+                    warn("client interrupted during shutdown, force shutdown now.");
+                    client.shutdownNow();
+                    Thread.currentThread().interrupt();
+                }
             }
-
             isDisabled = true;
 
             // The code makes various assumptions about this field never being
@@ -415,6 +415,15 @@ public abstract class AbstractTracer implements Tracer {
         try {
             long originMicros = nowMicrosApproximate();
             long originRelativeNanos = System.nanoTime();
+            if (client == null) {
+                try {
+                    client = new CollectorClient(collectorURL.getHost(), collectorURL.getPort());
+                } catch (ProviderNotFoundException e) {
+                    error("Exception creating GRPC client. Disabling tracer.");
+                    disable();
+                    return false;
+                }
+            }
             ReportResponse resp = client.report(reqBuilder.build());
 
             if (resp.hasReceiveTimestamp() && resp.hasTransmitTimestamp()) {
@@ -453,7 +462,7 @@ public abstract class AbstractTracer implements Tracer {
                 this.clientMetrics.merge(clientMetrics);
             }
 
-            // TODO should probably prepend and do it in bulk
+            // TODO May not be needed if we just increment dropped spans counter and report it to collectors
             for (Span span : reqBuilder.getSpansList()) {
                 addSpan(span);
             }
@@ -480,9 +489,23 @@ public abstract class AbstractTracer implements Tracer {
         }
     }
 
-    protected void addTracerTag(String key, String value) {
+    protected void addTracerTag(String key, Object value) {
         debug("Adding tracer tag: " + key + " => " + value);
-        reporter.addTags(KeyValue.newBuilder().setKey(key).setStringValue(value));
+        if (value instanceof String) {
+            reporter.addTags(KeyValue.newBuilder().setKey(key).setStringValue((String) value));
+        } else if (value instanceof Boolean) {
+            reporter.addTags(KeyValue.newBuilder().setKey(key).setBoolValue((Boolean) value));
+        } else if (value instanceof Number) {
+            if (value instanceof Long || value instanceof Integer) {
+                reporter.addTags(KeyValue.newBuilder().setKey(key).setIntValue(((Number) value).longValue()));
+            } else if (value instanceof Double || value instanceof Float) {
+                reporter.addTags(KeyValue.newBuilder().setKey(key).setDoubleValue(((Number) value).doubleValue()));
+            } else {
+                reporter.addTags(KeyValue.newBuilder().setKey(key).setStringValue(value.toString()));
+            }
+        } else {
+            reporter.addTags(KeyValue.newBuilder().setKey(key).setStringValue(value.toString()));
+        }
     }
 
     /**
@@ -568,7 +591,7 @@ public abstract class AbstractTracer implements Tracer {
     String generateTraceURL(long spanId) {
         return "https://app.lightstep.com/" + auth.getAccessToken() +
                 "/trace?span_guid=" + Long.toHexString(spanId) +
-                "&at_micros=" + (System.currentTimeMillis() * 1000);
+                "&at_micros=" + nowMicrosApproximate();
     }
 
     /**

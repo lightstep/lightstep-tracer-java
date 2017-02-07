@@ -1,6 +1,5 @@
 package com.lightstep.tracer.shared;
 
-import com.google.protobuf.Timestamp;
 import com.lightstep.tracer.grpc.KeyValue;
 import com.lightstep.tracer.grpc.Log;
 import com.lightstep.tracer.grpc.Span.Builder;
@@ -76,8 +75,15 @@ public class Span implements io.opentracing.Span {
             return this;
         }
         synchronized (mutex) {
-            // TODO convert to number value? lose precision?
-            grpcSpan.addTags(KeyValue.newBuilder().setKey(key).setStringValue(value.toString()));
+            if (value instanceof Long || value instanceof Integer) {
+                grpcSpan.addTags(KeyValue.newBuilder().setKey(key).setIntValue(value.longValue()));
+            } else if (value instanceof Double || value instanceof Float) {
+                grpcSpan
+                    .addTags(KeyValue.newBuilder().setKey(key).setDoubleValue(value.doubleValue()));
+            } else {
+                grpcSpan
+                    .addTags(KeyValue.newBuilder().setKey(key).setStringValue(value.toString()));
+            }
         }
         return this;
     }
@@ -112,18 +118,21 @@ public class Span implements io.opentracing.Span {
 
     @Override
     public final Span log(long timestampMicros, Map<String, ?> fields) {
-        com.lightstep.tracer.grpc.Log.Builder log = Log.newBuilder();
-
-        log.setTimestamp(Util.epochTimeMicrosToProtoTime(timestampMicros));
+        com.lightstep.tracer.grpc.Log.Builder log = Log.newBuilder()
+            .setTimestamp(Util.epochTimeMicrosToProtoTime(timestampMicros));
         for (Map.Entry<String, ?> kv : fields.entrySet()) {
             final Object inValue = kv.getValue();
-            final KeyValue.Builder outKV = KeyValue.newBuilder();
-            outKV.setKey(kv.getKey());
+            final KeyValue.Builder outKV = KeyValue.newBuilder().setKey(kv.getKey());
             if (inValue instanceof String) {
                 outKV.setStringValue((String)inValue);
             } else if (inValue instanceof Number) {
-                // TODO convert Number class?
-                outKV.setStringValue(((Number)inValue).toString());
+                if (inValue instanceof Long || inValue instanceof Integer) {
+                    outKV.setIntValue(((Number) inValue).longValue());
+                } else if (inValue instanceof Double || inValue instanceof Float) {
+                    outKV.setDoubleValue(((Number) inValue).doubleValue());
+                } else {
+                    outKV.setStringValue(inValue.toString());
+                }
             } else if (inValue instanceof Boolean) {
                 outKV.setBoolValue((Boolean)inValue);
             } else {
@@ -237,5 +246,12 @@ public class Span implements io.opentracing.Span {
      */
     long getStartTimestampRelativeNanos() {
         return startTimestampRelativeNanos;
+    }
+
+    /**
+     * For unit testing in JRE test.
+     */
+    public Builder getGrpcSpan() {
+        return grpcSpan;
     }
 }

@@ -1,9 +1,8 @@
 package com.lightstep.tracer.shared;
 
-import com.lightstep.tracer.thrift.KeyValue;
-import com.lightstep.tracer.thrift.SpanRecord;
-import com.lightstep.tracer.thrift.TraceJoinId;
-
+import com.lightstep.tracer.grpc.KeyValue;
+import com.lightstep.tracer.grpc.Span.Builder;
+import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,20 +33,14 @@ public class SpanBuilderTest {
     @Mock
     private AbstractTracer tracer;
 
-    @Mock
     private SpanContext context;
-
     private SpanBuilder undertest;
-    private Iterable<Map.Entry<String, String>> baggageItems;
+    private Map<String, String> baggageItems;
 
     @Before
     public void setup() {
-        baggageItems = Collections.<String, String>emptyMap().entrySet();
-        when(context.baggageItems()).thenReturn(baggageItems);
-
-        when(context.getTraceId()).thenReturn(TRACE_ID);
-        when(context.getSpanId()).thenReturn(SPAN_ID);
-
+        baggageItems = Collections.emptyMap();
+        context = new SpanContext(TRACE_ID, SPAN_ID, baggageItems);
         undertest = new SpanBuilder(OPERATION_NAME, tracer);
     }
 
@@ -96,7 +89,6 @@ public class SpanBuilderTest {
         undertest.withTag("key1", "value1");
         undertest.withTag("key2", true);
         undertest.withTag("key3", 1001);
-        undertest.withTag("join:key4", "value4");
 
         // start the Span
         io.opentracing.Span otSpan = undertest.start();
@@ -104,15 +96,12 @@ public class SpanBuilderTest {
         assertTrue(otSpan instanceof Span);
         Span lsSpan = (Span) otSpan;
 
-        SpanRecord record = lsSpan.getRecord();
+        Builder record = lsSpan.getGrpcSpan();
 
-        List<KeyValue> attributes = record.getAttributes();
-        assertTrue(attributes.contains(new KeyValue("key1", "value1")));
-        assertTrue(attributes.contains(new KeyValue("key2", "true")));
-        assertTrue(attributes.contains(new KeyValue("key3", "1001")));
-
-        List<TraceJoinId> joinIds = record.getJoin_ids();
-        assertTrue(joinIds.contains(new TraceJoinId("join:key4", "value4")));
+        List<KeyValue> attributes = record.getTagsList();
+        assertTrue(attributes.contains(KeyValue.newBuilder().setKey("key1").setStringValue("value1").build()));
+        assertTrue(attributes.contains(KeyValue.newBuilder().setKey("key2").setBoolValue(true).build()));
+        assertTrue(attributes.contains(KeyValue.newBuilder().setKey("key3").setIntValue(1001).build()));
 
         verifyResultingSpan(lsSpan);
     }
@@ -142,8 +131,8 @@ public class SpanBuilderTest {
 
         assertTrue(lsSpan.getStartTimestampRelativeNanos() + " was not greater than zero",
                 lsSpan.getStartTimestampRelativeNanos() > 0);
-        assertTrue(lsSpan.getRecord().getOldest_micros() + " was not greater than zero",
-                lsSpan.getRecord().getOldest_micros() > 0);
+        assertTrue(lsSpan.getGrpcSpan().getStartTimestamp() + " was not greater than zero",
+                Util.protoTimeToEpochMicros(lsSpan.getGrpcSpan().getStartTimestamp()) > 0);
 
         verifyResultingSpan(lsSpan);
     }
@@ -163,7 +152,7 @@ public class SpanBuilderTest {
         Span lsSpan = (Span) otSpan;
 
         assertEquals(-1, lsSpan.getStartTimestampRelativeNanos());
-        assertEquals(2002L, lsSpan.getRecord().getOldest_micros());
+        assertEquals(2002L, Util.protoTimeToEpochMicros(lsSpan.getGrpcSpan().getStartTimestamp()));
 
         verifyResultingSpan(lsSpan);
     }
@@ -190,7 +179,7 @@ public class SpanBuilderTest {
     private void verifySettingsFromParent() {
         // verify that getBaggage returns baggage from parent
         Iterable<Map.Entry<String, String>> actualBaggageItems = undertest.baggageItems();
-        assertSame(baggageItems, actualBaggageItems);
+        assertEquals(baggageItems.entrySet(), actualBaggageItems);
 
         // start the span
         io.opentracing.Span otSpan = undertest.start();
@@ -203,9 +192,9 @@ public class SpanBuilderTest {
         assertEquals(TRACE_ID, spanContext.getTraceId());
 
         // verify that record has span id set
-        SpanRecord spanRecord = lsSpan.getRecord();
-        List<KeyValue> attributes = spanRecord.getAttributes();
-        assertTrue(attributes.contains(new KeyValue(PARENT_SPAN_GUID_KEY, Long.toHexString(SPAN_ID))));
+        Builder spanRecord = lsSpan.getGrpcSpan();
+        List<KeyValue> attributes = spanRecord.getTagsList();
+        assertTrue(attributes.contains(KeyValue.newBuilder().setKey(PARENT_SPAN_GUID_KEY).setIntValue(SPAN_ID).build()));
 
         verifyResultingSpan(lsSpan);
         assertEquals(TRACE_ID, context.getTraceId());
@@ -215,13 +204,13 @@ public class SpanBuilderTest {
      * Verify values that should be set on the result span regardless of other state.
      */
     private void verifyResultingSpan(Span resultingSpan) {
-        SpanRecord record = resultingSpan.getRecord();
+        Builder record = resultingSpan.getGrpcSpan();
         SpanContext context = resultingSpan.context();
 
         assertNotEquals(SPAN_ID, context.getSpanId());
 
-        assertEquals(OPERATION_NAME, record.getSpan_name());
-        assertEquals(Long.toHexString(context.getTraceId()), record.getTrace_guid());
-        assertEquals(Long.toHexString(context.getSpanId()), record.getSpan_guid());
+        assertEquals(OPERATION_NAME, record.getOperationName());
+        assertEquals(context.getTraceId(), record.getSpanContext().getTraceId());
+        assertEquals(context.getSpanId(), record.getSpanContext().getSpanId());
     }
 }

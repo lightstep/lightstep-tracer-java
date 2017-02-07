@@ -1,9 +1,9 @@
 package com.lightstep.tracer.jre;
 
+import com.lightstep.tracer.grpc.KeyValue;
+import com.lightstep.tracer.grpc.Span.Builder;
 import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.shared.Status;
-import com.lightstep.tracer.thrift.KeyValue;
-import com.lightstep.tracer.thrift.SpanRecord;
 
 import org.junit.Test;
 
@@ -22,7 +22,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class RuntimeTest {
+public class JRETracerTest {
+    private static final String PREFIX_TRACER_STATE = "ot-tracer-";
+
+    static final String FIELD_NAME_TRACE_ID = PREFIX_TRACER_STATE + "traceid";
+    static final String FIELD_NAME_SPAN_ID = PREFIX_TRACER_STATE + "spanid";
 
     @Test
     public void tracerHasStandardTags() throws Exception {
@@ -170,6 +174,8 @@ public class RuntimeTest {
                 new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
 
         Map<String, String> headerMap = new HashMap<>();
+        headerMap.put(FIELD_NAME_TRACE_ID, "1");
+        headerMap.put(FIELD_NAME_SPAN_ID, "123");
         SpanContext parentCtx = tracer.extract(HTTP_HEADERS, new TextMapExtractAdapter(headerMap));
 
         Span span = tracer.buildSpan("test_span")
@@ -180,13 +186,13 @@ public class RuntimeTest {
 
     private void assertSpanHasTag(Span span, String key, String value) {
         com.lightstep.tracer.shared.Span lsSpan = (com.lightstep.tracer.shared.Span) span;
-        SpanRecord record = lsSpan.getRecord();
+        Builder record = lsSpan.getGrpcSpan();
 
-        assertNotNull("Tags are currently written the attributes", record.attributes);
+        assertNotNull("Tags are currently written the attributes", record.getTagsList());
 
         boolean found = false;
-        for (KeyValue pair : record.attributes) {
-            if (pair.Key.equals(key) && pair.Value.equals(value)) {
+        for (KeyValue pair : record.getTagsList()) {
+            if (pair.getKey().equals(key) && pair.getStringValue().equals(value)) {
                 found = true;
             }
         }

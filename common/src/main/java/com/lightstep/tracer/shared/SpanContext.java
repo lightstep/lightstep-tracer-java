@@ -1,5 +1,6 @@
 package com.lightstep.tracer.shared;
 
+import java.util.HashMap;
 import java.util.Map;
 import com.lightstep.tracer.grpc.SpanContext.Builder;
 
@@ -18,13 +19,17 @@ public class SpanContext implements io.opentracing.SpanContext {
 
     SpanContext(long traceId, long spanId, Map<String, String> baggage) {
         this(traceId, spanId);
-        ctxBuilder.putAllBaggage(baggage);
+        if (baggage != null) {
+            ctxBuilder.putAllBaggage(baggage);
+        }
     }
 
     SpanContext(long traceId, Map<String, String> baggage) {
         ctxBuilder.setTraceId(traceId);
         ctxBuilder.setSpanId(Util.generateRandomGUID());
-        ctxBuilder.putAllBaggage(baggage);
+        if (baggage != null) {
+            ctxBuilder.putAllBaggage(baggage);
+        }
     }
 
     SpanContext(long traceId) {
@@ -44,8 +49,15 @@ public class SpanContext implements io.opentracing.SpanContext {
     }
 
     SpanContext withBaggageItem(String key, String value) {
+        Map<String, String> baggageCopy;
+        if (ctxBuilder.getBaggageMap() != null) {
+            baggageCopy = new HashMap<>(ctxBuilder.getBaggageMap());
+        } else {
+            baggageCopy = new HashMap<>();
+        }
+        baggageCopy.put(key, value);
         ctxBuilder.putBaggage(key, value);
-        return this;
+        return new SpanContext(ctxBuilder.getTraceId(), ctxBuilder.getSpanId(), baggageCopy);
     }
 
     @Override

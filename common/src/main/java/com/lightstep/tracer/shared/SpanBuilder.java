@@ -25,6 +25,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
     private Long spanId = null;
     private final Map<String, String> stringTags;
     private final Map<String, Boolean> boolTags;
+    private final Map<String, Number> numTags;
     private final AbstractTracer tracer;
     private SpanContext parent;
     private long startTimestampMicros;
@@ -35,6 +36,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         this.tracer = tracer;
         stringTags = new HashMap<>();
         boolTags = new HashMap<>();
+        numTags = new HashMap<>();
     }
 
     public Tracer.SpanBuilder asChildOf(io.opentracing.Span parent) {
@@ -71,8 +73,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
     }
 
     public Tracer.SpanBuilder withTag(String key, Number value) {
-        // TODO use int or double value
-        stringTags.put(key, value.toString());
+        numTags.put(key, value);
         return this;
     }
 
@@ -117,7 +118,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         if (parent != null) {
             traceId = parent.getTraceId();
             grpcSpan.addTags(KeyValue.newBuilder().setKey(PARENT_SPAN_GUID_KEY)
-                .setStringValue(Long.toHexString(parent.getSpanId())));
+                .setIntValue(parent.getSpanId()));
         }
         SpanContext newSpanContext;
         if (traceId != null && spanId != null) {
@@ -136,6 +137,9 @@ public class SpanBuilder implements Tracer.SpanBuilder {
             span.setTag(pair.getKey(), pair.getValue());
         }
         for (Map.Entry<String, Boolean> pair : boolTags.entrySet()) {
+            span.setTag(pair.getKey(), pair.getValue());
+        }
+        for (Map.Entry<String, Number> pair : numTags.entrySet()) {
             span.setTag(pair.getKey(), pair.getValue());
         }
         return span;

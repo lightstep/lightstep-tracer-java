@@ -17,7 +17,7 @@ public class CollectorClient {
    * Constructor client for accessing CollectorService at {@code host:port}
    */
   public CollectorClient(String host, int port) {
-    this(ManagedChannelBuilder.forAddress(host, port).usePlaintext(true));
+    this(ManagedChannelBuilder.forAddress(host, port));
   }
 
   /**
