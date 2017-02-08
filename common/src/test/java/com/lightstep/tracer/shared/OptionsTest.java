@@ -13,6 +13,7 @@ import static com.lightstep.tracer.shared.Options.LEGACY_COMPONENT_NAME_KEY;
 import static com.lightstep.tracer.shared.Options.VERBOSITY_DEBUG;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -28,7 +29,7 @@ public class OptionsTest {
     private static final int MAX_BUFFERED_SPANS = 999;
     private static final String TAG_KEY = "my-tag-key";
     private static final String TAG_VALUE = "my-tag-value";
-    private static final Object GUID_VALUE = "abc123";
+    private static final long GUID_VALUE = 123;
 
     /**
      * Basic test of OptionsBuilder that ensures if I set everything explicitly, that these values
@@ -127,9 +128,7 @@ public class OptionsTest {
     @Test
     public void testOptionsBuilder_noGuid() throws Exception {
         Options options = new Options.OptionsBuilder().build();
-        String guid = options.getGuid();
-        assertNotNull(guid);
-        assertFalse(guid.isEmpty());
+        assertNotEquals(0L, options.getGuid());
     }
 
     @Test
