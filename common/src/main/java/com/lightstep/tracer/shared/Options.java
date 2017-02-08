@@ -21,7 +21,7 @@ public final class Options {
     /**
      * Hostname that will be used for the collector if no other value is provided.
      */
-    private static final String DEFAULT_COLLECTOR_HOST = "collector.lightstep.com";
+    private static final String DEFAULT_COLLECTOR_HOST = "collector-grpc.lightstep.com";
 
     /**
      * Default collector port for HTTPS
