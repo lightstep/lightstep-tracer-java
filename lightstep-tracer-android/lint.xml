@@ -1,5 +1,6 @@
 <lint>
     <issue id="InvalidPackage">
         <ignore path="**/libthrift*.jar"/>
+        <ignore regexp="okio.*jar" />
     </issue>
 </lint>
