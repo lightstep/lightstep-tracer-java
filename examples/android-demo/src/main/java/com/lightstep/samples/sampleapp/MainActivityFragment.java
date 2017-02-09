@@ -46,6 +46,7 @@ public class MainActivityFragment extends Fragment {
 
     public MainActivityFragment() throws MalformedURLException {
         options = new Options.OptionsBuilder().
+                withComponentName("Android Demo").
                 withAccessToken(ACCESS_TOKEN).
                 withVerbosity(4).
                 build();

@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     public MainActivity() throws MalformedURLException {
         options = new Options.OptionsBuilder().
                 withAccessToken("{your_access_token}").
+                withComponentName("Android Simple").
                 build();
     }
 
