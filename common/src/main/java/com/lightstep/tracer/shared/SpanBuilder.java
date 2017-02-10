@@ -108,7 +108,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         long startTimestampRelativeNanos = -1;
         if (startTimestampMicros == 0) {
             startTimestampRelativeNanos = System.nanoTime();
-            startTimestampMicros = AbstractTracer.nowMicrosApproximate();
+            startTimestampMicros = Util.nowMicrosApproximate();
         }
 
         grpcSpan.setOperationName(operationName);
