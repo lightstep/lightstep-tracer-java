@@ -39,4 +39,15 @@ class Util {
         builder.setNanos((int) (micros % 1000000) * 1000);
         return builder.build();
     }
+
+    static int safeLongToInt(long l) throws IllegalArgumentException {
+        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(l + " cannot be cast to an int without changing its value.");
+        }
+        return (int) l;
+    }
+
+    static long nowMicrosApproximate() {
+        return System.currentTimeMillis() * 1000;
+    }
 }
