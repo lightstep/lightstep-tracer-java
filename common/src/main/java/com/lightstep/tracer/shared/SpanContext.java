@@ -1,33 +1,35 @@
 package com.lightstep.tracer.shared;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+import com.lightstep.tracer.grpc.SpanContext.Builder;
 
 public class SpanContext implements io.opentracing.SpanContext {
-    private final long traceId;
-    private final long spanId;
-    private Map<String, String> baggage;
+    private final Builder ctxBuilder = com.lightstep.tracer.grpc.SpanContext.newBuilder();
 
     public SpanContext() {
-        this.traceId = RandomUtil.generateGUID();
-        this.spanId = RandomUtil.generateGUID();
+        ctxBuilder.setTraceId(Util.generateRandomGUID());
+        ctxBuilder.setSpanId(Util.generateRandomGUID());
     }
 
     public SpanContext(long traceId, long spanId) {
-        this.traceId = traceId;
-        this.spanId = spanId;
+        ctxBuilder.setTraceId(traceId);
+        ctxBuilder.setSpanId(spanId);
     }
 
     SpanContext(long traceId, long spanId, Map<String, String> baggage) {
         this(traceId, spanId);
-        this.baggage = baggage;
+        if (baggage != null) {
+            ctxBuilder.putAllBaggage(baggage);
+        }
     }
 
     SpanContext(long traceId, Map<String, String> baggage) {
-        this.traceId = traceId;
-        this.spanId = RandomUtil.generateGUID();
-        this.baggage = baggage;
+        ctxBuilder.setTraceId(traceId);
+        ctxBuilder.setSpanId(Util.generateRandomGUID());
+        if (baggage != null) {
+            ctxBuilder.putAllBaggage(baggage);
+        }
     }
 
     SpanContext(long traceId) {
@@ -35,37 +37,35 @@ public class SpanContext implements io.opentracing.SpanContext {
     }
 
     public long getSpanId() {
-        return spanId;
+        return ctxBuilder.getSpanId();
     }
 
     public long getTraceId() {
-        return traceId;
+        return ctxBuilder.getTraceId();
     }
 
     String getBaggageItem(String key) {
-        if (baggage == null) {
-            return null;
-        }
-        return baggage.get(key);
+        return ctxBuilder.getBaggageOrDefault(key, null);
     }
 
     SpanContext withBaggageItem(String key, String value) {
         Map<String, String> baggageCopy;
-        if (baggage == null) {
-            baggageCopy = new HashMap<>();
+        if (ctxBuilder.getBaggageMap() != null) {
+            baggageCopy = new HashMap<>(ctxBuilder.getBaggageMap());
         } else {
-            baggageCopy = new HashMap<>(baggage);
+            baggageCopy = new HashMap<>();
         }
         baggageCopy.put(key, value);
-        return new SpanContext(traceId, spanId, baggageCopy);
+        ctxBuilder.putBaggage(key, value);
+        return new SpanContext(ctxBuilder.getTraceId(), ctxBuilder.getSpanId(), baggageCopy);
     }
 
     @Override
     public Iterable<Map.Entry<String, String>> baggageItems() {
-        if (baggage == null) {
-            return Collections.emptySet();
-        } else {
-            return baggage.entrySet();
-        }
+        return ctxBuilder.getBaggageMap().entrySet();
+    }
+
+    public Builder getInnerSpanCtx() {
+        return ctxBuilder;
     }
 }

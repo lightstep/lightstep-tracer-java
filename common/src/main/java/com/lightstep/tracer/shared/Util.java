@@ -1,10 +1,11 @@
 package com.lightstep.tracer.shared;
 
+import com.google.protobuf.Timestamp;
 import java.util.Random;
 
-class RandomUtil {
+class Util {
 
-    static long generateGUID() {
+    static long generateRandomGUID() {
         // Note that ThreadLocalRandom is a singleton, thread safe Random Generator
         return random.get().nextLong();
     }
@@ -27,4 +28,26 @@ class RandomUtil {
                             (long) (1024 * Math.random()));
         }
     };
+
+    static long protoTimeToEpochMicros(Timestamp timestamp) {
+        return timestamp.getSeconds() * 1000000 + timestamp.getNanos() / 1000;
+    }
+
+    static Timestamp epochTimeMicrosToProtoTime(long micros) {
+        Timestamp.Builder builder = Timestamp.newBuilder();
+        builder.setSeconds(micros / 1000000);
+        builder.setNanos((int) (micros % 1000000) * 1000);
+        return builder.build();
+    }
+
+    static int safeLongToInt(long l) throws IllegalArgumentException {
+        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(l + " cannot be cast to an int without changing its value.");
+        }
+        return (int) l;
+    }
+
+    static long nowMicrosApproximate() {
+        return System.currentTimeMillis() * 1000;
+    }
 }

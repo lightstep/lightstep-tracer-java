@@ -1,9 +1,8 @@
 package com.lightstep.tracer.shared;
 
-import com.lightstep.tracer.thrift.KeyValue;
-import com.lightstep.tracer.thrift.LogRecord;
-import com.lightstep.tracer.thrift.SpanRecord;
-import com.lightstep.tracer.thrift.TraceJoinId;
+import com.lightstep.tracer.grpc.KeyValue;
+import com.lightstep.tracer.grpc.Log;
+import com.lightstep.tracer.grpc.Span.Builder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,15 +14,15 @@ public class Span implements io.opentracing.Span {
 
     private final Object mutex = new Object();
     private final AbstractTracer tracer;
-    private final SpanRecord record;
     private final long startTimestampRelativeNanos;
+    private final Builder grpcSpan;
 
     private SpanContext context;
 
-    Span(AbstractTracer tracer, SpanContext context, SpanRecord record, long startTimestampRelativeNanos) {
+    Span(AbstractTracer tracer, SpanContext context, Builder grpcSpan, long startTimestampRelativeNanos) {
         this.context = context;
         this.tracer = tracer;
-        this.record = record;
+        this.grpcSpan = grpcSpan;
         this.startTimestampRelativeNanos = startTimestampRelativeNanos;
     }
 
@@ -40,8 +39,8 @@ public class Span implements io.opentracing.Span {
     @Override
     public void finish(long finishTimeMicros) {
         synchronized (mutex) {
-            record.setYoungest_micros(finishTimeMicros);
-            tracer.addSpan(record);
+            grpcSpan.setDurationMicros(durationMicros(finishTimeMicros));
+            tracer.addSpan(grpcSpan.build());
         }
     }
 
@@ -52,11 +51,7 @@ public class Span implements io.opentracing.Span {
             return this;
         }
         synchronized (mutex) {
-            if (isJoinKey(key)) {
-                record.addToJoin_ids(new TraceJoinId(key, value));
-            } else {
-                record.addToAttributes(new KeyValue(key, value));
-            }
+            grpcSpan.addTags(KeyValue.newBuilder().setKey(key).setStringValue(value));
         }
         return this;
     }
@@ -68,11 +63,7 @@ public class Span implements io.opentracing.Span {
             return this;
         }
         synchronized (mutex) {
-            if (isJoinKey(key)) {
-                record.addToJoin_ids(new TraceJoinId(key, value ? "true" : "false"));
-            } else {
-                record.addToAttributes(new KeyValue(key, value ? "true" : "false"));
-            }
+            grpcSpan.addTags(KeyValue.newBuilder().setKey(key).setBoolValue(value));
         }
         return this;
     }
@@ -84,10 +75,14 @@ public class Span implements io.opentracing.Span {
             return this;
         }
         synchronized (mutex) {
-            if (isJoinKey(key)) {
-                record.addToJoin_ids(new TraceJoinId(key, value.toString()));
+            if (value instanceof Long || value instanceof Integer) {
+                grpcSpan.addTags(KeyValue.newBuilder().setKey(key).setIntValue(value.longValue()));
+            } else if (value instanceof Double || value instanceof Float) {
+                grpcSpan
+                    .addTags(KeyValue.newBuilder().setKey(key).setDoubleValue(value.doubleValue()));
             } else {
-                record.addToAttributes(new KeyValue(key, value.toString()));
+                grpcSpan
+                    .addTags(KeyValue.newBuilder().setKey(key).setStringValue(value.toString()));
             }
         }
         return this;
@@ -105,16 +100,12 @@ public class Span implements io.opentracing.Span {
     }
 
     public synchronized Span setOperationName(String operationName) {
-        record.setSpan_name(operationName);
+        grpcSpan.setOperationName(operationName);
         return this;
     }
 
     public void close() {
         finish();
-    }
-
-    static boolean isJoinKey(String key) {
-        return key != null && key.startsWith("join:");
     }
 
     public AbstractTracer getTracer() {
@@ -127,27 +118,31 @@ public class Span implements io.opentracing.Span {
 
     @Override
     public final Span log(long timestampMicros, Map<String, ?> fields) {
-        LogRecord log = new LogRecord();
-
-        log.setTimestamp_micros(timestampMicros);
+        com.lightstep.tracer.grpc.Log.Builder log = Log.newBuilder()
+            .setTimestamp(Util.epochTimeMicrosToProtoTime(timestampMicros));
         for (Map.Entry<String, ?> kv : fields.entrySet()) {
             final Object inValue = kv.getValue();
-            final KeyValue outKV = new KeyValue();
-            outKV.setKey(kv.getKey());
+            final KeyValue.Builder outKV = KeyValue.newBuilder().setKey(kv.getKey());
             if (inValue instanceof String) {
-                outKV.setValue((String)inValue);
+                outKV.setStringValue((String)inValue);
             } else if (inValue instanceof Number) {
-                outKV.setValue(((Number)inValue).toString());
+                if (inValue instanceof Long || inValue instanceof Integer) {
+                    outKV.setIntValue(((Number) inValue).longValue());
+                } else if (inValue instanceof Double || inValue instanceof Float) {
+                    outKV.setDoubleValue(((Number) inValue).doubleValue());
+                } else {
+                    outKV.setStringValue(inValue.toString());
+                }
             } else if (inValue instanceof Boolean) {
-                outKV.setValue(((Boolean)inValue).toString());
+                outKV.setBoolValue((Boolean)inValue);
             } else {
-                outKV.setValue(Span.stringToJSONValue(inValue.toString()));
+                outKV.setJsonValue(Span.stringToJSONValue(inValue.toString()));
             }
-            log.addToFields(outKV);
+            log.addKeyvalues(outKV.build());
         }
 
         synchronized (mutex) {
-            record.addToLog_records(log);
+            grpcSpan.addLogs(log.build());
         }
         return this;
     }
@@ -186,10 +181,14 @@ public class Span implements io.opentracing.Span {
         // provided an explicit start timestamp in the SpanBuilder.
         if (startTimestampRelativeNanos > 0) {
             long durationMicros = (System.nanoTime() - startTimestampRelativeNanos) / 1000;
-            return record.getOldest_micros() + durationMicros;
+            return Util.protoTimeToEpochMicros(grpcSpan.getStartTimestamp())+ durationMicros;
         } else {
             return System.currentTimeMillis() * 1000;
         }
+    }
+
+    private long durationMicros(long finishTimeMicros) {
+        return finishTimeMicros - Util.protoTimeToEpochMicros(grpcSpan.getStartTimestamp());
     }
 
     /**
@@ -245,14 +244,14 @@ public class Span implements io.opentracing.Span {
     /**
      * For unit testing only.
      */
-    public SpanRecord getRecord() {
-        return record;
+    long getStartTimestampRelativeNanos() {
+        return startTimestampRelativeNanos;
     }
 
     /**
-     * For unit testing only.
+     * For unit testing in JRE test.
      */
-    long getStartTimestampRelativeNanos() {
-        return startTimestampRelativeNanos;
+    public Builder getGrpcSpan() {
+        return grpcSpan;
     }
 }

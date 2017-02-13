@@ -1,20 +1,13 @@
 package com.lightstep.tracer.shared;
 
-import com.lightstep.tracer.thrift.Auth;
-import com.lightstep.tracer.thrift.Command;
-import com.lightstep.tracer.thrift.KeyValue;
-import com.lightstep.tracer.thrift.ReportRequest;
-import com.lightstep.tracer.thrift.ReportResponse;
-import com.lightstep.tracer.thrift.ReportingService;
-import com.lightstep.tracer.thrift.Runtime;
-import com.lightstep.tracer.thrift.SpanRecord;
-
-import org.apache.thrift.TApplicationException;
-import org.apache.thrift.TException;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.transport.THttpClient;
-import org.apache.thrift.transport.TTransport;
-
+import com.lightstep.tracer.grpc.Auth;
+import com.lightstep.tracer.grpc.Command;
+import com.lightstep.tracer.grpc.KeyValue;
+import com.lightstep.tracer.grpc.ReportRequest;
+import com.lightstep.tracer.grpc.ReportResponse;
+import com.lightstep.tracer.grpc.Reporter;
+import com.lightstep.tracer.grpc.Span;
+import io.grpc.ManagedChannelProvider.ProviderNotFoundException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -53,23 +46,23 @@ public abstract class AbstractTracer implements Tracer {
     }
 
     private final int verbosity;
-    private final Auth auth;
-    private final Runtime runtime;
+    private final Auth.Builder auth;
+    private final Reporter.Builder reporter;
+    private CollectorClient client;
 
     /**
      * False, until the first error has been logged, after which it is true, and if verbosity says
      * not to log more than one error, no more errors will be logged.
      */
     private boolean firstErrorLogged = false;
-    private URL collectorURL;
 
     // Timestamp of the last recorded span. Used to terminate the reporting
     // loop thread if no new data has come in (which is necessary for clean
     // shutdown).
     private final AtomicLong lastNewSpanMillis;
-    private ArrayList<SpanRecord> spans;
+    private ArrayList<Span> spans;
     private final ClockState clockState;
-    private ClientMetrics clientMetrics;
+    private final URL collectorURL;
 
     // Should *NOT* attempt to take a span's lock while holding this lock.
     protected final Object mutex = new Object();
@@ -85,9 +78,6 @@ public abstract class AbstractTracer implements Tracer {
 
     private boolean isDisabled;
 
-    private TTransport transport;
-    private ReportingService.Client client;
-
     public AbstractTracer(Options options) {
         // Set verbosity first so debug logs from the constructor take effect
         verbosity = options.verbosity;
@@ -99,27 +89,21 @@ public abstract class AbstractTracer implements Tracer {
         lastNewSpanMillis = new AtomicLong(System.currentTimeMillis());
         spans = new ArrayList<>(maxBufferedSpans);
 
-        clockState = new ClockState();
-        clientMetrics = new ClientMetrics();
-
-        auth = new Auth();
-        auth.setAccess_token(options.accessToken);
-
-        runtime = new Runtime();
-        runtime.setGuid(options.getGuid());
-
         // Unfortunately Java7 has no way to generate a timestamp that's both
         // precise (a la System.nanoTime()) and absolute (a la
         // System.currentTimeMillis()). We store an absolute start timestamp but at
         // least get a precise duration at Span.finish() time via
         // startTimestampRelativeNanos (search for it below).
-        runtime.setStart_micros(nowMicrosApproximate());
+        clockState = new ClockState();
+
+        auth = Auth.newBuilder().setAccessToken(options.accessToken);
+        reporter = Reporter.newBuilder().setReporterId(options.getGuid());
+        collectorURL = options.collectorUrl;
+
 
         for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
-            addTracerTag(entry.getKey(), entry.getValue().toString());
+            addTracerTag(entry.getKey(), entry.getValue());
         }
-
-        collectorURL = options.collectorUrl;
 
         if (!options.disableReportingLoop) {
             reportingLoop = new ReportingLoop(options.maxReportingIntervalMillis);
@@ -195,6 +179,7 @@ public abstract class AbstractTracer implements Tracer {
                         reportSucceeded = result.get();
                     } catch (InterruptedException e) {
                         warn("Future timed out");
+                        Thread.currentThread().interrupt();
                     }
 
                     // Check consecutive failures for back off purposes
@@ -218,6 +203,7 @@ public abstract class AbstractTracer implements Tracer {
                         Thread.sleep(POLL_INTERVAL_MILLIS);
                     } catch (InterruptedException e) {
                         warn("Exception trying to sleep in reporting thread");
+                        Thread.currentThread().interrupt();
                     }
                 }
             }
@@ -259,11 +245,9 @@ public abstract class AbstractTracer implements Tracer {
         doStopReporting();
 
         synchronized (mutex) {
-            if (transport != null) {
-                transport.close();
-                transport = null;
+            if (client != null ) {
+                client.shutdown();
             }
-
             isDisabled = true;
 
             // The code makes various assumptions about this field never being
@@ -333,6 +317,16 @@ public abstract class AbstractTracer implements Tracer {
 
     protected abstract SimpleFuture<Boolean> flushInternal(boolean explicitRequest);
 
+    private boolean initializeCollectorClient() {
+        try {
+            client = new CollectorClient(this, collectorURL.getHost(), collectorURL.getPort());
+        } catch (ProviderNotFoundException e) {
+            error("Exception creating GRPC client. Disabling tracer.");
+            disable();
+            return false;
+        }
+        return true;
+    }
     /**
      * Does the work of a flush by sending spans to the collector.
      *
@@ -386,18 +380,14 @@ public abstract class AbstractTracer implements Tracer {
      * Returns false in the case of an error. True if the report was successful.
      */
     private boolean sendReportWorker(boolean explicitRequest) {
-        // Data to be sent. Maybe be merged back into the local buffers if the
-        // report fails.
-        ArrayList<SpanRecord> spans;
-        ClientMetrics clientMetrics = null;
+        // Data to be sent.
+        ArrayList<Span> spans;
 
         synchronized (mutex) {
             if (clockState.isReady() || explicitRequest) {
                 // Copy the reference to the spans and make a new array for other spans.
                 spans = this.spans;
-                clientMetrics = this.clientMetrics;
                 this.spans = new ArrayList<>(maxBufferedSpans);
-                this.clientMetrics = new ClientMetrics();
                 debug(String.format("Sending report, %d spans", spans.size()));
             } else {
                 // Otherwise, if the clock state is not ready, we'll send an empty
@@ -405,83 +395,47 @@ public abstract class AbstractTracer implements Tracer {
                 debug("Sending empty report to prime clock state");
                 spans = new ArrayList<>();
             }
+        }
 
-            if (transport == null) {
-                debug("Creating transport");
-                try {
-                    // TODO add support for cookies (for load balancer sessions)
-                    THttpClient tHttpClient = new THttpClient(collectorURL.toString());
-                    tHttpClient.setConnectTimeout(DEFAULT_REPORT_TIMEOUT_MILLIS);
-                    transport = tHttpClient;
-                    transport.open();
-                    TBinaryProtocol protocol = new TBinaryProtocol(transport);
-                    client = new ReportingService.Client(protocol);
-                } catch (TException e) {
-                    error("Exception creating Thrift client. Disabling tracer.", e);
+        ReportRequest.Builder reqBuilder = ReportRequest.newBuilder().setReporter(reporter)
+            .setAuth(auth).addAllSpans(spans)
+            .setTimestampOffsetMicros(Util.safeLongToInt(clockState.offsetMicros()));
+
+        long originMicros = Util.nowMicrosApproximate();
+        long originRelativeNanos = System.nanoTime();
+
+        // make sure collector client is initialized
+        if (client == null && !initializeCollectorClient()) {
+            return false;
+        }
+
+        ReportResponse resp = client.report(reqBuilder);
+
+        if (resp == null) {
+            return false;
+        }
+
+        if (resp.hasReceiveTimestamp() && resp.hasTransmitTimestamp()) {
+            long deltaMicros = (System.nanoTime() - originRelativeNanos) / 1000;
+            long destinationMicros = originMicros + deltaMicros;
+            clockState.addSample(originMicros,
+                Util.protoTimeToEpochMicros(resp.getReceiveTimestamp()),
+                Util.protoTimeToEpochMicros(resp.getTransmitTimestamp()), destinationMicros);
+        } else {
+            warn("Collector response did not include timing info");
+        }
+
+        // Check whether or not to disable the tracer
+        if (resp.getCommandsCount() != 0) {
+            for (Command command : resp.getCommandsList()) {
+                if (command.getDisable()) {
                     disable();
-                    return false;
                 }
             }
         }
 
-        ReportRequest req = new ReportRequest();
-        req.setRuntime(runtime);
-        req.setSpan_records(spans);
-        req.setTimestamp_offset_micros(clockState.offsetMicros());
-
-        if (clientMetrics != null) {
-            req.setInternal_metrics(clientMetrics.toThrift());
-        }
-
-        try {
-            long originMicros = nowMicrosApproximate();
-            long originRelativeNanos = System.nanoTime();
-            ReportResponse resp = client.Report(auth, req);
-
-            if (resp.isSetTiming()) {
-                long deltaMicros = (System.nanoTime() - originRelativeNanos) / 1000;
-                long destinationMicros = originMicros + deltaMicros;
-                clockState.addSample(originMicros,
-                        resp.getTiming().getReceive_micros(),
-                        resp.getTiming().getTransmit_micros(),
-                        destinationMicros);
-            } else {
-                warn("Collector response did not include timing info");
-            }
-
-            // Check whether or not to disable the tracer
-            if (resp.isSetCommands()) {
-                for (Command command : resp.commands) {
-                    if (command.disable) {
-                        disable();
-                    }
-                }
-            }
-
-            debug(String.format("Report sent successfully (%d spans)", spans.size()));
-            return true;
-
-        } catch (TApplicationException e) {
-            // Log as this probably indicates malformed spans
-            error("TApplicationException: error from collector", e);
-            return false;
-        } catch (TException x) {
-            // This may include exceptions like connection timeouts, which are expected during
-            // normal operation.
-            debug("Report failed with exception", x);
-
-            // The request failed, add any data that was supposed to be sent back to the
-            // client local buffers.
-            synchronized (mutex) {
-                this.clientMetrics.merge(clientMetrics);
-            }
-
-            // TODO should probably prepend and do it in bulk
-            for (SpanRecord span : req.span_records) {
-                addSpan(span);
-            }
-            return false;
-        }
+        debug(String.format("Report sent successfully (%d spans)", spans.size()));
+        return true;
     }
 
     /**
@@ -489,23 +443,39 @@ public abstract class AbstractTracer implements Tracer {
      *
      * @param span the span to be added
      */
-    void addSpan(SpanRecord span) {
+    void addSpan(Span span) {
         lastNewSpanMillis.set(System.currentTimeMillis());
 
         synchronized (mutex) {
             if (spans.size() >= maxBufferedSpans) {
-                clientMetrics.spansDropped++;
+                if (client == null && !initializeCollectorClient()) {
+                    return;
+                }
+                client.dropSpan();
             } else {
                 spans.add(span);
             }
-
             maybeStartReporting();
         }
     }
 
-    protected void addTracerTag(String key, String value) {
+    protected void addTracerTag(String key, Object value) {
         debug("Adding tracer tag: " + key + " => " + value);
-        runtime.addToAttrs(new KeyValue(key, value));
+        if (value instanceof String) {
+            reporter.addTags(KeyValue.newBuilder().setKey(key).setStringValue((String) value));
+        } else if (value instanceof Boolean) {
+            reporter.addTags(KeyValue.newBuilder().setKey(key).setBoolValue((Boolean) value));
+        } else if (value instanceof Number) {
+            if (value instanceof Long || value instanceof Integer) {
+                reporter.addTags(KeyValue.newBuilder().setKey(key).setIntValue(((Number) value).longValue()));
+            } else if (value instanceof Double || value instanceof Float) {
+                reporter.addTags(KeyValue.newBuilder().setKey(key).setDoubleValue(((Number) value).doubleValue()));
+            } else {
+                reporter.addTags(KeyValue.newBuilder().setKey(key).setStringValue(value.toString()));
+            }
+        } else {
+            reporter.addTags(KeyValue.newBuilder().setKey(key).setStringValue(value.toString()));
+        }
     }
 
     /**
@@ -584,14 +554,11 @@ public abstract class AbstractTracer implements Tracer {
 
     protected abstract void printLogToConsole(InternalLogLevel level, String msg, Object payload);
 
-    static long nowMicrosApproximate() {
-        return System.currentTimeMillis() * 1000;
-    }
 
     String generateTraceURL(long spanId) {
-        return "https://app.lightstep.com/" + auth.access_token +
+        return "https://app.lightstep.com/" + auth.getAccessToken() +
                 "/trace?span_guid=" + Long.toHexString(spanId) +
-                "&at_micros=" + (System.currentTimeMillis() * 1000);
+                "&at_micros=" + Util.nowMicrosApproximate();
     }
 
     /**
@@ -603,7 +570,11 @@ public abstract class AbstractTracer implements Tracer {
      */
     public Status status() {
         synchronized (mutex) {
-            return new Status(runtime.getAttrs(), new ClientMetrics(clientMetrics));
+            long spansDropped = 0;
+            if (client != null) {
+                spansDropped = client.getClientMetrics().spansDropped;
+            }
+            return new Status(reporter.getTagsList(), spansDropped);
         }
     }
 }

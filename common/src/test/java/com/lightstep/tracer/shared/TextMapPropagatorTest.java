@@ -60,7 +60,7 @@ public class TextMapPropagatorTest {
         assertEquals(Long.MAX_VALUE, TextMapPropagator.unHex(Long.toHexString(Long.MAX_VALUE)));
         assertEquals(Long.MIN_VALUE, TextMapPropagator.unHex(Long.toHexString(Long.MIN_VALUE)));
         assertEquals(0, TextMapPropagator.unHex(Long.toHexString(0)));
-        long randomLong = RandomUtil.generateGUID();
+        long randomLong = Util.generateRandomGUID();
         assertEquals(randomLong, TextMapPropagator.unHex(Long.toHexString(randomLong)));
     }
 }

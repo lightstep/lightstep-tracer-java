@@ -73,6 +73,8 @@ repositories {
 dependencies {
     compile project(':java-common')
     compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'io.grpc:grpc-netty:1.1.1'
+    compile 'io.netty:netty-tcnative-boringssl-static:1.1.33.Fork26'
     testCompile 'junit:junit:4.11'
 
     benchmarkCompile project(':lightstep-tracer-jre')

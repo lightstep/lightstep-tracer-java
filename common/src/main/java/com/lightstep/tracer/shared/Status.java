@@ -1,7 +1,6 @@
 package com.lightstep.tracer.shared;
 
-import com.lightstep.tracer.thrift.KeyValue;
-
+import com.lightstep.tracer.grpc.KeyValue;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,19 +11,18 @@ import java.util.Map;
  */
 public class Status {
     private final Map<String, String> tags;
-    private final ClientMetrics clientMetrics;
+    private long spansDropped;
 
-    Status(List<KeyValue> attrs, ClientMetrics clientMetrics) {
+    Status(List<KeyValue> attrs, long spansDropped) {
+        this.spansDropped = spansDropped;
         tags = new HashMap<>(attrs.size());
         for (KeyValue pair : attrs) {
-            tags.put(pair.getKey(), pair.getValue());
+            tags.put(pair.getKey(), pair.getStringValue());
         }
-
-        this.clientMetrics = clientMetrics;
     }
 
     public long getSpansDropped() {
-        return clientMetrics.spansDropped;
+        return spansDropped;
     }
 
     public boolean hasTag(String key) {
