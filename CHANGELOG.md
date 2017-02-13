@@ -1,5 +1,12 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.10.0)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.11.0)
+
+<a name="0.11.0"></a>
+## [0.11.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.11.0...0.10.0)
+
+### BREAKING CHANGES
+* Thrift protocol has been removed in favor of protobuf (GRPC)
+* Many API changes in Span, SpanBuilder and SpanContext
 
 <a name="0.10.0"></a>
 ## [0.10.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.10.0...0.9.28)
