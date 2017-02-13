@@ -53,6 +53,7 @@ class BenchmarkClient {
         public long NumLogs;
         public boolean Trace;
         public boolean Exit;
+        public boolean Profile;
     }
 
     private static class Result {
