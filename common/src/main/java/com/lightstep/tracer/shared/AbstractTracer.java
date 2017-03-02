@@ -29,6 +29,7 @@ public abstract class AbstractTracer implements Tracer {
     // Maximum interval between reports
     private static final long DEFAULT_CLOCK_STATE_INTERVAL_MILLIS = 500;
     private static final int DEFAULT_REPORT_TIMEOUT_MILLIS = 10 * 1000;
+    private static final int DEFAULT_CLIENT_RESET_INTERVAL_MILLIS = 5 * 60 * 1000; // 5 min
 
     protected static final String LIGHTSTEP_TRACER_PLATFORM_KEY = "lightstep.tracer_platform";
     protected static final String LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY = "lightstep.tracer_platform_version";
@@ -164,6 +165,7 @@ public abstract class AbstractTracer implements Tracer {
         public void run() {
             debug("Reporting thread started");
             long nextReportMillis = computeNextReportMillis();
+            long nextResetMillis = System.currentTimeMillis() + DEFAULT_CLIENT_RESET_INTERVAL_MILLIS;
 
             // Run until the reporting loop has been explicitly told to stop.
             while (!Thread.interrupted()) {
@@ -172,6 +174,10 @@ public abstract class AbstractTracer implements Tracer {
                 // no new data to report or, for example, the Android device does
                 // not have a wireless connection.
                 long nowMillis = System.currentTimeMillis();
+                if (nowMillis >= nextResetMillis) {
+                    client.reconnect();
+                    nextResetMillis = System.currentTimeMillis() + DEFAULT_CLIENT_RESET_INTERVAL_MILLIS;
+                }
                 if (nowMillis >= nextReportMillis) {
                     SimpleFuture<Boolean> result = flushInternal(false);
                     boolean reportSucceeded = false;

@@ -14,10 +14,11 @@ import java.util.concurrent.TimeUnit;
 
 public class CollectorClient {
 
-  private final ManagedChannel channel;
-  private final CollectorServiceBlockingStub blockingStub;
+  private final ManagedChannelBuilder<?> channelBuilder;
+  private ManagedChannel channel;
+  private CollectorServiceBlockingStub blockingStub;
   private ClientMetrics clientMetrics;
-  private AbstractTracer tracer;
+  private final AbstractTracer tracer;
 
   /**
    * Constructor client for accessing CollectorService at {@code host:port}
@@ -31,12 +32,13 @@ public class CollectorClient {
    */
   public CollectorClient(AbstractTracer tracer, ManagedChannelBuilder<?> channelBuilder) {
     this.tracer = tracer;
+    this.channelBuilder = channelBuilder;
     channel = channelBuilder.build();
     blockingStub = CollectorServiceGrpc.newBlockingStub(channel);
     clientMetrics = new ClientMetrics(Util.epochTimeMicrosToProtoTime(Util.nowMicrosApproximate()));
   }
 
-  public void shutdown() {
+  public synchronized void shutdown() {
     try {
       channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
@@ -82,6 +84,12 @@ public class CollectorClient {
       }
     }
     return resp;
+  }
+
+  public synchronized void reconnect() {
+    this.shutdown();
+    channel = channelBuilder.build();
+    blockingStub = CollectorServiceGrpc.newBlockingStub(channel);
   }
 
   public synchronized void dropSpan() {
