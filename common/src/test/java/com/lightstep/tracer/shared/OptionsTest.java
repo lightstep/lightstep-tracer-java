@@ -156,6 +156,7 @@ public class OptionsTest {
                 .withCollectorProtocol(HTTPS_PROTOCOL)
                 .withComponentName(COMPONENT_NAME)
                 .withDisableReportingLoop(true)
+                .withResetClient(true)
                 .withMaxReportingIntervalMillis(MAX_REPORTING_INTERVAL_MILLIS)
                 .withMaxBufferedSpans(MAX_BUFFERED_SPANS)
                 .withTag(TAG_KEY, TAG_VALUE)
@@ -170,6 +171,7 @@ public class OptionsTest {
                 options.collectorUrl.toString());
         assertEquals(COMPONENT_NAME, options.tags.get(COMPONENT_NAME_KEY));
         assertTrue(options.disableReportingLoop);
+        assertTrue(options.resetClient);
         assertEquals(MAX_REPORTING_INTERVAL_MILLIS, options.maxReportingIntervalMillis);
         assertEquals(MAX_BUFFERED_SPANS, options.maxBufferedSpans);
         assertEquals(TAG_VALUE, options.tags.get(TAG_KEY));

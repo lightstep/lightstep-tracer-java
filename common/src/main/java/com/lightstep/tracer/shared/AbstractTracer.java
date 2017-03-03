@@ -79,6 +79,8 @@ public abstract class AbstractTracer implements Tracer {
 
     private boolean isDisabled;
 
+    private boolean resetClient;
+
     public AbstractTracer(Options options) {
         // Set verbosity first so debug logs from the constructor take effect
         verbosity = options.verbosity;
@@ -100,6 +102,7 @@ public abstract class AbstractTracer implements Tracer {
         auth = Auth.newBuilder().setAccessToken(options.accessToken);
         reporter = Reporter.newBuilder().setReporterId(options.getGuid());
         collectorURL = options.collectorUrl;
+        resetClient = options.resetClient;
 
 
         for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
@@ -174,7 +177,7 @@ public abstract class AbstractTracer implements Tracer {
                 // no new data to report or, for example, the Android device does
                 // not have a wireless connection.
                 long nowMillis = System.currentTimeMillis();
-                if (nowMillis >= nextResetMillis) {
+                if (resetClient && nowMillis >= nextResetMillis) {
                     client.reconnect();
                     nextResetMillis = System.currentTimeMillis() + DEFAULT_CLIENT_RESET_INTERVAL_MILLIS;
                 }

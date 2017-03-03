@@ -26,7 +26,7 @@ public class Tracer extends AbstractTracer {
      * @param options control LightStep-specific behavior
      */
     public Tracer(Context ctx, Options options) {
-        super(options.setDefaultReportingIntervalMillis(ANDROID_DEFAULT_REPORTING_INTERVAL_MILLIS));
+        super(options.setDefaultReportingIntervalMillis(ANDROID_DEFAULT_REPORTING_INTERVAL_MILLIS).disableResetClient());
 
         this.ctx = ctx;
         addStandardTracerTags();

@@ -33,8 +33,7 @@ public class CollectorClient {
   public CollectorClient(AbstractTracer tracer, ManagedChannelBuilder<?> channelBuilder) {
     this.tracer = tracer;
     this.channelBuilder = channelBuilder;
-    channel = channelBuilder.build();
-    blockingStub = CollectorServiceGrpc.newBlockingStub(channel);
+    connect();
     clientMetrics = new ClientMetrics(Util.epochTimeMicrosToProtoTime(Util.nowMicrosApproximate()));
   }
 
@@ -86,10 +85,14 @@ public class CollectorClient {
     return resp;
   }
 
-  public synchronized void reconnect() {
-    this.shutdown();
+  private synchronized void connect() {
     channel = channelBuilder.build();
     blockingStub = CollectorServiceGrpc.newBlockingStub(channel);
+  }
+
+  public synchronized void reconnect() {
+    this.shutdown();
+    connect();
   }
 
   public synchronized void dropSpan() {
