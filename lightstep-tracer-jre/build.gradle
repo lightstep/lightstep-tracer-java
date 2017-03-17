@@ -65,6 +65,7 @@ artifacts {
     archives sourcesJar
     archives javadocJar
     archives benchmarkJar
+    archives shadowJar
 }
 
 // Defines the repositories need for dependencies below
@@ -114,6 +115,12 @@ publishing {
                     }
                 }.each { it.scope*.value = 'compile'}
             }
+        }
+        shadow(MavenPublication) {
+            from components.shadow
+            groupId 'com.lightstep.tracer'
+            artifactId 'lightstep-tracer-shadow'
+            version = current_version
         }
     }
 }
