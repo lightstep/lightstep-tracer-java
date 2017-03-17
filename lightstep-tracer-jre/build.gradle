@@ -5,6 +5,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+        classpath "com.github.jengelman.gradle.plugins:shadow:1.2.4"
     }
 }
 
@@ -12,6 +13,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'java'
+apply plugin: "com.github.johnrengelman.shadow"
 
 // Make sure the library is Java 7 compatible
 targetCompatibility = '1.7'
@@ -35,6 +37,11 @@ jar {
     baseName 'lightstep-tracer-jre'
     version = current_version
     from sourceSets.main.output
+}
+
+// configure shadow jar task
+shadowJar {
+    relocate 'io.netty', 'lightstep.io.netty'
 }
 
 task benchmarkJar(type: Jar) {
