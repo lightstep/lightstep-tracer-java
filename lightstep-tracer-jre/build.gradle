@@ -124,6 +124,9 @@ publishing {
             groupId 'com.lightstep.tracer'
             artifactId 'lightstep-tracer-jre-shadow'
             version = current_version
+
+            artifact sourcesJar
+            artifact javadocJar
         }
     }
 }
@@ -201,6 +204,45 @@ if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload'
             }.writeTo("build/publications/maven/pom-default.xml")
         }
     }
+    gradle.taskGraph.whenReady { taskGraph ->
+        taskGraph.getAllTasks().find {
+            it.path == ":lightstep-tracer-jre:generatePomFileForShadowPublication"
+        }.doLast {
+            file("build/publications/shadow/pom-default.xml").delete()
+            println 'Overriding pom-file to make sure we can sync to maven central!'
+            pom {
+                //noinspection GroovyAssignabilityCheck
+                project {
+                    name 'lightstep-tracer-jre-shadow'
+                    groupId 'com.lightstep.tracer'
+                    artifactId 'lightstep-tracer-jre-shadow'
+                    packaging 'jar'
+                    description 'The LightStep OpenTracing Tracer implementation for Java - Shadow Version'
+                    url 'https://github.com/lightstep/lightstep-tracer-java'
+                    version = current_version
+
+                    licenses {
+                        license {
+                            name 'MIT'
+                            url 'https://opensource.org/licenses/MIT'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'lightstep'
+                            name 'LightStep'
+                            email 'hello@lightstep.com'
+                        }
+                    }
+                    scm {
+                        connection 'https://github.com/lightstep/lightstep-tracer-java'
+                        developerConnection 'https://github.com/lightstep/lightstep-tracer-java'
+                        url 'https://github.com/lightstep/lightstep-tracer-java'
+                    }
+                }
+            }.writeTo("build/publications/shadow/pom-default.xml")
+        }
+    }
 }
 
 
@@ -210,7 +252,7 @@ if (project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload'
 bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_API_KEY')
-    publications = ['maven']
+    publications = ['maven','shadow']
     pkg {
         repo = 'maven'
         name = 'lightstep-tracer-jre'
