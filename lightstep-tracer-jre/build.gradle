@@ -44,12 +44,8 @@ shadowJar {
     classifier = null
     relocate 'com.google', 'lightstep.com.google'
     relocate 'google.protobuf', 'lightstep.google.protobuf'
-    relocate 'io.opentracing', 'lightstep.io.opentracing'
-    relocate 'io.grpc', 'lightstep.io.grpc'
     relocate 'io.netty', 'lightstep.io.netty'
     relocate 'javax.annotation', 'lightstep.javax.annotation'
-    relocate 'org.apache.tomcat', 'lightstep.org.apache.tomcat'
-    relocate 'org.slf4j', 'lightstep.org.slf4j'
 }
 
 task benchmarkJar(type: Jar) {
