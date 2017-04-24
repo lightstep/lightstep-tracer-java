@@ -223,16 +223,17 @@ class BenchmarkClient {
 
     public static void main(String[] args) throws Exception {
         String collectorHost = "localhost";
-        int collectorPort = 8000;
+        int controllerPort = 8000;
+        int grpcPort = 8001;
         Options opts = new Options.OptionsBuilder().
                 withAccessToken("notUsed").
                 withCollectorHost(collectorHost).
-                withCollectorPort(collectorPort).
+                withCollectorPort(grpcPort).
                 withCollectorProtocol("http").
                 withVerbosity(3).
                 build();
         BenchmarkClient bc = new BenchmarkClient(new JRETracer(opts),
-                "http://" + collectorHost + ":" + collectorPort + "/");
+                "http://" + collectorHost + ":" + controllerPort + "/");
         bc.loop();
     }
 }
