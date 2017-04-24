@@ -7,6 +7,7 @@ import com.lightstep.tracer.grpc.ReportRequest;
 import com.lightstep.tracer.grpc.ReportResponse;
 import com.lightstep.tracer.grpc.Reporter;
 import com.lightstep.tracer.grpc.Span;
+import io.grpc.ManagedChannelBuilder;
 import io.grpc.ManagedChannelProvider.ProviderNotFoundException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -319,7 +320,12 @@ public abstract class AbstractTracer implements Tracer {
 
     private boolean initializeCollectorClient() {
         try {
-            client = new CollectorClient(this, collectorURL.getHost(), collectorURL.getPort());
+            ManagedChannelBuilder builder =
+                ManagedChannelBuilder.forAddress(collectorURL.getHost(), collectorURL.getPort());
+            if (collectorURL.getProtocol() == "http") {
+                builder.usePlaintext(true);
+            }
+            client = new CollectorClient(this, builder);
         } catch (ProviderNotFoundException e) {
             error("Exception creating GRPC client. Disabling tracer.");
             disable();
