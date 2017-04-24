@@ -96,15 +96,18 @@ public final class Options {
     final int maxBufferedSpans;
     final int verbosity;
     final boolean disableReportingLoop;
+    // reset GRPC client at regular intervals (for load balancing)
+    final boolean resetClient;
 
     private Options(String accessToken, URL collectorUrl, long maxReportingIntervalMillis,
-                    int maxBufferedSpans, int verbosity, boolean disableReportingLoop, Map<String, Object> tags) {
+                    int maxBufferedSpans, int verbosity, boolean disableReportingLoop, boolean resetClient, Map<String, Object> tags) {
         this.accessToken = accessToken;
         this.collectorUrl = collectorUrl;
         this.maxReportingIntervalMillis = maxReportingIntervalMillis;
         this.maxBufferedSpans = maxBufferedSpans;
         this.verbosity = verbosity;
         this.disableReportingLoop = disableReportingLoop;
+        this.resetClient = resetClient;
         this.tags = tags;
     }
 
@@ -122,6 +125,7 @@ public final class Options {
         private int maxBufferedSpans = -1;
         private int verbosity = 1;
         private boolean disableReportingLoop = false;
+        private boolean resetClient = true;
         private Map<String, Object> tags = new HashMap<>();
 
         public OptionsBuilder() {
@@ -136,6 +140,7 @@ public final class Options {
             this.maxBufferedSpans = options.maxBufferedSpans;
             this.verbosity = options.verbosity;
             this.disableReportingLoop = options.disableReportingLoop;
+            this.resetClient = options.resetClient;
             this.tags = options.tags;
         }
 
@@ -262,6 +267,15 @@ public final class Options {
         }
 
         /**
+         * If true, the GRPC client connection will be reset at regular intevals
+         * Used to load balance on server side
+         */
+        public OptionsBuilder withResetClient(boolean reset) {
+            this.resetClient = reset;
+            return this;
+        }
+
+        /**
          * Sets the defaults for values not provided and constructs a new Options object.
          *
          * @return Options object configured with the built values.
@@ -275,7 +289,7 @@ public final class Options {
             defaultMaxBufferedSpans();
 
             return new Options(accessToken, getCollectorUrl(), maxReportingIntervalMillis, maxBufferedSpans, verbosity,
-                    disableReportingLoop, tags);
+                    disableReportingLoop, resetClient, tags);
         }
 
         private void defaultMaxReportingIntervalMillis() {
@@ -352,6 +366,21 @@ public final class Options {
             throw new IllegalArgumentException("Unexpected error when building a new set of" +
                     "options from a valid set of existing options. collectorUrl=" +
                     this.collectorUrl);
+        }
+    }
+
+    /**
+     * Provided so implementations of AbstractTracer can turn off resetClient by default.
+     * For example, Android tracer may not want resetClient.
+     */
+    public Options disableResetClient() {
+        try {
+            return new OptionsBuilder(this).withResetClient(false).build();
+        } catch (MalformedURLException e) {
+            // not possible given that we are constructing Options from a valid set of Options
+            throw new IllegalArgumentException("Unexpected error when building a new set of" +
+                "options from a valid set of existing options. collectorUrl=" +
+                this.collectorUrl);
         }
     }
 }
