@@ -5,7 +5,6 @@ import com.lightstep.tracer.grpc.KeyValue;
 import com.lightstep.tracer.grpc.Reference;
 import com.lightstep.tracer.grpc.Reference.Relationship;
 import io.opentracing.ActiveSpan;
-import io.opentracing.ActiveSpanSource;
 import io.opentracing.BaseSpan;
 import java.util.Collections;
 import java.util.HashMap;
@@ -124,6 +123,20 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         }
     }
 
+    private SpanContext activeSpanContext() {
+        ActiveSpan handle = this.tracer.activeSpan();
+        if (handle == null) {
+            return null;
+        }
+
+        io.opentracing.SpanContext spanContext = handle.context();
+        if(spanContext instanceof SpanContext) {
+            return (SpanContext) spanContext;
+        }
+
+        return null;
+    }
+
     @Override
     public io.opentracing.Span startManual() {
         if (tracer.isDisabled()) {
@@ -140,6 +153,11 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         grpcSpan.setStartTimestamp(Util.epochTimeMicrosToProtoTime(startTimestampMicros));
 
         Long traceId = this.traceId;
+
+        if(parent == null && !ignoringActiveSpan) {
+            parent = activeSpanContext();
+        }
+
         if (parent != null) {
             traceId = parent.getTraceId();
             grpcSpan.addTags(KeyValue.newBuilder().setKey(PARENT_SPAN_GUID_KEY)
