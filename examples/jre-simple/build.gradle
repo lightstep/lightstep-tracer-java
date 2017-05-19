@@ -16,7 +16,8 @@ dependencies {
     // pom.xml). Therefore when building locally the transitive dependencies need to be
     // explicitly included here.
     compile project(':lightstep-tracer-jre')
-    compile 'io.opentracing:opentracing-api:0.20.2'
+    compile 'io.opentracing:opentracing-api:0.30.0.RC2'
+    compile 'io.opentracing:opentracing-util:0.30.0.RC2'
 
     compile 'org.slf4j:slf4j-simple:1.7.21'
 }

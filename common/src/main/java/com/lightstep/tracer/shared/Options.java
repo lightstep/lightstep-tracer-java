@@ -1,5 +1,8 @@
 package com.lightstep.tracer.shared;
 
+import io.opentracing.ActiveSpanSource;
+import io.opentracing.util.ThreadLocalActiveSpanSource;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -98,9 +101,11 @@ public final class Options {
     final boolean disableReportingLoop;
     // reset GRPC client at regular intervals (for load balancing)
     final boolean resetClient;
+    final ActiveSpanSource spanSource;
 
     private Options(String accessToken, URL collectorUrl, long maxReportingIntervalMillis,
-                    int maxBufferedSpans, int verbosity, boolean disableReportingLoop, boolean resetClient, Map<String, Object> tags) {
+                    int maxBufferedSpans, int verbosity, boolean disableReportingLoop, boolean resetClient, Map<String, Object> tags,
+                    ActiveSpanSource spanSource) {
         this.accessToken = accessToken;
         this.collectorUrl = collectorUrl;
         this.maxReportingIntervalMillis = maxReportingIntervalMillis;
@@ -109,6 +114,7 @@ public final class Options {
         this.disableReportingLoop = disableReportingLoop;
         this.resetClient = resetClient;
         this.tags = tags;
+        this.spanSource = spanSource;
     }
 
     long getGuid() {
@@ -127,6 +133,7 @@ public final class Options {
         private boolean disableReportingLoop = false;
         private boolean resetClient = true;
         private Map<String, Object> tags = new HashMap<>();
+        private ActiveSpanSource spanSource;
 
         public OptionsBuilder() {
         }
@@ -142,6 +149,7 @@ public final class Options {
             this.disableReportingLoop = options.disableReportingLoop;
             this.resetClient = options.resetClient;
             this.tags = options.tags;
+            this.spanSource = options.spanSource;
         }
 
         /**
@@ -287,9 +295,16 @@ public final class Options {
             defaultGuid();
             defaultMaxReportingIntervalMillis();
             defaultMaxBufferedSpans();
+            defaultSpanSource();
 
             return new Options(accessToken, getCollectorUrl(), maxReportingIntervalMillis, maxBufferedSpans, verbosity,
-                    disableReportingLoop, resetClient, tags);
+                    disableReportingLoop, resetClient, tags, spanSource);
+        }
+
+        private void defaultSpanSource() {
+            if(spanSource == null) {
+                spanSource = new ThreadLocalActiveSpanSource();
+            }
         }
 
         private void defaultMaxReportingIntervalMillis() {

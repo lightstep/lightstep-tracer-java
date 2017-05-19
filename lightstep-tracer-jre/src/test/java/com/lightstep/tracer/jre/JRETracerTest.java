@@ -91,7 +91,7 @@ public class JRETracerTest {
             t[j] = new Thread() {
                 public void run() {
                     for (int i = 0; i < 1024; i++) {
-                        Span span = tracer.buildSpan("test_span").start();
+                        Span span = tracer.buildSpan("test_span").startManual();
                         SpanContext ctx = span.context();
                         long id = ((com.lightstep.tracer.shared.SpanContext) ctx).getSpanId();
                         assertEquals(m.containsKey(id), false);
@@ -120,7 +120,7 @@ public class JRETracerTest {
         Tracer tracer = new JRETracer(
                 new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
 
-        Span span = tracer.buildSpan("test_span").start();
+        Span span = tracer.buildSpan("test_span").startManual();
         span.setTag("my_key", "my_value");
         span.setTag("key2", testStr);
         span.setTag(testStr, "my_value2");
@@ -139,7 +139,7 @@ public class JRETracerTest {
         Span span = tracer
                 .buildSpan("test_span")
                 .withTag("my_key", "my_value")
-                .start();
+                .startManual();
         span.finish();
 
         assertSpanHasTag(span, "my_key", "my_value");
@@ -155,13 +155,13 @@ public class JRETracerTest {
         Status status = tracer.status();
         assertEquals(status.getSpansDropped(), 0);
         for (int i = 0; i < Options.DEFAULT_MAX_BUFFERED_SPANS; i++) {
-            Span span = tracer.buildSpan("test_span").start();
+            Span span = tracer.buildSpan("test_span").startManual();
             span.finish();
         }
         status = tracer.status();
         assertEquals(status.getSpansDropped(), 0);
         for (int i = 0; i < 10; i++) {
-            Span span = tracer.buildSpan("test_span").start();
+            Span span = tracer.buildSpan("test_span").startManual();
             span.finish();
         }
         status = tracer.status();
@@ -180,7 +180,7 @@ public class JRETracerTest {
 
         Span span = tracer.buildSpan("test_span")
                 .asChildOf(parentCtx)
-                .start();
+                .startManual();
         span.finish();
     }
 

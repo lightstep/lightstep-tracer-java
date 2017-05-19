@@ -89,7 +89,8 @@ dependencies {
     testCompile 'junit:junit:4.11'
 
     benchmarkCompile project(':lightstep-tracer-jre')
-    benchmarkCompile 'io.opentracing:opentracing-noop:0.20.2'
+    benchmarkCompile 'io.opentracing:opentracing-noop:0.30.0.RC2'
+    benchmarkCompile 'io.opentracing:opentracing-util:0.30.0.RC2'
     benchmarkCompile 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
 }
 
