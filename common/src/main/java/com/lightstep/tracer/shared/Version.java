@@ -2,5 +2,5 @@
 package com.lightstep.tracer.shared;
 
 public class Version {
-  public static final String LIGHTSTEP_TRACER_VERSION = "0.11.0";
+  public static final String LIGHTSTEP_TRACER_VERSION = "0.12.0.RC1";
 }

@@ -5,6 +5,7 @@ import com.lightstep.tracer.grpc.Span.Builder;
 import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.shared.Status;
 
+import io.opentracing.ActiveSpan;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import static io.opentracing.propagation.Format.Builtin.HTTP_HEADERS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class JRETracerTest {
@@ -91,12 +93,12 @@ public class JRETracerTest {
             t[j] = new Thread() {
                 public void run() {
                     for (int i = 0; i < 1024; i++) {
-                        Span span = tracer.buildSpan("test_span").startManual();
-                        SpanContext ctx = span.context();
-                        long id = ((com.lightstep.tracer.shared.SpanContext) ctx).getSpanId();
-                        assertEquals(m.containsKey(id), false);
-                        m.put(Long.toHexString(id), true);
-                        span.finish();
+                        try(ActiveSpan activeSpan = tracer.buildSpan("test_span").startActive()) {
+                            SpanContext ctx = activeSpan.context();
+                            long id = ((com.lightstep.tracer.shared.SpanContext) ctx).getSpanId();
+                            assertEquals(m.containsKey(id), false);
+                            m.put(Long.toHexString(id), true);
+                        }
                     }
                 }
             };
@@ -146,6 +148,20 @@ public class JRETracerTest {
     }
 
     @Test
+    public void activeSpanTryWithResources() throws Exception {
+        Tracer tracer = new JRETracer(
+                new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
+
+       try(ActiveSpan activeSpan = tracer
+                .buildSpan("test_span")
+                .startActive()) {
+           activeSpan.setTag("test", "test");
+           assertNotNull(tracer.activeSpan());
+       }
+       assertNull(tracer.activeSpan());
+    }
+
+    @Test
     public void spansDroppedCounterTest() throws Exception {
         JRETracer tracer = new JRETracer(
                 new Options.OptionsBuilder()
@@ -155,14 +171,12 @@ public class JRETracerTest {
         Status status = tracer.status();
         assertEquals(status.getSpansDropped(), 0);
         for (int i = 0; i < Options.DEFAULT_MAX_BUFFERED_SPANS; i++) {
-            Span span = tracer.buildSpan("test_span").startManual();
-            span.finish();
+            try(ActiveSpan ignored = tracer.buildSpan("test_span").startActive()){}
         }
         status = tracer.status();
         assertEquals(status.getSpansDropped(), 0);
         for (int i = 0; i < 10; i++) {
-            Span span = tracer.buildSpan("test_span").startManual();
-            span.finish();
+            try(ActiveSpan ignored = tracer.buildSpan("test_span").startActive()){}
         }
         status = tracer.status();
         assertEquals(status.getSpansDropped(), 10);
@@ -178,10 +192,9 @@ public class JRETracerTest {
         headerMap.put(FIELD_NAME_SPAN_ID, "123");
         SpanContext parentCtx = tracer.extract(HTTP_HEADERS, new TextMapExtractAdapter(headerMap));
 
-        Span span = tracer.buildSpan("test_span")
+        try(ActiveSpan ignored = tracer.buildSpan("test_span")
                 .asChildOf(parentCtx)
-                .startManual();
-        span.finish();
+                .startActive()){}
     }
 
     private void assertSpanHasTag(Span span, String key, String value) {
