@@ -4,6 +4,8 @@ import com.lightstep.tracer.grpc.KeyValue;
 
 import com.lightstep.tracer.grpc.Reference;
 import com.lightstep.tracer.grpc.Reference.Relationship;
+import io.opentracing.ActiveSpan;
+import io.opentracing.BaseSpan;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +31,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
     private final AbstractTracer tracer;
     private SpanContext parent;
     private long startTimestampMicros;
+    private boolean ignoringActiveSpan;
     private final com.lightstep.tracer.grpc.Span.Builder grpcSpan = com.lightstep.tracer.grpc.Span.newBuilder();
 
     SpanBuilder(String operationName, AbstractTracer tracer) {
@@ -39,14 +42,17 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         numTags = new HashMap<>();
     }
 
-    public Tracer.SpanBuilder asChildOf(io.opentracing.Span parent) {
-        return asChildOf(parent.context());
-    }
-
+    @Override
     public Tracer.SpanBuilder asChildOf(io.opentracing.SpanContext parent) {
         return addReference(CHILD_OF, parent);
     }
 
+    @Override
+    public Tracer.SpanBuilder asChildOf(BaseSpan<?> parent) {
+        return asChildOf(parent.context());
+    }
+
+    @Override
     public Tracer.SpanBuilder addReference(String type, io.opentracing.SpanContext referredTo) {
         if (CHILD_OF.equals(type) || FOLLOWS_FROM.equals(type)) {
             parent = (SpanContext) referredTo;
@@ -59,6 +65,12 @@ public class SpanBuilder implements Tracer.SpanBuilder {
             }
             grpcSpan.addReferences(refBuilder);
         }
+        return this;
+    }
+
+    @Override
+    public Tracer.SpanBuilder ignoreActiveSpan() {
+        ignoringActiveSpan = true;
         return this;
     }
 
@@ -82,6 +94,17 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         return this;
     }
 
+    @Override
+    public ActiveSpan startActive() {
+        io.opentracing.Span span = this.startManual();
+        return tracer.makeActive(span);
+    }
+
+    @Override
+    public io.opentracing.Span start() {
+        return startManual();
+    }
+
     /**
      * Sets the traceId and the spanId for the span being created. If the span has a parent, the
      * traceId of the parent will override this traceId value.
@@ -100,7 +123,22 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         }
     }
 
-    public io.opentracing.Span start() {
+    private SpanContext activeSpanContext() {
+        ActiveSpan handle = this.tracer.activeSpan();
+        if (handle == null) {
+            return null;
+        }
+
+        io.opentracing.SpanContext spanContext = handle.context();
+        if(spanContext instanceof SpanContext) {
+            return (SpanContext) spanContext;
+        }
+
+        return null;
+    }
+
+    @Override
+    public io.opentracing.Span startManual() {
         if (tracer.isDisabled()) {
             return NoopSpan.INSTANCE;
         }
@@ -115,6 +153,11 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         grpcSpan.setStartTimestamp(Util.epochTimeMicrosToProtoTime(startTimestampMicros));
 
         Long traceId = this.traceId;
+
+        if(parent == null && !ignoringActiveSpan) {
+            parent = activeSpanContext();
+        }
+
         if (parent != null) {
             traceId = parent.getTraceId();
             grpcSpan.addTags(KeyValue.newBuilder().setKey(PARENT_SPAN_GUID_KEY)

@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.opentracing.ActiveSpan;
+import io.opentracing.ActiveSpanSource;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
@@ -82,7 +84,10 @@ public abstract class AbstractTracer implements Tracer {
 
     private boolean resetClient;
 
+    private final ActiveSpanSource spanSource;
+
     public AbstractTracer(Options options) {
+        spanSource = options.spanSource;
         // Set verbosity first so debug logs from the constructor take effect
         verbosity = options.verbosity;
 
@@ -270,6 +275,16 @@ public abstract class AbstractTracer implements Tracer {
         synchronized (mutex) {
             return isDisabled;
         }
+    }
+
+    @Override
+    public ActiveSpan activeSpan() {
+        return spanSource.activeSpan();
+    }
+
+    @Override
+    public ActiveSpan makeActive(io.opentracing.Span span) {
+        return spanSource.makeActive(span);
     }
 
     public Tracer.SpanBuilder buildSpan(String operationName) {

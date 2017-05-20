@@ -24,11 +24,8 @@ class NoopSpan implements Span {
     public void finish() {
     }
 
-    public void finish(long timestamp) {
-    }
-
     @Override
-    public void close() {
+    public void finish(long timestamp) {
     }
 
     @Override
@@ -46,10 +43,12 @@ class NoopSpan implements Span {
         return this;
     }
 
+    @Override
     public Span log(String message) {
         return this;
     }
 
+    @Override
     public Span log(long timestampMicroseconds, String message) {
         return this;
     }
@@ -64,10 +63,12 @@ class NoopSpan implements Span {
         return this;
     }
 
+    @Override
     public final Span log(Map<String, ?> fields) {
         return this;
     }
 
+    @Override
     public final Span log(long timestampMicros, Map<String, ?> fields) {
         return this;
     }
