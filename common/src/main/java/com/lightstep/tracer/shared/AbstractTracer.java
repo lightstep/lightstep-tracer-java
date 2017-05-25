@@ -98,7 +98,11 @@ public abstract class AbstractTracer implements Tracer {
         // System.currentTimeMillis()). We store an absolute start timestamp but at
         // least get a precise duration at Span.finish() time via
         // startTimestampRelativeNanos (search for it below).
-        clockState = new ClockState();
+	if (options.useClockCorrection) {
+	    clockState = new ClockState();
+	} else {
+	    clockState = new ClockState.NoopClockState();
+	}
 
         auth = Auth.newBuilder().setAccessToken(options.accessToken);
         reporter = Reporter.newBuilder().setReporterId(options.getGuid());

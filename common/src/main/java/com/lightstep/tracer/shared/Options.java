@@ -98,9 +98,11 @@ public final class Options {
     final boolean disableReportingLoop;
     // reset GRPC client at regular intervals (for load balancing)
     final boolean resetClient;
+    final boolean useClockCorrection;
 
     private Options(String accessToken, URL collectorUrl, long maxReportingIntervalMillis,
-                    int maxBufferedSpans, int verbosity, boolean disableReportingLoop, boolean resetClient, Map<String, Object> tags) {
+                    int maxBufferedSpans, int verbosity, boolean disableReportingLoop, boolean resetClient,
+                    Map<String, Object> tags, boolean useClockCorrection) {
         this.accessToken = accessToken;
         this.collectorUrl = collectorUrl;
         this.maxReportingIntervalMillis = maxReportingIntervalMillis;
@@ -109,6 +111,7 @@ public final class Options {
         this.disableReportingLoop = disableReportingLoop;
         this.resetClient = resetClient;
         this.tags = tags;
+    	this.useClockCorrection = useClockCorrection;
     }
 
     long getGuid() {
@@ -126,6 +129,7 @@ public final class Options {
         private int verbosity = 1;
         private boolean disableReportingLoop = false;
         private boolean resetClient = true;
+        private boolean useClockCorrection = true;
         private Map<String, Object> tags = new HashMap<>();
 
         public OptionsBuilder() {
@@ -275,6 +279,11 @@ public final class Options {
             return this;
         }
 
+	public OptionsBuilder withClockSkewCorrection(boolean clockCorrection) {
+	    this.useClockCorrection = clockCorrection;
+	    return this;
+	}
+
         /**
          * Sets the defaults for values not provided and constructs a new Options object.
          *
@@ -289,7 +298,7 @@ public final class Options {
             defaultMaxBufferedSpans();
 
             return new Options(accessToken, getCollectorUrl(), maxReportingIntervalMillis, maxBufferedSpans, verbosity,
-                    disableReportingLoop, resetClient, tags);
+                    disableReportingLoop, resetClient, tags, useClockCorrection);
         }
 
         private void defaultMaxReportingIntervalMillis() {
