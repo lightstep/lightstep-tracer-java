@@ -8,9 +8,9 @@ class ClockState {
 
     public static class NoopClockState extends ClockState {
         void addSample(long o, long r, long t, long d) {}
-	    long offsetMicros() { return 0; }
-	    boolean isReady() { return true; }
-	    int activeSampleCount() { return 0; }
+        long offsetMicros() { return 0; }
+        boolean isReady() { return true; }
+        int activeSampleCount() { return 0; }
     }
 
     /**
