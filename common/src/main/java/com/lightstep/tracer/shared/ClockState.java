@@ -5,6 +5,14 @@ import java.util.LinkedList;
 import static java.lang.Long.MAX_VALUE;
 
 class ClockState {
+
+    public static class NoopClockState extends ClockState {
+	void addSample(long o, long r, long t, long d) {}
+	long offsetMicros() { return 0; }
+	boolean isReady() { return true; }
+	int activeSampleCount() { return 0; }
+    }
+
     /**
      * How many updates before a sample is considered old. This happens to
      * be one less than the number of samples in our buffer but that's
