@@ -101,11 +101,12 @@ public final class Options {
     final boolean disableReportingLoop;
     // reset GRPC client at regular intervals (for load balancing)
     final boolean resetClient;
+    final boolean useClockCorrection;
     final ActiveSpanSource spanSource;
 
     private Options(String accessToken, URL collectorUrl, long maxReportingIntervalMillis,
                     int maxBufferedSpans, int verbosity, boolean disableReportingLoop, boolean resetClient, Map<String, Object> tags,
-                    ActiveSpanSource spanSource) {
+                    boolean useClockCorrection, ActiveSpanSource spanSource) {
         this.accessToken = accessToken;
         this.collectorUrl = collectorUrl;
         this.maxReportingIntervalMillis = maxReportingIntervalMillis;
@@ -114,6 +115,7 @@ public final class Options {
         this.disableReportingLoop = disableReportingLoop;
         this.resetClient = resetClient;
         this.tags = tags;
+	this.useClockCorrection = useClockCorrection;
         this.spanSource = spanSource;
     }
 
@@ -132,6 +134,7 @@ public final class Options {
         private int verbosity = 1;
         private boolean disableReportingLoop = false;
         private boolean resetClient = true;
+        private boolean useClockCorrection = true;
         private Map<String, Object> tags = new HashMap<>();
         private ActiveSpanSource spanSource;
 
@@ -283,6 +286,11 @@ public final class Options {
             return this;
         }
 
+	public OptionsBuilder withClockSkewCorrection(boolean clockCorrection) {
+	    this.useClockCorrection = clockCorrection;
+	    return this;
+	}
+
         /**
          * Sets the defaults for values not provided and constructs a new Options object.
          *
@@ -298,7 +306,7 @@ public final class Options {
             defaultSpanSource();
 
             return new Options(accessToken, getCollectorUrl(), maxReportingIntervalMillis, maxBufferedSpans, verbosity,
-                    disableReportingLoop, resetClient, tags, spanSource);
+                    disableReportingLoop, resetClient, tags, useClockCorrection, spanSource);
         }
 
         private void defaultSpanSource() {
