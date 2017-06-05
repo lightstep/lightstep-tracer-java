@@ -157,6 +157,7 @@ public class OptionsTest {
                 .withComponentName(COMPONENT_NAME)
                 .withDisableReportingLoop(true)
                 .withResetClient(true)
+                .withClockSkewCorrection(false)
                 .withMaxReportingIntervalMillis(MAX_REPORTING_INTERVAL_MILLIS)
                 .withMaxBufferedSpans(MAX_BUFFERED_SPANS)
                 .withTag(TAG_KEY, TAG_VALUE)
@@ -172,6 +173,7 @@ public class OptionsTest {
         assertEquals(COMPONENT_NAME, options.tags.get(COMPONENT_NAME_KEY));
         assertTrue(options.disableReportingLoop);
         assertTrue(options.resetClient);
+        assertFalse(options.useClockCorrection);
         assertEquals(MAX_REPORTING_INTERVAL_MILLIS, options.maxReportingIntervalMillis);
         assertEquals(MAX_BUFFERED_SPANS, options.maxBufferedSpans);
         assertEquals(TAG_VALUE, options.tags.get(TAG_KEY));

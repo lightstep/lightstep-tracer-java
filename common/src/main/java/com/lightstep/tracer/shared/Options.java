@@ -146,6 +146,7 @@ public final class Options {
             this.disableReportingLoop = options.disableReportingLoop;
             this.resetClient = options.resetClient;
             this.tags = options.tags;
+            this.useClockCorrection = options.useClockCorrection;
         }
 
         /**
