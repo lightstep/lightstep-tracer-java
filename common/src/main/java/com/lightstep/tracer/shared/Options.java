@@ -153,6 +153,7 @@ public final class Options {
             this.resetClient = options.resetClient;
             this.tags = options.tags;
             this.spanSource = options.spanSource;
+            this.useClockCorrection = options.useClockCorrection;
         }
 
         /**
