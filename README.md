@@ -176,6 +176,17 @@ To then manually flush by using the LightStep tracer object directly:
 
 In order to send a final flush of the data prior to exit, clients should manually flush by using the LightStep tracer object as described above.
 
+### Disabling default clock correction
+
+By default, the Java library performs clock correction based on timestamp information provided in the spans. To disable this behavior, initialize with: 
+
+```java
+options = new com.lightstep.tracer.shared.Options.OptionsBuilder()
+                      .withAccessToken("{your_access_token}")
+                      .withClockSkewCorrection(false)
+                      .build();
+```
+
 ## Development info
 
 See [DEV.md](DEV.md) for information on contributing to this instrumentation library.
