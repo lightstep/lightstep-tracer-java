@@ -46,6 +46,12 @@ shadowJar {
     relocate 'google.protobuf', 'lightstep.google.protobuf'
     relocate 'io.netty', 'lightstep.io.netty'
     relocate 'javax.annotation', 'lightstep.javax.annotation'
+
+    dependencies {
+        exclude(project(':java-common'))
+        exclude(dependency('org.slf4j:slf4j-api:1.7.21'))
+        exclude(dependency('io.opentracing::0.30.0'))
+    }
 }
 
 task benchmarkJar(type: Jar) {
@@ -84,9 +90,12 @@ repositories {
 dependencies {
     compile project(':java-common')
     compile 'org.slf4j:slf4j-api:1.7.21'
-    compile 'io.grpc:grpc-netty:1.1.1'
+    compile 'io.grpc:grpc-netty:1.2.0'
     compile 'io.netty:netty-tcnative-boringssl-static:1.1.33.Fork26'
     testCompile 'junit:junit:4.11'
+
+    shadow project(':java-common')
+    shadow 'org.slf4j:slf4j-api:1.7.21'
 
     benchmarkCompile project(':lightstep-tracer-jre')
     benchmarkCompile 'io.opentracing:opentracing-noop:0.30.0'
@@ -128,6 +137,13 @@ publishing {
 
             artifact sourcesJar
             artifact javadocJar
+            pom.withXml {
+                asNode().dependencies.'*'.findAll() {
+                    it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+                        dep.name == it.artifactId.text()
+                    }
+                }.each { it.scope*.value = 'compile'}
+            }
         }
     }
 }
