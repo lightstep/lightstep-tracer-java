@@ -17,13 +17,13 @@ test: ci_test
 publish: pre-publish build test inc-version
 	git add gradle.properties
 	git add common/src/main/java/com/lightstep/tracer/shared/Version.java
-	git commit -m "VERSION `awk 'BEGIN { FS = "=" }; { printf("%s", $$2) }' gradle.properties`"
-	git tag `awk 'BEGIN { FS = "=" }; { printf("%s", $$2) }' gradle.properties`
+	git commit -m "VERSION `awk 'BEGIN { FS = "=" }; { printf("%s", $2) }' gradle.properties`"
+	git tag `awk 'BEGIN { FS = "=" }; { printf("%s", $2) }' gradle.properties`
 	git push
 	git push --tags
 	./gradlew bintrayUpload
 	@echo
-	@echo "\033[92mSUCCESS: published v`awk 'BEGIN { FS = "=" }; { printf("%s", $$2) }' gradle.properties` \033[0m"
+	@echo "\033[92mSUCCESS: published v`awk 'BEGIN { FS = "=" }; { printf("%s", $2) }' gradle.properties` \033[0m"
 	@echo
 
 pre-publish:
@@ -42,6 +42,6 @@ ci_test: build
 # majority of the code is the same.
 inc-version:
 	@git diff-index --quiet HEAD || (echo "git has uncommitted changes. Refusing to publish." && false)
-	awk 'BEGIN { FS = "." }; { printf("%s.%d.%d", $$1, $$2, $$3+1) }' gradle.properties > gradle.properties.incr
+	awk 'BEGIN { FS = "." }; { printf("%s.%d.%d", $1, $2, $3+1) }' gradle.properties > gradle.properties.incr
 	mv gradle.properties.incr gradle.properties
 	make -C common generate-version-source-file
