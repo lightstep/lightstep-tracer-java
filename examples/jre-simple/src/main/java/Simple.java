@@ -20,8 +20,7 @@ public class Simple {
         System.out.println("Starting Simple example...");
 
         Options options = new Options.OptionsBuilder()
-                .withCollectorHost("collector-grpc-staging.lightstep.com")
-                .withAccessToken("d356abe1d9ca0e424542c103e6d474f9")
+                .withAccessToken("{your_access_token}")
                 .withComponentName("JRE Simple")
                 .withVerbosity(4)
                 .build();
