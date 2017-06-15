@@ -346,18 +346,29 @@ public abstract class AbstractTracer implements Tracer {
 
     protected abstract SimpleFuture<Boolean> flushInternal(boolean explicitRequest);
 
+    /**
+     * Do not call this function while holding a lock.
+     *
+     */
     private boolean initializeCollectorClient() {
+        CollectorClient newClient;
         try {
             ManagedChannelBuilder builder =
                 ManagedChannelBuilder.forAddress(collectorURL.getHost(), collectorURL.getPort());
             if (collectorURL.getProtocol() == "http") {
                 builder.usePlaintext(true);
             }
-            client = new CollectorClient(this, builder);
+            newClient = new CollectorClient(this, builder);
         } catch (ProviderNotFoundException e) {
             error("Exception creating GRPC client. Disabling tracer.");
             disable();
             return false;
+        }
+
+        synchronized (mutex) {
+            if (client == null) {
+                client = newClient;
+            }
         }
         return true;
     }
@@ -480,12 +491,15 @@ public abstract class AbstractTracer implements Tracer {
     void addSpan(Span span) {
         lastNewSpanMillis.set(System.currentTimeMillis());
 
+        if (client == null) {
+            initializeCollectorClient();
+        }
+
         synchronized (mutex) {
             if (spans.size() >= maxBufferedSpans) {
-                if (client == null && !initializeCollectorClient()) {
-                    return;
+                if (client != null) {
+                    client.dropSpan();
                 }
-                client.dropSpan();
             } else {
                 spans.add(span);
             }
