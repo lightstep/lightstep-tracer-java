@@ -1,5 +1,9 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.2)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.4)
+
+<a name="0.12.4"></a>
+## [0.12.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.2...0.12.4)
+* Upgrade to grpc-netty:1.2.0
 
 <a name="0.12.2"></a>
 ## [0.12.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.1...0.12.2)
