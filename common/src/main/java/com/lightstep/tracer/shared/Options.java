@@ -96,9 +96,11 @@ public final class Options {
     final int maxBufferedSpans;
     final int verbosity;
     final boolean disableReportingLoop;
+    final Map<String, String> customHeaders;
 
     private Options(String accessToken, URL collectorUrl, long maxReportingIntervalMillis,
-                    int maxBufferedSpans, int verbosity, boolean disableReportingLoop, Map<String, Object> tags) {
+                    int maxBufferedSpans, int verbosity, boolean disableReportingLoop, Map<String, Object> tags,
+                    Map<String, String> customHeaders) {
         this.accessToken = accessToken;
         this.collectorUrl = collectorUrl;
         this.maxReportingIntervalMillis = maxReportingIntervalMillis;
@@ -106,6 +108,7 @@ public final class Options {
         this.verbosity = verbosity;
         this.disableReportingLoop = disableReportingLoop;
         this.tags = tags;
+        this.customHeaders = customHeaders;
     }
 
     String getGuid() {
@@ -123,6 +126,7 @@ public final class Options {
         private int verbosity = 1;
         private boolean disableReportingLoop = false;
         private Map<String, Object> tags = new HashMap<>();
+        private Map<String, String> customHeaders = new HashMap<>();
 
         public OptionsBuilder() {
         }
@@ -137,6 +141,7 @@ public final class Options {
             this.verbosity = options.verbosity;
             this.disableReportingLoop = options.disableReportingLoop;
             this.tags = options.tags;
+            this.customHeaders = options.customHeaders;
         }
 
         /**
@@ -214,6 +219,15 @@ public final class Options {
         }
 
         /**
+         * Sets user-defined key-value pairs that should be sent in the HTTP header of all of the
+         * reports produced by this tracer.
+         */
+        public OptionsBuilder withCustomHeader(String key, String value) {
+            customHeaders.put(key, value);
+            return this;
+        }
+
+        /**
          * Sets the maximum interval between reports.
          *
          * @param maxReportingIntervalMillis The maximum interval of time that will pass between
@@ -275,7 +289,7 @@ public final class Options {
             defaultMaxBufferedSpans();
 
             return new Options(accessToken, getCollectorUrl(), maxReportingIntervalMillis, maxBufferedSpans, verbosity,
-                    disableReportingLoop, tags);
+                    disableReportingLoop, tags, customHeaders);
         }
 
         private void defaultMaxReportingIntervalMillis() {

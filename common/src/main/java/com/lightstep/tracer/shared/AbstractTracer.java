@@ -88,6 +88,7 @@ public abstract class AbstractTracer implements Tracer {
 
     private TTransport transport;
     private ReportingService.Client client;
+    private Map<String, String> customHeaders;
 
     public AbstractTracer(Options options) {
         // Set verbosity first so debug logs from the constructor take effect
@@ -119,6 +120,8 @@ public abstract class AbstractTracer implements Tracer {
         for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
             addTracerTag(entry.getKey(), entry.getValue().toString());
         }
+
+        customHeaders = options.customHeaders;
 
         collectorURL = options.collectorUrl;
 
@@ -415,9 +418,7 @@ public abstract class AbstractTracer implements Tracer {
                     tHttpClient.setConnectTimeout(DEFAULT_REPORT_TIMEOUT_MILLIS);
 
                     // Set custom headers
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("key", "value");
-                    tHttpClient.setCustomHeaders(headers);
+                    tHttpClient.setCustomHeaders(customHeaders);
 
                     transport = tHttpClient;
                     transport.open();
