@@ -114,14 +114,38 @@ public abstract class AbstractTracer implements Tracer {
         collectorURL = options.collectorUrl;
         resetClient = options.resetClient;
 
+        // initialize collector client
+        boolean validCollectorClient = true;
+        if (!initializeCollectorClient()) {
+            validCollectorClient = false;
+            disable();
+        }
 
         for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
             addTracerTag(entry.getKey(), entry.getValue());
         }
 
-        if (!options.disableReportingLoop) {
+        if (validCollectorClient && !options.disableReportingLoop) {
             reportingLoop = new ReportingLoop(options.maxReportingIntervalMillis);
         }
+    }
+
+    /**
+     * This call is not synchronized
+     */
+    private boolean initializeCollectorClient() {
+        try {
+            ManagedChannelBuilder builder =
+                    ManagedChannelBuilder.forAddress(collectorURL.getHost(), collectorURL.getPort());
+            if (collectorURL.getProtocol() == "http") {
+                builder.usePlaintext(true);
+            }
+            client = new CollectorClient(this, builder);
+        } catch (ProviderNotFoundException e) {
+            error("Exception creating GRPC client.");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -347,32 +371,6 @@ public abstract class AbstractTracer implements Tracer {
     protected abstract SimpleFuture<Boolean> flushInternal(boolean explicitRequest);
 
     /**
-     * Do not call this function while holding a lock.
-     *
-     */
-    private boolean initializeCollectorClient() {
-        CollectorClient newClient;
-        try {
-            ManagedChannelBuilder builder =
-                ManagedChannelBuilder.forAddress(collectorURL.getHost(), collectorURL.getPort());
-            if (collectorURL.getProtocol() == "http") {
-                builder.usePlaintext(true);
-            }
-            newClient = new CollectorClient(this, builder);
-        } catch (ProviderNotFoundException e) {
-            error("Exception creating GRPC client. Disabling tracer.");
-            disable();
-            return false;
-        }
-
-        synchronized (mutex) {
-            if (client == null) {
-                client = newClient;
-            }
-        }
-        return true;
-    }
-    /**
      * Does the work of a flush by sending spans to the collector.
      *
      * @param explicitRequest if true, the report request was made explicitly rather than implicitly
@@ -449,12 +447,10 @@ public abstract class AbstractTracer implements Tracer {
         long originMicros = Util.nowMicrosApproximate();
         long originRelativeNanos = System.nanoTime();
 
-        // make sure collector client is initialized
-        if (client == null && !initializeCollectorClient()) {
-            return false;
+        ReportResponse resp = null;
+        if (client != null) {
+            resp = client.report(reqBuilder);
         }
-
-        ReportResponse resp = client.report(reqBuilder);
 
         if (resp == null) {
             return false;
@@ -490,10 +486,6 @@ public abstract class AbstractTracer implements Tracer {
      */
     void addSpan(Span span) {
         lastNewSpanMillis.set(System.currentTimeMillis());
-
-        if (client == null) {
-            initializeCollectorClient();
-        }
 
         synchronized (mutex) {
             if (spans.size() >= maxBufferedSpans) {
