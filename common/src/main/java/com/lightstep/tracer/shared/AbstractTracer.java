@@ -114,14 +114,38 @@ public abstract class AbstractTracer implements Tracer {
         collectorURL = options.collectorUrl;
         resetClient = options.resetClient;
 
+        // initialize collector client
+        boolean validCollectorClient = true;
+        if (!initializeCollectorClient()) {
+            validCollectorClient = false;
+            disable();
+        }
 
         for (Map.Entry<String, Object> entry : options.tags.entrySet()) {
             addTracerTag(entry.getKey(), entry.getValue());
         }
 
-        if (!options.disableReportingLoop) {
+        if (validCollectorClient && !options.disableReportingLoop) {
             reportingLoop = new ReportingLoop(options.maxReportingIntervalMillis);
         }
+    }
+
+    /**
+     * This call is not synchronized
+     */
+    private boolean initializeCollectorClient() {
+        try {
+            ManagedChannelBuilder builder =
+                    ManagedChannelBuilder.forAddress(collectorURL.getHost(), collectorURL.getPort());
+            if (collectorURL.getProtocol() == "http") {
+                builder.usePlaintext(true);
+            }
+            client = new CollectorClient(this, builder);
+        } catch (ProviderNotFoundException e) {
+            error("Exception creating GRPC client.");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -346,21 +370,6 @@ public abstract class AbstractTracer implements Tracer {
 
     protected abstract SimpleFuture<Boolean> flushInternal(boolean explicitRequest);
 
-    private boolean initializeCollectorClient() {
-        try {
-            ManagedChannelBuilder builder =
-                ManagedChannelBuilder.forAddress(collectorURL.getHost(), collectorURL.getPort());
-            if (collectorURL.getProtocol() == "http") {
-                builder.usePlaintext(true);
-            }
-            client = new CollectorClient(this, builder);
-        } catch (ProviderNotFoundException e) {
-            error("Exception creating GRPC client. Disabling tracer.");
-            disable();
-            return false;
-        }
-        return true;
-    }
     /**
      * Does the work of a flush by sending spans to the collector.
      *
@@ -438,12 +447,10 @@ public abstract class AbstractTracer implements Tracer {
         long originMicros = Util.nowMicrosApproximate();
         long originRelativeNanos = System.nanoTime();
 
-        // make sure collector client is initialized
-        if (client == null && !initializeCollectorClient()) {
-            return false;
+        ReportResponse resp = null;
+        if (client != null) {
+            resp = client.report(reqBuilder);
         }
-
-        ReportResponse resp = client.report(reqBuilder);
 
         if (resp == null) {
             return false;
@@ -482,10 +489,9 @@ public abstract class AbstractTracer implements Tracer {
 
         synchronized (mutex) {
             if (spans.size() >= maxBufferedSpans) {
-                if (client == null && !initializeCollectorClient()) {
-                    return;
+                if (client != null) {
+                    client.dropSpan();
                 }
-                client.dropSpan();
             } else {
                 spans.add(span);
             }
