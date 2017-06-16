@@ -18,6 +18,7 @@ import org.apache.thrift.transport.TTransport;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -412,6 +413,12 @@ public abstract class AbstractTracer implements Tracer {
                     // TODO add support for cookies (for load balancer sessions)
                     THttpClient tHttpClient = new THttpClient(collectorURL.toString());
                     tHttpClient.setConnectTimeout(DEFAULT_REPORT_TIMEOUT_MILLIS);
+
+                    // Set custom headers
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("key", "value");
+                    tHttpClient.setCustomHeaders(headers);
+
                     transport = tHttpClient;
                     transport.open();
                     TBinaryProtocol protocol = new TBinaryProtocol(transport);
