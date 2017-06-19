@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.4)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.5)
+
+<a name="0.12.5"></a>
+## [0.12.5](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.4...0.12.5)
+* Bugfix: upgrade to grpc:1.2.0 everywhere
+* Initialize collector client once during AbstractTracer construction
 
 <a name="0.12.4"></a>
 ## [0.12.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.2...0.12.4)
