@@ -132,7 +132,7 @@ dependencies {
         // Not needed on Android
         exclude module: 'httpclient'
     }
-    compile 'io.grpc:grpc-okhttp:1.1.1'
+    compile 'io.grpc:grpc-okhttp:1.2.0'
 }
 
 task sourcesJar(type: Jar) {
