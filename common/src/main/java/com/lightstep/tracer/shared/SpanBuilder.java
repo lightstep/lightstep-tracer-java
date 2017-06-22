@@ -1,14 +1,13 @@
 package com.lightstep.tracer.shared;
 
 import com.lightstep.tracer.grpc.KeyValue;
-
 import com.lightstep.tracer.grpc.Reference;
 import com.lightstep.tracer.grpc.Reference.Relationship;
+import io.opentracing.Tracer;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import io.opentracing.Tracer;
 
 import static io.opentracing.References.CHILD_OF;
 import static io.opentracing.References.FOLLOWS_FROM;
@@ -44,11 +43,14 @@ public class SpanBuilder implements Tracer.SpanBuilder {
     }
 
     public Tracer.SpanBuilder asChildOf(io.opentracing.SpanContext parent) {
+        if (parent == null) {
+            return this;
+        }
         return addReference(CHILD_OF, parent);
     }
 
     public Tracer.SpanBuilder addReference(String type, io.opentracing.SpanContext referredTo) {
-        if (CHILD_OF.equals(type) || FOLLOWS_FROM.equals(type)) {
+        if (referredTo != null && (CHILD_OF.equals(type) || FOLLOWS_FROM.equals(type))) {
             parent = (SpanContext) referredTo;
             Reference.Builder refBuilder = Reference.newBuilder();
             refBuilder.setSpanContext(parent.getInnerSpanCtx());
