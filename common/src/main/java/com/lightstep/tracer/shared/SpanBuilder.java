@@ -49,12 +49,15 @@ public class SpanBuilder implements Tracer.SpanBuilder {
 
     @Override
     public Tracer.SpanBuilder asChildOf(BaseSpan<?> parent) {
+        if (parent == null) {
+            return this;
+        }
         return asChildOf(parent.context());
     }
 
     @Override
     public Tracer.SpanBuilder addReference(String type, io.opentracing.SpanContext referredTo) {
-        if (CHILD_OF.equals(type) || FOLLOWS_FROM.equals(type)) {
+        if (referredTo != null && (CHILD_OF.equals(type) || FOLLOWS_FROM.equals(type))) {
             parent = (SpanContext) referredTo;
             Reference.Builder refBuilder = Reference.newBuilder();
             refBuilder.setSpanContext(parent.getInnerSpanCtx());
