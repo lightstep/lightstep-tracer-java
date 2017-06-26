@@ -48,7 +48,6 @@ shadowJar {
     relocate 'javax.annotation', 'lightstep.javax.annotation'
 
     dependencies {
-        exclude(project(':java-common'))
         exclude(dependency('org.slf4j:slf4j-api:1.7.21'))
         exclude(dependency('io.opentracing::0.30.0'))
     }
@@ -88,13 +87,12 @@ repositories {
 
 // Dependencies to build this JAR archive
 dependencies {
-    compile project(':java-common')
+    compile 'com.lightstep.tracer:java-common:0.12.5'
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile 'io.grpc:grpc-netty:1.2.0'
     compile 'io.netty:netty-tcnative-boringssl-static:1.1.33.Fork26'
     testCompile 'junit:junit:4.11'
 
-    shadow project(':java-common')
     shadow 'org.slf4j:slf4j-api:1.7.21'
 
     benchmarkCompile project(':lightstep-tracer-jre')
