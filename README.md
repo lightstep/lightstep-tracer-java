@@ -2,75 +2,14 @@
 
 [ ![Download](https://api.bintray.com/packages/lightstep/maven/lightstep-tracer-android/images/download.svg) ](https://bintray.com/lightstep/maven/) [![Circle CI](https://circleci.com/gh/lightstep/lightstep-tracer-java.svg?style=shield)](https://circleci.com/gh/lightstep/lightstep-tracer-java) [![MIT license](http://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
-The LightStep distributed tracing library for Android and the standard Java runtime environment.
+The LightStep distributed tracing library for the standard Java runtime environment.
 
 * [Getting Started](#getting-started)
-  * [Android](#getting-started-android)
   * [JRE](#getting-started-jre)
 * [API documentation](#apidocs)
 * [Options](#options)
 
 <a name="#getting-started"></a>
-<a name="#getting-started-android"></a>
-
-## Getting started: Android
-
-The Android library is hosted on Bintray, jcenter, and Maven Central. The Bintray [lightstep-tracer-android](https://bintray.com/lightstep/maven/lightstep-tracer-android/view) project contains additional installation and setup information for using the library with various build systems such as Ivy and Maven.
-
-### Gradle
-
-In most cases, modifying your `build.gradle` with the below is all that is required:
-
-```
-repositories {
-    jcenter() // OR mavenCentral()
-}
-dependencies {
-    compile 'com.lightstep.tracer:lightstep-tracer-android:VERSION'
-}
-```
-
-* Be sure to replace `VERSION` with the current version of the library
-* The artifact is published to both `jcenter()` and `mavenCentral()`. Use whichever you prefer.
-
-### Update your AndroidManifest.xml
-
-Ensure the app's `AndroidManifest.xml` has the following (under the `<manifest>` tag):
-
-```xml
-<!-- Permissions required to make http calls -->
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-```
-
-### Initializing the LightStep Tracer
-
-
-```java
-// Import the OpenTracing interfaces
-import io.opentracing.Span;
-import io.opentracing.Tracer;
-
-// ...
-
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    // Initialize LightStep tracer implementation in the main activity
-    // (or anywhere with a valid android.content.Context).
-    this.tracer = new com.lightstep.tracer.android.Tracer(
-         this,
-         new com.lightstep.tracer.shared.Options.OptionsBuilder()
-            .withAccessToken("{your_access_token}")
-            .build()
-    );
-
-    // Start and finish a Span
-    Span span = this.tracer.buildSpan("my_span").start();
-    this.doSomeWorkHere();
-    span.finish();
-```
-
 <a name="#getting-started-jre"></a>
 
 ## Getting started: JRE
@@ -137,7 +76,6 @@ Tracing instrumentation should use the OpenTracing APIs to stay portable and in 
 
 For reference, the generated LightStep documentation is also available:
 
-* [lightstep-tracer-android (javadoc)](http://javadoc.io/doc/com.lightstep.tracer/lightstep-tracer-android)
 * [lightstep-tracer-jre (javadoc)](http://javadoc.io/doc/com.lightstep.tracer/lightstep-tracer-jre)
 
 ## Options
@@ -169,7 +107,7 @@ To then manually flush by using the LightStep tracer object directly:
 
 ```java
 // Flush any buffered tracing data
-((com.lightstep.tracer.android.Tracer)tracer).flush();
+((com.lightstep.tracer.jre.JRETracer)tracer).flush();
 ```
 
 ### Flushing the report at exit
