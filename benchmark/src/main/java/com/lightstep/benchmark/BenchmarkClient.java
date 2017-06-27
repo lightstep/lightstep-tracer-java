@@ -3,6 +3,9 @@ package com.lightstep.benchmark;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.shared.Options;
+import io.opentracing.NoopTracerFactory;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,10 +14,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-
-import io.opentracing.NoopTracerFactory;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
 
 class BenchmarkClient {
     private static final long PRIME_WORK = 982451653;
