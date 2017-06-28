@@ -39,6 +39,7 @@
                                 <excludes>
                                     <exclude>org.slf4j:slf4j-api</exclude>
                                     <exclude>io.opentracing</exclude>
+                                    <exclude>com.lightstep.tracer:java-common</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
