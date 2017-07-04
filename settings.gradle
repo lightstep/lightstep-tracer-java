@@ -1,4 +1,0 @@
-rootProject.name = 'lightstep-tracer-java'
-
-include 'lightstep-tracer-jre'
-include 'examples:jre-simple'

@@ -3,7 +3,6 @@ package com.lightstep.tracer.jre;
 import com.lightstep.tracer.shared.AbstractTracer;
 import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.shared.SimpleFuture;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
