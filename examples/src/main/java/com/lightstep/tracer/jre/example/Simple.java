@@ -18,11 +18,11 @@ import java.util.concurrent.TimeUnit;
 
 public class Simple {
     public static void main(String[] args) throws InterruptedException, MalformedURLException {
-        System.out.println("Starting com.lightstep.tracer.jre.example.Simple example...");
+        System.out.println("Starting Simple example...");
 
         Options options = new Options.OptionsBuilder()
                 .withAccessToken("{your_access_token}")
-                .withComponentName("JRE com.lightstep.tracer.jre.example.Simple")
+                .withComponentName("JRE Simple")
                 .withVerbosity(4)
                 .build();
         final Tracer tracer = new JRETracer(options);
