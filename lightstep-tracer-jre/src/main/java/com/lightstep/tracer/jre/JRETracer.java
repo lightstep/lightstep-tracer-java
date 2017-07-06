@@ -6,10 +6,9 @@ import com.lightstep.tracer.shared.SimpleFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.lightstep.tracer.shared.Version.LIGHTSTEP_TRACER_VERSION;
+import static com.lightstep.tracer.jre.Version.LIGHTSTEP_TRACER_VERSION;
 
 public class JRETracer extends AbstractTracer {
-
     private static final int JRE_DEFAULT_REPORTING_INTERVAL_MILLIS = 2500;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JRETracer.class);
