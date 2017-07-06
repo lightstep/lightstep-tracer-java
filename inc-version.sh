@@ -35,3 +35,12 @@ git push
 git push --tags
 
 echo "Updated from $CURRENT_VERSION to $NEW_VERSION"
+
+# Build and deploy to Bintray
+mvn deploy -pl lightstep-tracer-jre
+
+# Sign the jar and other files in Bintray
+curl -H "X-GPG-PASSPHRASE:$BINTRAY_GPG_PASSPHRASE" -u $BINTRAY_USER:$BINTRAY_API_KEY -X POST https://api.bintray.com/gpg/lightstep/maven/lightstep-tracer-jre/versions/$NEW_VERSION
+
+# Sync the repository with Maven Central
+curl -H "Content-Type: application/json" -u $BINTRAY_USER:$BINTRAY_API_KEY -X POST -d '{"username":"'$MAVEN_CENTRAL_USER_TOKEN'","password":"'$MAVEN_CENTRAL_TOKEN_PASSWORD'","close":"1"}' https://api.bintray.com/maven_central_sync/lightstep/maven/lightstep-tracer-jre/versions/$NEW_VERSION
