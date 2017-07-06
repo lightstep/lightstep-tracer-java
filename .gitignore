@@ -10,3 +10,5 @@ local.properties
 build
 **/*.iml
 target
+dependency-reduced-pom.xml
+
