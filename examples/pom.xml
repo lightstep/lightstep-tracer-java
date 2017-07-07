@@ -29,24 +29,34 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>com.lightstep.tracer</groupId>
+            <artifactId>lightstep-tracer-jre</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+        <dependency>
             <groupId>io.opentracing</groupId>
             <artifactId>opentracing-api</artifactId>
-            <version>0.30.0</version>
+            <version>${io.opentracing.version}</version>
         </dependency>
         <dependency>
             <groupId>io.opentracing</groupId>
             <artifactId>opentracing-util</artifactId>
-            <version>0.30.0</version>
+            <version>${io.opentracing.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.25</version>
+            <version>${org.slf4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.lightstep.tracer</groupId>
-            <artifactId>lightstep-tracer-jre</artifactId>
-            <version>0.12.6</version>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty</artifactId>
+            <version>${io.grpc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-tcnative-boringssl-static</artifactId>
+            <version>${io.netty.version}</version>
         </dependency>
     </dependencies>
 </project>
