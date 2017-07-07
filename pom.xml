@@ -44,5 +44,6 @@
         <module>lightstep-tracer-jre</module>
         <module>examples</module>
         <module>benchmark</module>
+        <module>shadow</module>
     </modules>
 </project>
