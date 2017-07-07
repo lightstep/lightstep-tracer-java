@@ -17,6 +17,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Simple {
+
+    private static final String MESSAGE_KEY = "message";
+    private static final String PAYLOAD_KEY = "payload";
+
     public static void main(String[] args) throws InterruptedException, MalformedURLException {
         System.out.println("Starting Simple example...");
 
@@ -29,17 +33,18 @@ public class Simple {
 
         // Create a simple span and delay for a while to ensure the reporting
         // loop works as expected
-        final Span mySpan = tracer.buildSpan("my_span").start();
+        final Span mySpan = tracer.buildSpan("my_span").startManual();
 
         // Play with different sorts of payloads for fun.
         mySpan.log("just a message");
         mySpan.log("just a message");
-        mySpan.log("no payload", null);
-        mySpan.log("string payload", "str");
+        mySpan.log("no payload");
+        mySpan.log(getLogPayloadMap("string payload", "str"));
         Map<String, Object> m = new HashMap<>();
+        m.put(MESSAGE_KEY, "map payload");
         m.put("foo", "bar");
         m.put("baz", 42);
-        mySpan.log("map payload", m);
+        mySpan.log(m);
         mySpan.log(m);
         m.put("event", "now an event field exists");
         mySpan.log(m);
@@ -54,15 +59,15 @@ public class Simple {
                 .withTag("Valid ASCII", "abcdefg")
                 .withTag("Manual unicode", "\u0027\u0018\u00f6\u0003\u0012\u008e\u00fa\u00ec\u0011\r")
                 .withTag("🍕", "pepperoni")
-                .start();
-        parentSpan.log("Starting outer span", null);
+                .startManual();
+        parentSpan.log("Starting outer span");
 
 
         // Create a simple child span
         Span childSpan = tracer.buildSpan("hello_world")
                 .asChildOf(parentSpan.context())
                 .withTag("hello", "world")
-                .start();
+                .startManual();
         Thread.sleep(100);
         // Note that the returned SpanContext is still valid post-finish().
         SpanContext childCtx = childSpan.context();
@@ -70,8 +75,8 @@ public class Simple {
 
         // Throw inject and extract into the mix, even though we aren't making
         // an RPC.
-        Span grandchild = createChildViaInjectExtract(tracer, "grandchild", childCtx);
-        grandchild.log("grandchild created", null);
+        Span grandchild = createChildViaInjectExtract(tracer, childCtx);
+        grandchild.log("grandchild created");
         grandchild.finish();
 
         // Spawn some concurrent threads - which in turn will spawn their
@@ -84,7 +89,7 @@ public class Simple {
                         spawnWorkers(tracer, parentSpan);
                     } catch (InterruptedException e) {
                         parentSpan.setTag("error", "true");
-                        parentSpan.log("InterruptedException", e);
+                        parentSpan.log(getLogPayloadMap("InterruptedException", e));
                     }
                 }
             });
@@ -99,7 +104,7 @@ public class Simple {
     }
 
     // An ultra-hacky demonstration of inject() and extract() in-process.
-    private static Span createChildViaInjectExtract(Tracer tracer, String opName, SpanContext parentCtx) {
+    private static Span createChildViaInjectExtract(Tracer tracer, SpanContext parentCtx) {
         final Map<String, String> textMap = new HashMap<>();
         final TextMap demoCarrier = new TextMap() {
             public void put(String key, String value) {
@@ -119,13 +124,13 @@ public class Simple {
                             "', value='" + entry.getValue() + "'");
         }
         SpanContext extracted = tracer.extract(Format.Builtin.TEXT_MAP, demoCarrier);
-        return tracer.buildSpan(opName).asChildOf(extracted).start();
+        return tracer.buildSpan("grandchild").asChildOf(extracted).startManual();
     }
 
     private static void spawnWorkers(final Tracer tracer, Span outerSpan) throws InterruptedException {
         final Span parentSpan = tracer.buildSpan("spawn_workers")
                 .asChildOf(outerSpan.context())
-                .start();
+                .startManual();
 
         System.out.println("Launching worker threads.");
 
@@ -134,16 +139,16 @@ public class Simple {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker0")
                         .asChildOf(parentSpan.context())
-                        .start();
+                        .startManual();
                 for (int i = 0; i < 20; i++) {
                     Span innerSpan = tracer.buildSpan("worker0/microspan")
                             .asChildOf(childSpan.context())
-                            .start();
+                            .startManual();
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
                         childSpan.setTag("error", "true");
-                        childSpan.log("InterruptedException!", e);
+                        childSpan.log(getLogPayloadMap("InterruptedException!", e));
                     }
                     innerSpan.finish();
                 }
@@ -154,15 +159,15 @@ public class Simple {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker1")
                         .asChildOf(parentSpan.context())
-                        .start();
+                        .startManual();
                 for (int i = 0; i < 20; i++) {
-                    childSpan.log("Beginning inner loop", i);
+                    childSpan.log(getLogPayloadMap("Beginning inner loop", i));
                     for (int j = 0; j < 10; j++) {
                         try {
                             Thread.sleep(1);
                         } catch (InterruptedException e) {
                             childSpan.setTag("error", "true");
-                            childSpan.log("InterruptedException!", e);
+                            childSpan.log(getLogPayloadMap("InterruptedException!", e));
                         }
                     }
                 }
@@ -173,12 +178,12 @@ public class Simple {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker2")
                         .asChildOf(parentSpan.context())
-                        .start();
+                        .startManual();
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
                     childSpan.setTag("error", "true");
-                    childSpan.log("InterruptedException!", e);
+                    childSpan.log(getLogPayloadMap("InterruptedException!", e));
                 }
                 childSpan.finish();
             }
@@ -187,13 +192,13 @@ public class Simple {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker3")
                         .asChildOf(parentSpan.context())
-                        .start();
+                        .startManual();
                 for (int i = 0; i < 20; i++) {
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
                         childSpan.setTag("error", "true");
-                        childSpan.log("InterruptedException!", e);
+                        childSpan.log(getLogPayloadMap("InterruptedException!", e));
                     }
                 }
                 childSpan.finish();
@@ -208,5 +213,12 @@ public class Simple {
         }
         System.out.println("Finished worker threads.");
         parentSpan.finish();
+    }
+
+    private static Map<String, Object> getLogPayloadMap(String message, Object payload) {
+        Map<String,Object> m = new HashMap<>();
+        m.put(MESSAGE_KEY, message);
+        m.put(PAYLOAD_KEY, payload);
+        return m;
     }
 }
