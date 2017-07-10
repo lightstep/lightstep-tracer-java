@@ -1,5 +1,25 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.5)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.8)
+
+<a name="0.12.8"></a>
+## [0.12.8](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.7...0.12.8)
+* Fixed bug in publish script, previous build 0.12.7 would report client library version as 0.12.6
+
+<a name="0.12.7"></a>
+## [0.12.7](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.6...0.12.7)
+* Moved shadow project to it's own Maven module for more flexible jar creation
+* Fixed miscellaneous IntelliJ IDE warnings
+* Upgraded Jackson from 2.7.4 to 2.8.9
+* Made Netty dependency scope 'provided'
+* Made benchmark.jar an uber jar
+
+<a name="0.12.6"></a>
+## [0.12.6](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.5...0.12.6)
+* Added null checks in SpanBuilder
+* Removed common and android code from the repo
+* Converted project from Gradle to Maven
+* Added slf4j-simple to the pom for executable projects
+* Upgraded java-common to 0.12.6
 
 <a name="0.12.5"></a>
 ## [0.12.5](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.4...0.12.5)
