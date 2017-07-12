@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.8)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.9)
+
+<a name="0.12.9"></a>
+## [0.12.9](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.8...0.12.9)
+* Built with Java 8
+* Upgraded java-common to 0.13.1 (Fixes a potential deadlock)
 
 <a name="0.12.8"></a>
 ## [0.12.8](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.7...0.12.8)
