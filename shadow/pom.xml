@@ -10,7 +10,7 @@
     <parent>
         <artifactId>lightstep-tracer-java</artifactId>
         <groupId>com.lightstep.tracer</groupId>
-        <version>0.12.9</version>
+        <version>0.12.10</version>
     </parent>
 
     <distributionManagement>
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>com.lightstep.tracer</groupId>
             <artifactId>lightstep-tracer-jre</artifactId>
-            <version>0.12.9</version>
+            <version>0.12.10</version>
         </dependency>
     </dependencies>
 
