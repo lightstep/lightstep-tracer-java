@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.9)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.10)
+
+<a name="0.12.10"></a>
+## [0.12.10](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.9...0.12.10)
+* Upgraded java-common to 0.13.2 (Addresses major issue with GRPC call deadline. Previous version was setting a single global deadline, so all calls after 30s would
+exceed the deadline. This new version sets a 30s deadline from the time of each call.)
 
 <a name="0.12.9"></a>
 ## [0.12.9](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.8...0.12.9)
