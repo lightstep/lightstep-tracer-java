@@ -33,13 +33,13 @@ git commit -m "VERSION $NEW_VERSION"
 git tag $NEW_VERSION
 
 # Push the commit and tag
-git push
-git push --tags
+#git push
+#git push --tags
 
 echo "Updated from $CURRENT_VERSION to $NEW_VERSION"
 
 # Build and deploy to Bintray
-mvn deploy -pl lightstep-tracer-jre
+mvn deploy -pl .,lightstep-tracer-jre
 
 # Sign the jar and other files in Bintray
 curl -H "X-GPG-PASSPHRASE:$BINTRAY_GPG_PASSPHRASE" -u $BINTRAY_USER:$BINTRAY_API_KEY -X POST https://api.bintray.com/gpg/lightstep/maven/lightstep-tracer-jre/versions/$NEW_VERSION
