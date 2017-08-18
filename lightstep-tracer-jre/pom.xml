@@ -13,13 +13,6 @@
         <version>0.12.10</version>
     </parent>
 
-    <distributionManagement>
-        <repository>
-            <id>lightstep-bintray</id>
-            <url>https://api.bintray.com/maven/lightstep/maven/lightstep-tracer-jre/;publish=1</url>
-        </repository>
-    </distributionManagement>
-
     <build>
         <plugins>
             <plugin>
