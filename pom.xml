@@ -7,7 +7,11 @@
     <groupId>com.lightstep.tracer</groupId>
     <artifactId>lightstep-tracer-java</artifactId>
     <packaging>pom</packaging>
-    <version>0.12.10</version>
+    <version>0.12.14</version>
+
+    <name>LightStep Tracer Java (parent)</name>
+    <description>LightStep Tracer Java (parent)</description>
+    <url>https://github.com/lightstep/lightstep-tracer-java</url>
 
     <organization>
         <name>LightStep</name>
@@ -34,6 +38,13 @@
         <developerConnection>https://github.com/lightstep/lightstep-tracer-java</developerConnection>
         <url>https://github.com/lightstep/lightstep-tracer-java</url>
     </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>lightstep-bintray</id>
+            <url>https://api.bintray.com/maven/lightstep/maven/lightstep-tracer-jre/;publish=1</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
