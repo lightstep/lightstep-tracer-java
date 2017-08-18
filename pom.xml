@@ -9,6 +9,10 @@
     <packaging>pom</packaging>
     <version>0.12.13</version>
 
+    <name>LightStep Tracer Java (parent)</name>
+    <description>LightStep Tracer Java (parent)</description>
+    <url>https://github.com/lightstep/lightstep-tracer-java</url>
+
     <organization>
         <name>LightStep</name>
         <url>http://lightstep.com/</url>
