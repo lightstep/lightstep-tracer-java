@@ -1,5 +1,13 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.10)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.15)
+
+<a name="0.12.15"></a>
+## [0.12.15](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.14...0.12.15)
+* Fixed issue where shadow jar was not published to Maven
+
+<a name="0.12.14"></a>
+## [0.12.14](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.10...0.12.14)
+* Fixed issue where parent pom referenced by jar was not available in Maven
 
 <a name="0.12.10"></a>
 ## [0.12.10](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.9...0.12.10)
