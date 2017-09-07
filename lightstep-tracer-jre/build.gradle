@@ -50,7 +50,7 @@ shadowJar {
     dependencies {
         exclude(project(':java-common'))
         exclude(dependency('org.slf4j:slf4j-api:1.7.21'))
-        exclude(dependency('io.opentracing::0.30.0'))
+        exclude(dependency('io.opentracing::0.20.2'))
     }
 }
 
