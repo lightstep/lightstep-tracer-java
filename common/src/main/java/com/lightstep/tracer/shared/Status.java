@@ -1,6 +1,7 @@
 package com.lightstep.tracer.shared;
 
 import com.lightstep.tracer.grpc.KeyValue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +22,17 @@ public class Status {
         }
     }
 
+    @SuppressWarnings("unused")
     public long getSpansDropped() {
         return spansDropped;
     }
 
+    @SuppressWarnings("unused")
     public boolean hasTag(String key) {
         return tags.containsKey(key);
     }
 
+    @SuppressWarnings("unused")
     public String getTag(String key) {
         return tags.get(key);
     }

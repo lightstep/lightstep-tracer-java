@@ -22,11 +22,15 @@ import static com.lightstep.tracer.shared.Options.*;
 public abstract class AbstractTracer implements Tracer {
     // Maximum interval between reports
     private static final long DEFAULT_CLOCK_STATE_INTERVAL_MILLIS = 500;
-    private static final int DEFAULT_REPORT_TIMEOUT_MILLIS = 10 * 1000;
     private static final int DEFAULT_CLIENT_RESET_INTERVAL_MILLIS = 5 * 60 * 1000; // 5 min
 
+    @SuppressWarnings("unused")
     protected static final String LIGHTSTEP_TRACER_PLATFORM_KEY = "lightstep.tracer_platform";
+
+    @SuppressWarnings("unused")
     protected static final String LIGHTSTEP_TRACER_PLATFORM_VERSION_KEY = "lightstep.tracer_platform_version";
+
+    @SuppressWarnings("unused")
     protected static final String LIGHTSTEP_TRACER_VERSION_KEY = "lightstep.tracer_version";
 
     /**
@@ -60,6 +64,7 @@ public abstract class AbstractTracer implements Tracer {
     private final URL collectorURL;
 
     // Should *NOT* attempt to take a span's lock while holding this lock.
+    @SuppressWarnings("WeakerAccess")
     protected final Object mutex = new Object();
     private boolean reportInProgress;
 
@@ -125,7 +130,7 @@ public abstract class AbstractTracer implements Tracer {
         try {
             ManagedChannelBuilder builder =
                     ManagedChannelBuilder.forAddress(collectorURL.getHost(), collectorURL.getPort());
-            if (collectorURL.getProtocol() == "http") {
+            if (collectorURL.getProtocol().equals("http")) {
                 builder.usePlaintext(true);
             }
             client = new CollectorClient(this, builder, deadlineMillis);
@@ -287,6 +292,7 @@ public abstract class AbstractTracer implements Tracer {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean isDisabled() {
         synchronized (mutex) {
             return isDisabled;
@@ -337,6 +343,7 @@ public abstract class AbstractTracer implements Tracer {
      * @param timeoutMillis The amount of time, in milliseconds, to allow for the flush to complete
      * @return True if the flush completed within the time allotted, false otherwise.
      */
+    @SuppressWarnings("WeakerAccess")
     public Boolean flush(long timeoutMillis) {
         SimpleFuture<Boolean> flushFuture = flushInternal(true);
         try {
@@ -357,6 +364,7 @@ public abstract class AbstractTracer implements Tracer {
      *                        ready).
      * @return true if the report was sent successfully
      */
+    @SuppressWarnings("unused")
     protected boolean sendReport(boolean explicitRequest) {
 
         synchronized (mutex) {
@@ -477,6 +485,7 @@ public abstract class AbstractTracer implements Tracer {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected void addTracerTag(String key, Object value) {
         debug("Adding tracer tag: " + key + " => " + value);
         if (value instanceof String) {
@@ -499,6 +508,7 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * Internal logging.
      */
+    @SuppressWarnings("WeakerAccess")
     protected void debug(String s) {
         debug(s, null);
     }
@@ -506,6 +516,7 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * Internal logging.
      */
+    @SuppressWarnings({"WeakerAccess", "SameParameterValue"})
     protected void debug(String msg, Object payload) {
         if (verbosity < VERBOSITY_DEBUG) {
             return;
@@ -516,6 +527,7 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * Internal logging.
      */
+    @SuppressWarnings("WeakerAccess")
     protected void info(String s) {
         info(s, null);
     }
@@ -523,6 +535,7 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * Internal logging.
      */
+    @SuppressWarnings({"WeakerAccess", "SameParameterValue"})
     protected void info(String msg, Object payload) {
         if (verbosity < VERBOSITY_INFO) {
             return;
@@ -541,7 +554,7 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * Internal warning.
      */
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings({"WeakerAccess", "SameParameterValue"})
     protected void warn(String msg, Object payload) {
         if (verbosity < VERBOSITY_INFO) {
             return;
@@ -552,6 +565,7 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * Internal logging.
      */
+    @SuppressWarnings("WeakerAccess")
     protected void error(String s) {
         error(s, null);
     }
@@ -559,6 +573,7 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * Internal error.
      */
+    @SuppressWarnings("WeakerAccess")
     protected void error(String msg, Object payload) {
         if (verbosity < VERBOSITY_FIRST_ERROR_ONLY) {
             return;
@@ -586,6 +601,7 @@ public abstract class AbstractTracer implements Tracer {
      * Copies the internal state/status into an object that's easier to check
      * against in unit tests.
      */
+    @SuppressWarnings("unused")
     public Status status() {
         synchronized (mutex) {
             long spansDropped = 0;

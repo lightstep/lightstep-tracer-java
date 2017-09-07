@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class KeyValue extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.KeyValue)
-    KeyValueOrBuilder {
+        KeyValueOrBuilder {
   // Use KeyValue.newBuilder() to construct.
   private KeyValue(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -18,7 +18,7 @@ public  final class KeyValue extends
     key_ = "";
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -44,13 +44,13 @@ public  final class KeyValue extends
             break;
           }
           case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
+            String s = input.readStringRequireUtf8();
 
             key_ = s;
             break;
           }
           case 18: {
-            java.lang.String s = input.readStringRequireUtf8();
+            String s = input.readStringRequireUtf8();
             valueCase_ = 2;
             value_ = s;
             break;
@@ -71,7 +71,7 @@ public  final class KeyValue extends
             break;
           }
           case 50: {
-            java.lang.String s = input.readStringRequireUtf8();
+            String s = input.readStringRequireUtf8();
             valueCase_ = 6;
             value_ = s;
             break;
@@ -100,7 +100,7 @@ public  final class KeyValue extends
   }
 
   private int valueCase_ = 0;
-  private java.lang.Object value_;
+  private Object value_;
   public enum ValueCase
       implements com.google.protobuf.Internal.EnumLite {
     STRING_VALUE(2),
@@ -116,7 +116,7 @@ public  final class KeyValue extends
     /**
      * @deprecated Use {@link #forNumber(int)} instead.
      */
-    @java.lang.Deprecated
+    @Deprecated
     public static ValueCase valueOf(int value) {
       return forNumber(value);
     }
@@ -144,18 +144,18 @@ public  final class KeyValue extends
   }
 
   public static final int KEY_FIELD_NUMBER = 1;
-  private volatile java.lang.Object key_;
+  private volatile Object key_;
   /**
    * <code>optional string key = 1;</code>
    */
-  public java.lang.String getKey() {
-    java.lang.Object ref = key_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
+  public String getKey() {
+    Object ref = key_;
+    if (ref instanceof String) {
+      return (String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
+      String s = bs.toStringUtf8();
       key_ = s;
       return s;
     }
@@ -165,11 +165,11 @@ public  final class KeyValue extends
    */
   public com.google.protobuf.ByteString
       getKeyBytes() {
-    java.lang.Object ref = key_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+    Object ref = key_;
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
+              (String) ref);
       key_ = b;
       return b;
     } else {
@@ -186,17 +186,17 @@ public  final class KeyValue extends
    *
    * <code>optional string string_value = 2;</code>
    */
-  public java.lang.String getStringValue() {
-    java.lang.Object ref = "";
+  public String getStringValue() {
+    Object ref = "";
     if (valueCase_ == 2) {
       ref = value_;
     }
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
+    if (ref instanceof String) {
+      return (String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
+      String s = bs.toStringUtf8();
       if (valueCase_ == 2) {
         value_ = s;
       }
@@ -213,14 +213,14 @@ public  final class KeyValue extends
    */
   public com.google.protobuf.ByteString
       getStringValueBytes() {
-    java.lang.Object ref = "";
+    Object ref = "";
     if (valueCase_ == 2) {
       ref = value_;
     }
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
+              (String) ref);
       if (valueCase_ == 2) {
         value_ = b;
       }
@@ -236,7 +236,7 @@ public  final class KeyValue extends
    */
   public long getIntValue() {
     if (valueCase_ == 3) {
-      return (java.lang.Long) value_;
+      return (Long) value_;
     }
     return 0L;
   }
@@ -247,7 +247,7 @@ public  final class KeyValue extends
    */
   public double getDoubleValue() {
     if (valueCase_ == 4) {
-      return (java.lang.Double) value_;
+      return (Double) value_;
     }
     return 0D;
   }
@@ -258,7 +258,7 @@ public  final class KeyValue extends
    */
   public boolean getBoolValue() {
     if (valueCase_ == 5) {
-      return (java.lang.Boolean) value_;
+      return (Boolean) value_;
     }
     return false;
   }
@@ -272,17 +272,17 @@ public  final class KeyValue extends
    *
    * <code>optional string json_value = 6;</code>
    */
-  public java.lang.String getJsonValue() {
-    java.lang.Object ref = "";
+  public String getJsonValue() {
+    Object ref = "";
     if (valueCase_ == 6) {
       ref = value_;
     }
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
+    if (ref instanceof String) {
+      return (String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
+      String s = bs.toStringUtf8();
       if (valueCase_ == 6) {
         value_ = s;
       }
@@ -299,14 +299,14 @@ public  final class KeyValue extends
    */
   public com.google.protobuf.ByteString
       getJsonValueBytes() {
-    java.lang.Object ref = "";
+    Object ref = "";
     if (valueCase_ == 6) {
       ref = value_;
     }
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
+              (String) ref);
       if (valueCase_ == 6) {
         value_ = b;
       }
@@ -336,15 +336,15 @@ public  final class KeyValue extends
     }
     if (valueCase_ == 3) {
       output.writeInt64(
-          3, (long)((java.lang.Long) value_));
+          3, (long)((Long) value_));
     }
     if (valueCase_ == 4) {
       output.writeDouble(
-          4, (double)((java.lang.Double) value_));
+          4, (double)((Double) value_));
     }
     if (valueCase_ == 5) {
       output.writeBool(
-          5, (boolean)((java.lang.Boolean) value_));
+          5, (boolean)((Boolean) value_));
     }
     if (valueCase_ == 6) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 6, value_);
@@ -365,17 +365,17 @@ public  final class KeyValue extends
     if (valueCase_ == 3) {
       size += com.google.protobuf.CodedOutputStream
         .computeInt64Size(
-            3, (long)((java.lang.Long) value_));
+            3, (long)((Long) value_));
     }
     if (valueCase_ == 4) {
       size += com.google.protobuf.CodedOutputStream
         .computeDoubleSize(
-            4, (double)((java.lang.Double) value_));
+            4, (double)((Double) value_));
     }
     if (valueCase_ == 5) {
       size += com.google.protobuf.CodedOutputStream
         .computeBoolSize(
-            5, (boolean)((java.lang.Boolean) value_));
+            5, (boolean)((Boolean) value_));
     }
     if (valueCase_ == 6) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, value_);
@@ -385,8 +385,8 @@ public  final class KeyValue extends
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -412,8 +412,8 @@ public  final class KeyValue extends
         break;
       case 4:
         result = result && (
-            java.lang.Double.doubleToLongBits(getDoubleValue())
-            == java.lang.Double.doubleToLongBits(
+            Double.doubleToLongBits(getDoubleValue())
+            == Double.doubleToLongBits(
                 other.getDoubleValue()));
         break;
       case 5:
@@ -430,7 +430,7 @@ public  final class KeyValue extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -452,7 +452,7 @@ public  final class KeyValue extends
       case 4:
         hash = (37 * hash) + DOUBLE_VALUE_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-            java.lang.Double.doubleToLongBits(getDoubleValue()));
+            Double.doubleToLongBits(getDoubleValue()));
         break;
       case 5:
         hash = (37 * hash) + BOOL_VALUE_FIELD_NUMBER;
@@ -542,7 +542,7 @@ public  final class KeyValue extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -727,7 +727,7 @@ public  final class KeyValue extends
       return this;
     }
     private int valueCase_ = 0;
-    private java.lang.Object value_;
+    private Object value_;
     public ValueCase
         getValueCase() {
       return ValueCase.forNumber(
@@ -742,20 +742,20 @@ public  final class KeyValue extends
     }
 
 
-    private java.lang.Object key_ = "";
+    private Object key_ = "";
     /**
      * <code>optional string key = 1;</code>
      */
-    public java.lang.String getKey() {
-      java.lang.Object ref = key_;
-      if (!(ref instanceof java.lang.String)) {
+    public String getKey() {
+      Object ref = key_;
+      if (!(ref instanceof String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
+        String s = bs.toStringUtf8();
         key_ = s;
         return s;
       } else {
-        return (java.lang.String) ref;
+        return (String) ref;
       }
     }
     /**
@@ -763,11 +763,11 @@ public  final class KeyValue extends
      */
     public com.google.protobuf.ByteString
         getKeyBytes() {
-      java.lang.Object ref = key_;
+      Object ref = key_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+                (String) ref);
         key_ = b;
         return b;
       } else {
@@ -778,11 +778,11 @@ public  final class KeyValue extends
      * <code>optional string key = 1;</code>
      */
     public Builder setKey(
-        java.lang.String value) {
+        String value) {
       if (value == null) {
     throw new NullPointerException();
   }
-  
+
       key_ = value;
       onChanged();
       return this;
@@ -791,7 +791,7 @@ public  final class KeyValue extends
      * <code>optional string key = 1;</code>
      */
     public Builder clearKey() {
-      
+
       key_ = getDefaultInstance().getKey();
       onChanged();
       return this;
@@ -805,7 +805,7 @@ public  final class KeyValue extends
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-      
+
       key_ = value;
       onChanged();
       return this;
@@ -819,21 +819,21 @@ public  final class KeyValue extends
      *
      * <code>optional string string_value = 2;</code>
      */
-    public java.lang.String getStringValue() {
-      java.lang.Object ref = "";
+    public String getStringValue() {
+      Object ref = "";
       if (valueCase_ == 2) {
         ref = value_;
       }
-      if (!(ref instanceof java.lang.String)) {
+      if (!(ref instanceof String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
+        String s = bs.toStringUtf8();
         if (valueCase_ == 2) {
           value_ = s;
         }
         return s;
       } else {
-        return (java.lang.String) ref;
+        return (String) ref;
       }
     }
     /**
@@ -846,14 +846,14 @@ public  final class KeyValue extends
      */
     public com.google.protobuf.ByteString
         getStringValueBytes() {
-      java.lang.Object ref = "";
+      Object ref = "";
       if (valueCase_ == 2) {
         ref = value_;
       }
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+                (String) ref);
         if (valueCase_ == 2) {
           value_ = b;
         }
@@ -871,7 +871,7 @@ public  final class KeyValue extends
      * <code>optional string string_value = 2;</code>
      */
     public Builder setStringValue(
-        java.lang.String value) {
+        String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -921,7 +921,7 @@ public  final class KeyValue extends
      */
     public long getIntValue() {
       if (valueCase_ == 3) {
-        return (java.lang.Long) value_;
+        return (Long) value_;
       }
       return 0L;
     }
@@ -951,7 +951,7 @@ public  final class KeyValue extends
      */
     public double getDoubleValue() {
       if (valueCase_ == 4) {
-        return (java.lang.Double) value_;
+        return (Double) value_;
       }
       return 0D;
     }
@@ -981,7 +981,7 @@ public  final class KeyValue extends
      */
     public boolean getBoolValue() {
       if (valueCase_ == 5) {
-        return (java.lang.Boolean) value_;
+        return (Boolean) value_;
       }
       return false;
     }
@@ -1014,21 +1014,21 @@ public  final class KeyValue extends
      *
      * <code>optional string json_value = 6;</code>
      */
-    public java.lang.String getJsonValue() {
-      java.lang.Object ref = "";
+    public String getJsonValue() {
+      Object ref = "";
       if (valueCase_ == 6) {
         ref = value_;
       }
-      if (!(ref instanceof java.lang.String)) {
+      if (!(ref instanceof String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
+        String s = bs.toStringUtf8();
         if (valueCase_ == 6) {
           value_ = s;
         }
         return s;
       } else {
-        return (java.lang.String) ref;
+        return (String) ref;
       }
     }
     /**
@@ -1041,14 +1041,14 @@ public  final class KeyValue extends
      */
     public com.google.protobuf.ByteString
         getJsonValueBytes() {
-      java.lang.Object ref = "";
+      Object ref = "";
       if (valueCase_ == 6) {
         ref = value_;
       }
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+                (String) ref);
         if (valueCase_ == 6) {
           value_ = b;
         }
@@ -1066,7 +1066,7 @@ public  final class KeyValue extends
      * <code>optional string json_value = 6;</code>
      */
     public Builder setJsonValue(
-        java.lang.String value) {
+        String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -1148,7 +1148,7 @@ public  final class KeyValue extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<KeyValue> getParserForType() {
     return PARSER;
   }

@@ -23,7 +23,7 @@ public interface LogOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.KeyValue keyvalues = 2;</code>
    */
-  java.util.List<com.lightstep.tracer.grpc.KeyValue> 
+  java.util.List<KeyValue>
       getKeyvaluesList();
   /**
    * <code>repeated .lightstep.collector.KeyValue keyvalues = 2;</code>
@@ -36,11 +36,11 @@ public interface LogOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.KeyValue keyvalues = 2;</code>
    */
-  java.util.List<? extends com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+  java.util.List<? extends KeyValueOrBuilder>
       getKeyvaluesOrBuilderList();
   /**
    * <code>repeated .lightstep.collector.KeyValue keyvalues = 2;</code>
    */
   com.lightstep.tracer.grpc.KeyValueOrBuilder getKeyvaluesOrBuilder(
-      int index);
+          int index);
 }

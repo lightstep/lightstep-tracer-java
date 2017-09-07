@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class SpanContext extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.SpanContext)
-    SpanContextOrBuilder {
+        SpanContextOrBuilder {
   // Use SpanContext.newBuilder() to construct.
   private SpanContext(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -19,7 +19,7 @@ public  final class SpanContext extends
     spanId_ = 0L;
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -60,7 +60,7 @@ public  final class SpanContext extends
                   BaggageDefaultEntryHolder.defaultEntry);
               mutable_bitField0_ |= 0x00000004;
             }
-            com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+            com.google.protobuf.MapEntry<String, String>
             baggage__ = input.readMessage(
                 BaggageDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
             baggage_.getMutableMap().put(
@@ -123,18 +123,18 @@ public  final class SpanContext extends
   public static final int BAGGAGE_FIELD_NUMBER = 3;
   private static final class BaggageDefaultEntryHolder {
     static final com.google.protobuf.MapEntry<
-        java.lang.String, java.lang.String> defaultEntry =
+        String, String> defaultEntry =
             com.google.protobuf.MapEntry
-            .<java.lang.String, java.lang.String>newDefaultInstance(
-                com.lightstep.tracer.grpc.Collector.internal_static_lightstep_collector_SpanContext_BaggageEntry_descriptor, 
+            .<String, String>newDefaultInstance(
+                com.lightstep.tracer.grpc.Collector.internal_static_lightstep_collector_SpanContext_BaggageEntry_descriptor,
                 com.google.protobuf.WireFormat.FieldType.STRING,
                 "",
                 com.google.protobuf.WireFormat.FieldType.STRING,
                 "");
   }
   private com.google.protobuf.MapField<
-      java.lang.String, java.lang.String> baggage_;
-  private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+      String, String> baggage_;
+  private com.google.protobuf.MapField<String, String>
   internalGetBaggage() {
     if (baggage_ == null) {
       return com.google.protobuf.MapField.emptyMapField(
@@ -151,33 +151,33 @@ public  final class SpanContext extends
    */
 
   public boolean containsBaggage(
-      java.lang.String key) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
+      String key) {
+    if (key == null) { throw new NullPointerException(); }
     return internalGetBaggage().getMap().containsKey(key);
   }
   /**
    * Use {@link #getBaggageMap()} instead.
    */
-  @java.lang.Deprecated
-  public java.util.Map<java.lang.String, java.lang.String> getBaggage() {
+  @Deprecated
+  public java.util.Map<String, String> getBaggage() {
     return getBaggageMap();
   }
   /**
    * <code>map&lt;string, string&gt; baggage = 3;</code>
    */
 
-  public java.util.Map<java.lang.String, java.lang.String> getBaggageMap() {
+  public java.util.Map<String, String> getBaggageMap() {
     return internalGetBaggage().getMap();
   }
   /**
    * <code>map&lt;string, string&gt; baggage = 3;</code>
    */
 
-  public java.lang.String getBaggageOrDefault(
-      java.lang.String key,
-      java.lang.String defaultValue) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
-    java.util.Map<java.lang.String, java.lang.String> map =
+  public String getBaggageOrDefault(
+      String key,
+      String defaultValue) {
+    if (key == null) { throw new NullPointerException(); }
+    java.util.Map<String, String> map =
         internalGetBaggage().getMap();
     return map.containsKey(key) ? map.get(key) : defaultValue;
   }
@@ -185,13 +185,13 @@ public  final class SpanContext extends
    * <code>map&lt;string, string&gt; baggage = 3;</code>
    */
 
-  public java.lang.String getBaggageOrThrow(
-      java.lang.String key) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
-    java.util.Map<java.lang.String, java.lang.String> map =
+  public String getBaggageOrThrow(
+      String key) {
+    if (key == null) { throw new NullPointerException(); }
+    java.util.Map<String, String> map =
         internalGetBaggage().getMap();
     if (!map.containsKey(key)) {
-      throw new java.lang.IllegalArgumentException();
+      throw new IllegalArgumentException();
     }
     return map.get(key);
   }
@@ -235,9 +235,9 @@ public  final class SpanContext extends
       size += com.google.protobuf.CodedOutputStream
         .computeUInt64Size(2, spanId_);
     }
-    for (java.util.Map.Entry<java.lang.String, java.lang.String> entry
+    for (java.util.Map.Entry<String, String> entry
          : internalGetBaggage().getMap().entrySet()) {
-      com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+      com.google.protobuf.MapEntry<String, String>
       baggage__ = BaggageDefaultEntryHolder.defaultEntry.newBuilderForType()
           .setKey(entry.getKey())
           .setValue(entry.getValue())
@@ -250,8 +250,8 @@ public  final class SpanContext extends
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -270,7 +270,7 @@ public  final class SpanContext extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -363,7 +363,7 @@ public  final class SpanContext extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -548,7 +548,7 @@ public  final class SpanContext extends
      * <code>optional uint64 trace_id = 1;</code>
      */
     public Builder setTraceId(long value) {
-      
+
       traceId_ = value;
       onChanged();
       return this;
@@ -557,7 +557,7 @@ public  final class SpanContext extends
      * <code>optional uint64 trace_id = 1;</code>
      */
     public Builder clearTraceId() {
-      
+
       traceId_ = 0L;
       onChanged();
       return this;
@@ -574,7 +574,7 @@ public  final class SpanContext extends
      * <code>optional uint64 span_id = 2;</code>
      */
     public Builder setSpanId(long value) {
-      
+
       spanId_ = value;
       onChanged();
       return this;
@@ -583,15 +583,15 @@ public  final class SpanContext extends
      * <code>optional uint64 span_id = 2;</code>
      */
     public Builder clearSpanId() {
-      
+
       spanId_ = 0L;
       onChanged();
       return this;
     }
 
     private com.google.protobuf.MapField<
-        java.lang.String, java.lang.String> baggage_;
-    private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+        String, String> baggage_;
+    private com.google.protobuf.MapField<String, String>
     internalGetBaggage() {
       if (baggage_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
@@ -599,7 +599,7 @@ public  final class SpanContext extends
       }
       return baggage_;
     }
-    private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+    private com.google.protobuf.MapField<String, String>
     internalGetMutableBaggage() {
       onChanged();;
       if (baggage_ == null) {
@@ -620,33 +620,33 @@ public  final class SpanContext extends
      */
 
     public boolean containsBaggage(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+        String key) {
+      if (key == null) { throw new NullPointerException(); }
       return internalGetBaggage().getMap().containsKey(key);
     }
     /**
      * Use {@link #getBaggageMap()} instead.
      */
-    @java.lang.Deprecated
-    public java.util.Map<java.lang.String, java.lang.String> getBaggage() {
+    @Deprecated
+    public java.util.Map<String, String> getBaggage() {
       return getBaggageMap();
     }
     /**
      * <code>map&lt;string, string&gt; baggage = 3;</code>
      */
 
-    public java.util.Map<java.lang.String, java.lang.String> getBaggageMap() {
+    public java.util.Map<String, String> getBaggageMap() {
       return internalGetBaggage().getMap();
     }
     /**
      * <code>map&lt;string, string&gt; baggage = 3;</code>
      */
 
-    public java.lang.String getBaggageOrDefault(
-        java.lang.String key,
-        java.lang.String defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, java.lang.String> map =
+    public String getBaggageOrDefault(
+        String key,
+        String defaultValue) {
+      if (key == null) { throw new NullPointerException(); }
+      java.util.Map<String, String> map =
           internalGetBaggage().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
@@ -654,13 +654,13 @@ public  final class SpanContext extends
      * <code>map&lt;string, string&gt; baggage = 3;</code>
      */
 
-    public java.lang.String getBaggageOrThrow(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, java.lang.String> map =
+    public String getBaggageOrThrow(
+        String key) {
+      if (key == null) { throw new NullPointerException(); }
+      java.util.Map<String, String> map =
           internalGetBaggage().getMap();
       if (!map.containsKey(key)) {
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
       }
       return map.get(key);
     }
@@ -674,16 +674,16 @@ public  final class SpanContext extends
      */
 
     public Builder removeBaggage(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+        String key) {
+      if (key == null) { throw new NullPointerException(); }
       getMutableBaggage().remove(key);
       return this;
     }
     /**
      * Use alternate mutation accessors instead.
      */
-    @java.lang.Deprecated
-    public java.util.Map<java.lang.String, java.lang.String>
+    @Deprecated
+    public java.util.Map<String, String>
     getMutableBaggage() {
       return internalGetMutableBaggage().getMutableMap();
     }
@@ -691,10 +691,10 @@ public  final class SpanContext extends
      * <code>map&lt;string, string&gt; baggage = 3;</code>
      */
     public Builder putBaggage(
-        java.lang.String key,
-        java.lang.String value) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      if (value == null) { throw new java.lang.NullPointerException(); }
+        String key,
+        String value) {
+      if (key == null) { throw new NullPointerException(); }
+      if (value == null) { throw new NullPointerException(); }
       getMutableBaggage().put(key, value);
       return this;
     }
@@ -703,7 +703,7 @@ public  final class SpanContext extends
      */
 
     public Builder putAllBaggage(
-        java.util.Map<java.lang.String, java.lang.String> values) {
+        java.util.Map<String, String> values) {
       getMutableBaggage().putAll(values);
       return this;
     }
@@ -745,7 +745,7 @@ public  final class SpanContext extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<SpanContext> getParserForType() {
     return PARSER;
   }

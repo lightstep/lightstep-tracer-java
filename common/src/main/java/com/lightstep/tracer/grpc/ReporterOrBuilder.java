@@ -15,7 +15,7 @@ public interface ReporterOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 4;</code>
    */
-  java.util.List<com.lightstep.tracer.grpc.KeyValue> 
+  java.util.List<KeyValue>
       getTagsList();
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 4;</code>
@@ -28,11 +28,11 @@ public interface ReporterOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 4;</code>
    */
-  java.util.List<? extends com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+  java.util.List<? extends KeyValueOrBuilder>
       getTagsOrBuilderList();
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 4;</code>
    */
   com.lightstep.tracer.grpc.KeyValueOrBuilder getTagsOrBuilder(
-      int index);
+          int index);
 }

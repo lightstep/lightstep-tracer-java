@@ -1,8 +1,9 @@
 package com.lightstep.tracer.shared;
 
+import com.lightstep.tracer.grpc.SpanContext.Builder;
+
 import java.util.HashMap;
 import java.util.Map;
-import com.lightstep.tracer.grpc.SpanContext.Builder;
 
 public class SpanContext implements io.opentracing.SpanContext {
     private final Builder ctxBuilder = com.lightstep.tracer.grpc.SpanContext.newBuilder();
@@ -36,10 +37,12 @@ public class SpanContext implements io.opentracing.SpanContext {
         this(traceId, null);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public long getSpanId() {
         return ctxBuilder.getSpanId();
     }
 
+    @SuppressWarnings("WeakerAccess")
     public long getTraceId() {
         return ctxBuilder.getTraceId();
     }
@@ -65,6 +68,7 @@ public class SpanContext implements io.opentracing.SpanContext {
         return ctxBuilder.getBaggageMap().entrySet();
     }
 
+    @SuppressWarnings("WeakerAccess")
     public Builder getInnerSpanCtx() {
         return ctxBuilder;
     }

@@ -10,7 +10,7 @@ public interface KeyValueOrBuilder extends
   /**
    * <code>optional string key = 1;</code>
    */
-  java.lang.String getKey();
+  String getKey();
   /**
    * <code>optional string key = 1;</code>
    */
@@ -25,7 +25,7 @@ public interface KeyValueOrBuilder extends
    *
    * <code>optional string string_value = 2;</code>
    */
-  java.lang.String getStringValue();
+  String getStringValue();
   /**
    * <pre>
    * Holds arbitrary string data; well-formed JSON strings should go in
@@ -60,7 +60,7 @@ public interface KeyValueOrBuilder extends
    *
    * <code>optional string json_value = 6;</code>
    */
-  java.lang.String getJsonValue();
+  String getJsonValue();
   /**
    * <pre>
    * Must be a well-formed JSON value. Truncated JSON should go in

@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class Command extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.Command)
-    CommandOrBuilder {
+        CommandOrBuilder {
   // Use Command.newBuilder() to construct.
   private Command(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -18,7 +18,7 @@ public  final class Command extends
     disable_ = false;
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -111,8 +111,8 @@ public  final class Command extends
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -127,7 +127,7 @@ public  final class Command extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -213,7 +213,7 @@ public  final class Command extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -361,7 +361,7 @@ public  final class Command extends
      * <code>optional bool disable = 1;</code>
      */
     public Builder setDisable(boolean value) {
-      
+
       disable_ = value;
       onChanged();
       return this;
@@ -370,7 +370,7 @@ public  final class Command extends
      * <code>optional bool disable = 1;</code>
      */
     public Builder clearDisable() {
-      
+
       disable_ = false;
       onChanged();
       return this;
@@ -413,7 +413,7 @@ public  final class Command extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<Command> getParserForType() {
     return PARSER;
   }

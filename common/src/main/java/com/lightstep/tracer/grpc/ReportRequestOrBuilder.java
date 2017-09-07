@@ -36,7 +36,7 @@ public interface ReportRequestOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.Span spans = 3;</code>
    */
-  java.util.List<com.lightstep.tracer.grpc.Span> 
+  java.util.List<Span>
       getSpansList();
   /**
    * <code>repeated .lightstep.collector.Span spans = 3;</code>
@@ -49,13 +49,13 @@ public interface ReportRequestOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.Span spans = 3;</code>
    */
-  java.util.List<? extends com.lightstep.tracer.grpc.SpanOrBuilder> 
+  java.util.List<? extends SpanOrBuilder>
       getSpansOrBuilderList();
   /**
    * <code>repeated .lightstep.collector.Span spans = 3;</code>
    */
   com.lightstep.tracer.grpc.SpanOrBuilder getSpansOrBuilder(
-      int index);
+          int index);
 
   /**
    * <code>optional uint32 timestamp_offset_micros = 5;</code>

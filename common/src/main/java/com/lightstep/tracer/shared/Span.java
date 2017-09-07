@@ -104,6 +104,7 @@ public class Span implements io.opentracing.Span {
         return this;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void close() {
         finish();
     }
@@ -172,6 +173,7 @@ public class Span implements io.opentracing.Span {
         return log(timestampMicroseconds, fields);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public String generateTraceURL() {
         return tracer.generateTraceURL(context.getSpanId());
     }
@@ -197,7 +199,7 @@ public class Span implements io.opentracing.Span {
      * Adapted from https://android.googlesource.com/platform/dalvik/libcore/json/src/main/java/org/json/JSONStringer.java
      */
     static String stringToJSONValue(String value) {
-        StringBuffer out = new StringBuffer(value.length() + 2);
+        StringBuilder out = new StringBuilder(value.length() + 2);
         out.append("\"");
         for (int i = 0, length = value.length(); i < length; i++) {
             char c = value.charAt(i);
@@ -251,6 +253,7 @@ public class Span implements io.opentracing.Span {
     /**
      * For unit testing in JRE test.
      */
+    @SuppressWarnings("WeakerAccess")
     public Builder getGrpcSpan() {
         return grpcSpan;
     }

@@ -2,14 +2,14 @@ package com.lightstep.tracer.shared;
 
 import io.opentracing.propagation.TextMap;
 import io.opentracing.propagation.TextMapExtractAdapter;
-
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TextMapPropagatorTest {
 

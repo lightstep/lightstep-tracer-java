@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class Span extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.Span)
-    SpanOrBuilder {
+        SpanOrBuilder {
   // Use Span.newBuilder() to construct.
   private Span(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -22,7 +22,7 @@ public  final class Span extends
     logs_ = java.util.Collections.emptyList();
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -61,14 +61,14 @@ public  final class Span extends
             break;
           }
           case 18: {
-            java.lang.String s = input.readStringRequireUtf8();
+            String s = input.readStringRequireUtf8();
 
             operationName_ = s;
             break;
           }
           case 26: {
             if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-              references_ = new java.util.ArrayList<com.lightstep.tracer.grpc.Reference>();
+              references_ = new java.util.ArrayList<Reference>();
               mutable_bitField0_ |= 0x00000004;
             }
             references_.add(
@@ -95,7 +95,7 @@ public  final class Span extends
           }
           case 50: {
             if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
-              tags_ = new java.util.ArrayList<com.lightstep.tracer.grpc.KeyValue>();
+              tags_ = new java.util.ArrayList<KeyValue>();
               mutable_bitField0_ |= 0x00000020;
             }
             tags_.add(
@@ -104,7 +104,7 @@ public  final class Span extends
           }
           case 58: {
             if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-              logs_ = new java.util.ArrayList<com.lightstep.tracer.grpc.Log>();
+              logs_ = new java.util.ArrayList<Log>();
               mutable_bitField0_ |= 0x00000040;
             }
             logs_.add(
@@ -166,18 +166,18 @@ public  final class Span extends
   }
 
   public static final int OPERATION_NAME_FIELD_NUMBER = 2;
-  private volatile java.lang.Object operationName_;
+  private volatile Object operationName_;
   /**
    * <code>optional string operation_name = 2;</code>
    */
-  public java.lang.String getOperationName() {
-    java.lang.Object ref = operationName_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
+  public String getOperationName() {
+    Object ref = operationName_;
+    if (ref instanceof String) {
+      return (String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
+      String s = bs.toStringUtf8();
       operationName_ = s;
       return s;
     }
@@ -187,11 +187,11 @@ public  final class Span extends
    */
   public com.google.protobuf.ByteString
       getOperationNameBytes() {
-    java.lang.Object ref = operationName_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+    Object ref = operationName_;
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
+              (String) ref);
       operationName_ = b;
       return b;
     } else {
@@ -200,17 +200,17 @@ public  final class Span extends
   }
 
   public static final int REFERENCES_FIELD_NUMBER = 3;
-  private java.util.List<com.lightstep.tracer.grpc.Reference> references_;
+  private java.util.List<Reference> references_;
   /**
    * <code>repeated .lightstep.collector.Reference references = 3;</code>
    */
-  public java.util.List<com.lightstep.tracer.grpc.Reference> getReferencesList() {
+  public java.util.List<Reference> getReferencesList() {
     return references_;
   }
   /**
    * <code>repeated .lightstep.collector.Reference references = 3;</code>
    */
-  public java.util.List<? extends com.lightstep.tracer.grpc.ReferenceOrBuilder> 
+  public java.util.List<? extends ReferenceOrBuilder>
       getReferencesOrBuilderList() {
     return references_;
   }
@@ -265,17 +265,17 @@ public  final class Span extends
   }
 
   public static final int TAGS_FIELD_NUMBER = 6;
-  private java.util.List<com.lightstep.tracer.grpc.KeyValue> tags_;
+  private java.util.List<KeyValue> tags_;
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 6;</code>
    */
-  public java.util.List<com.lightstep.tracer.grpc.KeyValue> getTagsList() {
+  public java.util.List<KeyValue> getTagsList() {
     return tags_;
   }
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 6;</code>
    */
-  public java.util.List<? extends com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+  public java.util.List<? extends KeyValueOrBuilder>
       getTagsOrBuilderList() {
     return tags_;
   }
@@ -300,17 +300,17 @@ public  final class Span extends
   }
 
   public static final int LOGS_FIELD_NUMBER = 7;
-  private java.util.List<com.lightstep.tracer.grpc.Log> logs_;
+  private java.util.List<Log> logs_;
   /**
    * <code>repeated .lightstep.collector.Log logs = 7;</code>
    */
-  public java.util.List<com.lightstep.tracer.grpc.Log> getLogsList() {
+  public java.util.List<Log> getLogsList() {
     return logs_;
   }
   /**
    * <code>repeated .lightstep.collector.Log logs = 7;</code>
    */
-  public java.util.List<? extends com.lightstep.tracer.grpc.LogOrBuilder> 
+  public java.util.List<? extends LogOrBuilder>
       getLogsOrBuilderList() {
     return logs_;
   }
@@ -406,8 +406,8 @@ public  final class Span extends
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -440,7 +440,7 @@ public  final class Span extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -548,7 +548,7 @@ public  final class Span extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -757,7 +757,7 @@ public  final class Span extends
             referencesBuilder_ = null;
             references_ = other.references_;
             bitField0_ = (bitField0_ & ~0x00000004);
-            referencesBuilder_ = 
+            referencesBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getReferencesFieldBuilder() : null;
           } else {
@@ -789,7 +789,7 @@ public  final class Span extends
             tagsBuilder_ = null;
             tags_ = other.tags_;
             bitField0_ = (bitField0_ & ~0x00000020);
-            tagsBuilder_ = 
+            tagsBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getTagsFieldBuilder() : null;
           } else {
@@ -815,7 +815,7 @@ public  final class Span extends
             logsBuilder_ = null;
             logs_ = other.logs_;
             bitField0_ = (bitField0_ & ~0x00000040);
-            logsBuilder_ = 
+            logsBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getLogsFieldBuilder() : null;
           } else {
@@ -935,7 +935,7 @@ public  final class Span extends
      * <code>optional .lightstep.collector.SpanContext span_context = 1;</code>
      */
     public com.lightstep.tracer.grpc.SpanContext.Builder getSpanContextBuilder() {
-      
+
       onChanged();
       return getSpanContextFieldBuilder().getBuilder();
     }
@@ -954,7 +954,7 @@ public  final class Span extends
      * <code>optional .lightstep.collector.SpanContext span_context = 1;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.lightstep.tracer.grpc.SpanContext, com.lightstep.tracer.grpc.SpanContext.Builder, com.lightstep.tracer.grpc.SpanContextOrBuilder> 
+        com.lightstep.tracer.grpc.SpanContext, com.lightstep.tracer.grpc.SpanContext.Builder, com.lightstep.tracer.grpc.SpanContextOrBuilder>
         getSpanContextFieldBuilder() {
       if (spanContextBuilder_ == null) {
         spanContextBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -967,20 +967,20 @@ public  final class Span extends
       return spanContextBuilder_;
     }
 
-    private java.lang.Object operationName_ = "";
+    private Object operationName_ = "";
     /**
      * <code>optional string operation_name = 2;</code>
      */
-    public java.lang.String getOperationName() {
-      java.lang.Object ref = operationName_;
-      if (!(ref instanceof java.lang.String)) {
+    public String getOperationName() {
+      Object ref = operationName_;
+      if (!(ref instanceof String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
+        String s = bs.toStringUtf8();
         operationName_ = s;
         return s;
       } else {
-        return (java.lang.String) ref;
+        return (String) ref;
       }
     }
     /**
@@ -988,11 +988,11 @@ public  final class Span extends
      */
     public com.google.protobuf.ByteString
         getOperationNameBytes() {
-      java.lang.Object ref = operationName_;
+      Object ref = operationName_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+                (String) ref);
         operationName_ = b;
         return b;
       } else {
@@ -1003,11 +1003,11 @@ public  final class Span extends
      * <code>optional string operation_name = 2;</code>
      */
     public Builder setOperationName(
-        java.lang.String value) {
+        String value) {
       if (value == null) {
     throw new NullPointerException();
   }
-  
+
       operationName_ = value;
       onChanged();
       return this;
@@ -1016,7 +1016,7 @@ public  final class Span extends
      * <code>optional string operation_name = 2;</code>
      */
     public Builder clearOperationName() {
-      
+
       operationName_ = getDefaultInstance().getOperationName();
       onChanged();
       return this;
@@ -1030,17 +1030,17 @@ public  final class Span extends
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-      
+
       operationName_ = value;
       onChanged();
       return this;
     }
 
-    private java.util.List<com.lightstep.tracer.grpc.Reference> references_ =
+    private java.util.List<Reference> references_ =
       java.util.Collections.emptyList();
     private void ensureReferencesIsMutable() {
       if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-        references_ = new java.util.ArrayList<com.lightstep.tracer.grpc.Reference>(references_);
+        references_ = new java.util.ArrayList<Reference>(references_);
         bitField0_ |= 0x00000004;
        }
     }
@@ -1051,7 +1051,7 @@ public  final class Span extends
     /**
      * <code>repeated .lightstep.collector.Reference references = 3;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.Reference> getReferencesList() {
+    public java.util.List<Reference> getReferencesList() {
       if (referencesBuilder_ == null) {
         return java.util.Collections.unmodifiableList(references_);
       } else {
@@ -1174,7 +1174,7 @@ public  final class Span extends
      * <code>repeated .lightstep.collector.Reference references = 3;</code>
      */
     public Builder addAllReferences(
-        java.lang.Iterable<? extends com.lightstep.tracer.grpc.Reference> values) {
+        Iterable<? extends Reference> values) {
       if (referencesBuilder_ == null) {
         ensureReferencesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1231,7 +1231,7 @@ public  final class Span extends
     /**
      * <code>repeated .lightstep.collector.Reference references = 3;</code>
      */
-    public java.util.List<? extends com.lightstep.tracer.grpc.ReferenceOrBuilder> 
+    public java.util.List<? extends ReferenceOrBuilder>
          getReferencesOrBuilderList() {
       if (referencesBuilder_ != null) {
         return referencesBuilder_.getMessageOrBuilderList();
@@ -1257,12 +1257,12 @@ public  final class Span extends
     /**
      * <code>repeated .lightstep.collector.Reference references = 3;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.Reference.Builder> 
+    public java.util.List<Reference.Builder>
          getReferencesBuilderList() {
       return getReferencesFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.lightstep.tracer.grpc.Reference, com.lightstep.tracer.grpc.Reference.Builder, com.lightstep.tracer.grpc.ReferenceOrBuilder> 
+        com.lightstep.tracer.grpc.Reference, com.lightstep.tracer.grpc.Reference.Builder, com.lightstep.tracer.grpc.ReferenceOrBuilder>
         getReferencesFieldBuilder() {
       if (referencesBuilder_ == null) {
         referencesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -1361,7 +1361,7 @@ public  final class Span extends
      * <code>optional .google.protobuf.Timestamp start_timestamp = 4;</code>
      */
     public com.google.protobuf.Timestamp.Builder getStartTimestampBuilder() {
-      
+
       onChanged();
       return getStartTimestampFieldBuilder().getBuilder();
     }
@@ -1380,7 +1380,7 @@ public  final class Span extends
      * <code>optional .google.protobuf.Timestamp start_timestamp = 4;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
         getStartTimestampFieldBuilder() {
       if (startTimestampBuilder_ == null) {
         startTimestampBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1404,7 +1404,7 @@ public  final class Span extends
      * <code>optional uint64 duration_micros = 5;</code>
      */
     public Builder setDurationMicros(long value) {
-      
+
       durationMicros_ = value;
       onChanged();
       return this;
@@ -1413,17 +1413,17 @@ public  final class Span extends
      * <code>optional uint64 duration_micros = 5;</code>
      */
     public Builder clearDurationMicros() {
-      
+
       durationMicros_ = 0L;
       onChanged();
       return this;
     }
 
-    private java.util.List<com.lightstep.tracer.grpc.KeyValue> tags_ =
+    private java.util.List<KeyValue> tags_ =
       java.util.Collections.emptyList();
     private void ensureTagsIsMutable() {
       if (!((bitField0_ & 0x00000020) == 0x00000020)) {
-        tags_ = new java.util.ArrayList<com.lightstep.tracer.grpc.KeyValue>(tags_);
+        tags_ = new java.util.ArrayList<KeyValue>(tags_);
         bitField0_ |= 0x00000020;
        }
     }
@@ -1434,7 +1434,7 @@ public  final class Span extends
     /**
      * <code>repeated .lightstep.collector.KeyValue tags = 6;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.KeyValue> getTagsList() {
+    public java.util.List<KeyValue> getTagsList() {
       if (tagsBuilder_ == null) {
         return java.util.Collections.unmodifiableList(tags_);
       } else {
@@ -1557,7 +1557,7 @@ public  final class Span extends
      * <code>repeated .lightstep.collector.KeyValue tags = 6;</code>
      */
     public Builder addAllTags(
-        java.lang.Iterable<? extends com.lightstep.tracer.grpc.KeyValue> values) {
+        Iterable<? extends KeyValue> values) {
       if (tagsBuilder_ == null) {
         ensureTagsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1614,7 +1614,7 @@ public  final class Span extends
     /**
      * <code>repeated .lightstep.collector.KeyValue tags = 6;</code>
      */
-    public java.util.List<? extends com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+    public java.util.List<? extends KeyValueOrBuilder>
          getTagsOrBuilderList() {
       if (tagsBuilder_ != null) {
         return tagsBuilder_.getMessageOrBuilderList();
@@ -1640,12 +1640,12 @@ public  final class Span extends
     /**
      * <code>repeated .lightstep.collector.KeyValue tags = 6;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.KeyValue.Builder> 
+    public java.util.List<KeyValue.Builder>
          getTagsBuilderList() {
       return getTagsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.lightstep.tracer.grpc.KeyValue, com.lightstep.tracer.grpc.KeyValue.Builder, com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+        com.lightstep.tracer.grpc.KeyValue, com.lightstep.tracer.grpc.KeyValue.Builder, com.lightstep.tracer.grpc.KeyValueOrBuilder>
         getTagsFieldBuilder() {
       if (tagsBuilder_ == null) {
         tagsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -1659,11 +1659,11 @@ public  final class Span extends
       return tagsBuilder_;
     }
 
-    private java.util.List<com.lightstep.tracer.grpc.Log> logs_ =
+    private java.util.List<Log> logs_ =
       java.util.Collections.emptyList();
     private void ensureLogsIsMutable() {
       if (!((bitField0_ & 0x00000040) == 0x00000040)) {
-        logs_ = new java.util.ArrayList<com.lightstep.tracer.grpc.Log>(logs_);
+        logs_ = new java.util.ArrayList<Log>(logs_);
         bitField0_ |= 0x00000040;
        }
     }
@@ -1674,7 +1674,7 @@ public  final class Span extends
     /**
      * <code>repeated .lightstep.collector.Log logs = 7;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.Log> getLogsList() {
+    public java.util.List<Log> getLogsList() {
       if (logsBuilder_ == null) {
         return java.util.Collections.unmodifiableList(logs_);
       } else {
@@ -1797,7 +1797,7 @@ public  final class Span extends
      * <code>repeated .lightstep.collector.Log logs = 7;</code>
      */
     public Builder addAllLogs(
-        java.lang.Iterable<? extends com.lightstep.tracer.grpc.Log> values) {
+        Iterable<? extends Log> values) {
       if (logsBuilder_ == null) {
         ensureLogsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1854,7 +1854,7 @@ public  final class Span extends
     /**
      * <code>repeated .lightstep.collector.Log logs = 7;</code>
      */
-    public java.util.List<? extends com.lightstep.tracer.grpc.LogOrBuilder> 
+    public java.util.List<? extends LogOrBuilder>
          getLogsOrBuilderList() {
       if (logsBuilder_ != null) {
         return logsBuilder_.getMessageOrBuilderList();
@@ -1880,12 +1880,12 @@ public  final class Span extends
     /**
      * <code>repeated .lightstep.collector.Log logs = 7;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.Log.Builder> 
+    public java.util.List<Log.Builder>
          getLogsBuilderList() {
       return getLogsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.lightstep.tracer.grpc.Log, com.lightstep.tracer.grpc.Log.Builder, com.lightstep.tracer.grpc.LogOrBuilder> 
+        com.lightstep.tracer.grpc.Log, com.lightstep.tracer.grpc.Log.Builder, com.lightstep.tracer.grpc.LogOrBuilder>
         getLogsFieldBuilder() {
       if (logsBuilder_ == null) {
         logsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -1936,7 +1936,7 @@ public  final class Span extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<Span> getParserForType() {
     return PARSER;
   }

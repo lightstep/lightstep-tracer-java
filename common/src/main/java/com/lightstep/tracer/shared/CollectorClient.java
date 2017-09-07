@@ -13,8 +13,7 @@ import io.grpc.StatusRuntimeException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class CollectorClient {
-
+class CollectorClient {
   private final ManagedChannelBuilder<?> channelBuilder;
   private ManagedChannel channel;
   private CollectorServiceBlockingStub blockingStub;
@@ -25,14 +24,15 @@ public class CollectorClient {
   /**
    * Constructor client for accessing CollectorService using the existing channel
    */
-  public CollectorClient(AbstractTracer tracer, ManagedChannelBuilder<?> channelBuilder, long deadlineMillis) {
+  CollectorClient(AbstractTracer tracer, ManagedChannelBuilder<?> channelBuilder, long deadlineMillis) {
     this.tracer = tracer;
     this.channelBuilder = channelBuilder;
     this.deadlineMillis = deadlineMillis;
-    clientMetrics = new ClientMetrics(Util.epochTimeMicrosToProtoTime(Util.nowMicrosApproximate()));
+    connect();
+    clientMetrics = new ClientMetrics();
   }
 
-  public synchronized void shutdown() {
+  synchronized void shutdown() {
     try {
       channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
@@ -44,7 +44,7 @@ public class CollectorClient {
   /**
    * Blocking call to report
    */
-  public synchronized ReportResponse report(ReportRequest.Builder reqBuilder) {
+  synchronized ReportResponse report(ReportRequest.Builder reqBuilder) {
     ReportResponse resp = null;
     reqBuilder.setInternalMetrics(clientMetrics.toGrpcAndReset());
 

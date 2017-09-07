@@ -1,6 +1,7 @@
 package com.lightstep.tracer.shared;
 
 import com.google.protobuf.Timestamp;
+
 import java.util.Random;
 
 class Util {

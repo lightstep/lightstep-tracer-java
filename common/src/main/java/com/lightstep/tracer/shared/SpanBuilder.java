@@ -38,10 +38,12 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         numTags = new HashMap<>();
     }
 
+    @Override
     public Tracer.SpanBuilder asChildOf(io.opentracing.Span parent) {
         return asChildOf(parent.context());
     }
 
+    @Override
     public Tracer.SpanBuilder asChildOf(io.opentracing.SpanContext parent) {
         if (parent == null) {
             return this;
@@ -49,6 +51,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         return addReference(CHILD_OF, parent);
     }
 
+    @Override
     public Tracer.SpanBuilder addReference(String type, io.opentracing.SpanContext referredTo) {
         if (referredTo != null && (CHILD_OF.equals(type) || FOLLOWS_FROM.equals(type))) {
             parent = (SpanContext) referredTo;
@@ -88,12 +91,14 @@ public class SpanBuilder implements Tracer.SpanBuilder {
      * Sets the traceId and the spanId for the span being created. If the span has a parent, the
      * traceId of the parent will override this traceId value.
      */
+    @SuppressWarnings({"WeakerAccess", "UnusedReturnValue", "SameParameterValue"})
     public Tracer.SpanBuilder withTraceIdAndSpanId(long traceId, long spanId) {
         this.traceId = traceId;
         this.spanId = spanId;
         return this;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public Iterable<Map.Entry<String, String>> baggageItems() {
         if (parent == null) {
             return Collections.emptySet();
@@ -102,6 +107,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         }
     }
 
+    @Override
     public io.opentracing.Span start() {
         if (tracer.isDisabled()) {
             return NoopSpan.INSTANCE;
@@ -117,6 +123,7 @@ public class SpanBuilder implements Tracer.SpanBuilder {
         grpcSpan.setStartTimestamp(Util.epochTimeMicrosToProtoTime(startTimestampMicros));
 
         Long traceId = this.traceId;
+
         if (parent != null) {
             traceId = parent.getTraceId();
             grpcSpan.addTags(KeyValue.newBuilder().setKey(PARENT_SPAN_GUID_KEY)

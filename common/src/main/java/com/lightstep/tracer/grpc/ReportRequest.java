@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class ReportRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.ReportRequest)
-    ReportRequestOrBuilder {
+        ReportRequestOrBuilder {
   // Use ReportRequest.newBuilder() to construct.
   private ReportRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -19,7 +19,7 @@ public  final class ReportRequest extends
     timestampOffsetMicros_ = 0;
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -72,7 +72,7 @@ public  final class ReportRequest extends
           }
           case 26: {
             if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-              spans_ = new java.util.ArrayList<com.lightstep.tracer.grpc.Span>();
+              spans_ = new java.util.ArrayList<Span>();
               mutable_bitField0_ |= 0x00000004;
             }
             spans_.add(
@@ -167,17 +167,17 @@ public  final class ReportRequest extends
   }
 
   public static final int SPANS_FIELD_NUMBER = 3;
-  private java.util.List<com.lightstep.tracer.grpc.Span> spans_;
+  private java.util.List<Span> spans_;
   /**
    * <code>repeated .lightstep.collector.Span spans = 3;</code>
    */
-  public java.util.List<com.lightstep.tracer.grpc.Span> getSpansList() {
+  public java.util.List<Span> getSpansList() {
     return spans_;
   }
   /**
    * <code>repeated .lightstep.collector.Span spans = 3;</code>
    */
-  public java.util.List<? extends com.lightstep.tracer.grpc.SpanOrBuilder> 
+  public java.util.List<? extends SpanOrBuilder>
       getSpansOrBuilderList() {
     return spans_;
   }
@@ -290,8 +290,8 @@ public  final class ReportRequest extends
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -323,7 +323,7 @@ public  final class ReportRequest extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -424,7 +424,7 @@ public  final class ReportRequest extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -608,7 +608,7 @@ public  final class ReportRequest extends
             spansBuilder_ = null;
             spans_ = other.spans_;
             bitField0_ = (bitField0_ & ~0x00000004);
-            spansBuilder_ = 
+            spansBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getSpansFieldBuilder() : null;
           } else {
@@ -734,7 +734,7 @@ public  final class ReportRequest extends
      * <code>optional .lightstep.collector.Reporter reporter = 1;</code>
      */
     public com.lightstep.tracer.grpc.Reporter.Builder getReporterBuilder() {
-      
+
       onChanged();
       return getReporterFieldBuilder().getBuilder();
     }
@@ -753,7 +753,7 @@ public  final class ReportRequest extends
      * <code>optional .lightstep.collector.Reporter reporter = 1;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.lightstep.tracer.grpc.Reporter, com.lightstep.tracer.grpc.Reporter.Builder, com.lightstep.tracer.grpc.ReporterOrBuilder> 
+        com.lightstep.tracer.grpc.Reporter, com.lightstep.tracer.grpc.Reporter.Builder, com.lightstep.tracer.grpc.ReporterOrBuilder>
         getReporterFieldBuilder() {
       if (reporterBuilder_ == null) {
         reporterBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -851,7 +851,7 @@ public  final class ReportRequest extends
      * <code>optional .lightstep.collector.Auth auth = 2;</code>
      */
     public com.lightstep.tracer.grpc.Auth.Builder getAuthBuilder() {
-      
+
       onChanged();
       return getAuthFieldBuilder().getBuilder();
     }
@@ -870,7 +870,7 @@ public  final class ReportRequest extends
      * <code>optional .lightstep.collector.Auth auth = 2;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.lightstep.tracer.grpc.Auth, com.lightstep.tracer.grpc.Auth.Builder, com.lightstep.tracer.grpc.AuthOrBuilder> 
+        com.lightstep.tracer.grpc.Auth, com.lightstep.tracer.grpc.Auth.Builder, com.lightstep.tracer.grpc.AuthOrBuilder>
         getAuthFieldBuilder() {
       if (authBuilder_ == null) {
         authBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -883,11 +883,11 @@ public  final class ReportRequest extends
       return authBuilder_;
     }
 
-    private java.util.List<com.lightstep.tracer.grpc.Span> spans_ =
+    private java.util.List<Span> spans_ =
       java.util.Collections.emptyList();
     private void ensureSpansIsMutable() {
       if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-        spans_ = new java.util.ArrayList<com.lightstep.tracer.grpc.Span>(spans_);
+        spans_ = new java.util.ArrayList<Span>(spans_);
         bitField0_ |= 0x00000004;
        }
     }
@@ -898,7 +898,7 @@ public  final class ReportRequest extends
     /**
      * <code>repeated .lightstep.collector.Span spans = 3;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.Span> getSpansList() {
+    public java.util.List<Span> getSpansList() {
       if (spansBuilder_ == null) {
         return java.util.Collections.unmodifiableList(spans_);
       } else {
@@ -1021,7 +1021,7 @@ public  final class ReportRequest extends
      * <code>repeated .lightstep.collector.Span spans = 3;</code>
      */
     public Builder addAllSpans(
-        java.lang.Iterable<? extends com.lightstep.tracer.grpc.Span> values) {
+        Iterable<? extends Span> values) {
       if (spansBuilder_ == null) {
         ensureSpansIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1078,7 +1078,7 @@ public  final class ReportRequest extends
     /**
      * <code>repeated .lightstep.collector.Span spans = 3;</code>
      */
-    public java.util.List<? extends com.lightstep.tracer.grpc.SpanOrBuilder> 
+    public java.util.List<? extends SpanOrBuilder>
          getSpansOrBuilderList() {
       if (spansBuilder_ != null) {
         return spansBuilder_.getMessageOrBuilderList();
@@ -1104,12 +1104,12 @@ public  final class ReportRequest extends
     /**
      * <code>repeated .lightstep.collector.Span spans = 3;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.Span.Builder> 
+    public java.util.List<Span.Builder>
          getSpansBuilderList() {
       return getSpansFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.lightstep.tracer.grpc.Span, com.lightstep.tracer.grpc.Span.Builder, com.lightstep.tracer.grpc.SpanOrBuilder> 
+        com.lightstep.tracer.grpc.Span, com.lightstep.tracer.grpc.Span.Builder, com.lightstep.tracer.grpc.SpanOrBuilder>
         getSpansFieldBuilder() {
       if (spansBuilder_ == null) {
         spansBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -1134,7 +1134,7 @@ public  final class ReportRequest extends
      * <code>optional uint32 timestamp_offset_micros = 5;</code>
      */
     public Builder setTimestampOffsetMicros(int value) {
-      
+
       timestampOffsetMicros_ = value;
       onChanged();
       return this;
@@ -1143,7 +1143,7 @@ public  final class ReportRequest extends
      * <code>optional uint32 timestamp_offset_micros = 5;</code>
      */
     public Builder clearTimestampOffsetMicros() {
-      
+
       timestampOffsetMicros_ = 0;
       onChanged();
       return this;
@@ -1234,7 +1234,7 @@ public  final class ReportRequest extends
      * <code>optional .lightstep.collector.InternalMetrics internal_metrics = 6;</code>
      */
     public com.lightstep.tracer.grpc.InternalMetrics.Builder getInternalMetricsBuilder() {
-      
+
       onChanged();
       return getInternalMetricsFieldBuilder().getBuilder();
     }
@@ -1253,7 +1253,7 @@ public  final class ReportRequest extends
      * <code>optional .lightstep.collector.InternalMetrics internal_metrics = 6;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.lightstep.tracer.grpc.InternalMetrics, com.lightstep.tracer.grpc.InternalMetrics.Builder, com.lightstep.tracer.grpc.InternalMetricsOrBuilder> 
+        com.lightstep.tracer.grpc.InternalMetrics, com.lightstep.tracer.grpc.InternalMetrics.Builder, com.lightstep.tracer.grpc.InternalMetricsOrBuilder>
         getInternalMetricsFieldBuilder() {
       if (internalMetricsBuilder_ == null) {
         internalMetricsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1303,7 +1303,7 @@ public  final class ReportRequest extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<ReportRequest> getParserForType() {
     return PARSER;
   }

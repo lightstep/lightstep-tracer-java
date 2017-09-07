@@ -1,10 +1,10 @@
 package com.lightstep.tracer.shared;
 
-import java.util.Collections;
-import java.util.Map;
-
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
+
+import java.util.Collections;
+import java.util.Map;
 
 // A span which is returned when the tracer is disabled.
 class NoopSpan implements Span {
@@ -24,6 +24,7 @@ class NoopSpan implements Span {
     public void finish() {
     }
 
+    @Override
     public void finish(long timestamp) {
     }
 
@@ -46,10 +47,12 @@ class NoopSpan implements Span {
         return this;
     }
 
+    @Override
     public Span log(String message) {
         return this;
     }
 
+    @Override
     public Span log(long timestampMicroseconds, String message) {
         return this;
     }
@@ -64,10 +67,12 @@ class NoopSpan implements Span {
         return this;
     }
 
+    @Override
     public final Span log(Map<String, ?> fields) {
         return this;
     }
 
+    @Override
     public final Span log(long timestampMicros, Map<String, ?> fields) {
         return this;
     }

@@ -10,7 +10,7 @@ public interface MetricsSampleOrBuilder extends
   /**
    * <code>optional string name = 1;</code>
    */
-  java.lang.String getName();
+  String getName();
   /**
    * <code>optional string name = 1;</code>
    */

@@ -87,7 +87,7 @@ public final class Collector {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    java.lang.String[] descriptorData = {
+    String[] descriptorData = {
       "\n\017collector.proto\022\023lightstep.collector\032\037" +
       "google/protobuf/timestamp.proto\"\240\001\n\013Span" +
       "Context\022\020\n\010trace_id\030\001 \001(\004\022\017\n\007span_id\030\002 \001" +
@@ -159,79 +159,79 @@ public final class Collector {
     internal_static_lightstep_collector_SpanContext_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_SpanContext_descriptor,
-        new java.lang.String[] { "TraceId", "SpanId", "Baggage", });
+        new String[] { "TraceId", "SpanId", "Baggage", });
     internal_static_lightstep_collector_SpanContext_BaggageEntry_descriptor =
       internal_static_lightstep_collector_SpanContext_descriptor.getNestedTypes().get(0);
     internal_static_lightstep_collector_SpanContext_BaggageEntry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_SpanContext_BaggageEntry_descriptor,
-        new java.lang.String[] { "Key", "Value", });
+        new String[] { "Key", "Value", });
     internal_static_lightstep_collector_KeyValue_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_lightstep_collector_KeyValue_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_KeyValue_descriptor,
-        new java.lang.String[] { "Key", "StringValue", "IntValue", "DoubleValue", "BoolValue", "JsonValue", "Value", });
+        new String[] { "Key", "StringValue", "IntValue", "DoubleValue", "BoolValue", "JsonValue", "Value", });
     internal_static_lightstep_collector_Log_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_lightstep_collector_Log_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_Log_descriptor,
-        new java.lang.String[] { "Timestamp", "Keyvalues", });
+        new String[] { "Timestamp", "Keyvalues", });
     internal_static_lightstep_collector_Reference_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_lightstep_collector_Reference_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_Reference_descriptor,
-        new java.lang.String[] { "Relationship", "SpanContext", });
+        new String[] { "Relationship", "SpanContext", });
     internal_static_lightstep_collector_Span_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_lightstep_collector_Span_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_Span_descriptor,
-        new java.lang.String[] { "SpanContext", "OperationName", "References", "StartTimestamp", "DurationMicros", "Tags", "Logs", });
+        new String[] { "SpanContext", "OperationName", "References", "StartTimestamp", "DurationMicros", "Tags", "Logs", });
     internal_static_lightstep_collector_Reporter_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_lightstep_collector_Reporter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_Reporter_descriptor,
-        new java.lang.String[] { "ReporterId", "Tags", });
+        new String[] { "ReporterId", "Tags", });
     internal_static_lightstep_collector_MetricsSample_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_lightstep_collector_MetricsSample_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_MetricsSample_descriptor,
-        new java.lang.String[] { "Name", "IntValue", "DoubleValue", "Value", });
+        new String[] { "Name", "IntValue", "DoubleValue", "Value", });
     internal_static_lightstep_collector_InternalMetrics_descriptor =
       getDescriptor().getMessageTypes().get(7);
     internal_static_lightstep_collector_InternalMetrics_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_InternalMetrics_descriptor,
-        new java.lang.String[] { "StartTimestamp", "DurationMicros", "Logs", "Counts", "Gauges", });
+        new String[] { "StartTimestamp", "DurationMicros", "Logs", "Counts", "Gauges", });
     internal_static_lightstep_collector_Auth_descriptor =
       getDescriptor().getMessageTypes().get(8);
     internal_static_lightstep_collector_Auth_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_Auth_descriptor,
-        new java.lang.String[] { "AccessToken", });
+        new String[] { "AccessToken", });
     internal_static_lightstep_collector_ReportRequest_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_lightstep_collector_ReportRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_ReportRequest_descriptor,
-        new java.lang.String[] { "Reporter", "Auth", "Spans", "TimestampOffsetMicros", "InternalMetrics", });
+        new String[] { "Reporter", "Auth", "Spans", "TimestampOffsetMicros", "InternalMetrics", });
     internal_static_lightstep_collector_Command_descriptor =
       getDescriptor().getMessageTypes().get(10);
     internal_static_lightstep_collector_Command_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_Command_descriptor,
-        new java.lang.String[] { "Disable", });
+        new String[] { "Disable", });
     internal_static_lightstep_collector_ReportResponse_descriptor =
       getDescriptor().getMessageTypes().get(11);
     internal_static_lightstep_collector_ReportResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_lightstep_collector_ReportResponse_descriptor,
-        new java.lang.String[] { "Commands", "ReceiveTimestamp", "TransmitTimestamp", "Errors", });
+        new String[] { "Commands", "ReceiveTimestamp", "TransmitTimestamp", "Errors", });
     com.google.protobuf.TimestampProto.getDescriptor();
   }
 

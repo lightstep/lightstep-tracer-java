@@ -1,11 +1,11 @@
 package com.lightstep.tracer.shared;
 
+import io.opentracing.propagation.TextMap;
+
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import io.opentracing.propagation.TextMap;
 
 class TextMapPropagator implements Propagator<TextMap> {
     private static final String PREFIX_TRACER_STATE = "ot-tracer-";

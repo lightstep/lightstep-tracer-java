@@ -1,5 +1,10 @@
 import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.shared.Options;
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMap;
 
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -9,13 +14,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import io.opentracing.Span;
-import io.opentracing.SpanContext;
-import io.opentracing.Tracer;
-import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMap;
-
 public class Simple {
+
+    private static final String MESSAGE_KEY = "message";
+    private static final String PAYLOAD_KEY = "payload";
+
     public static void main(String[] args) throws InterruptedException, MalformedURLException {
         System.out.println("Starting Simple example...");
 
@@ -33,12 +36,13 @@ public class Simple {
         // Play with different sorts of payloads for fun.
         mySpan.log("just a message");
         mySpan.log("just a message");
-        mySpan.log("no payload", null);
-        mySpan.log("string payload", "str");
+        mySpan.log("no payload");
+        mySpan.log(getLogPayloadMap("string payload", "str"));
         Map<String, Object> m = new HashMap<>();
+        m.put(MESSAGE_KEY, "map payload");
         m.put("foo", "bar");
         m.put("baz", 42);
-        mySpan.log("map payload", m);
+        mySpan.log(m);
         mySpan.log(m);
         m.put("event", "now an event field exists");
         mySpan.log(m);
@@ -54,7 +58,7 @@ public class Simple {
                 .withTag("Manual unicode", "\u0027\u0018\u00f6\u0003\u0012\u008e\u00fa\u00ec\u0011\r")
                 .withTag("🍕", "pepperoni")
                 .start();
-        parentSpan.log("Starting outer span", null);
+        parentSpan.log("Starting outer span");
 
 
         // Create a simple child span
@@ -69,8 +73,8 @@ public class Simple {
 
         // Throw inject and extract into the mix, even though we aren't making
         // an RPC.
-        Span grandchild = createChildViaInjectExtract(tracer, "grandchild", childCtx);
-        grandchild.log("grandchild created", null);
+        Span grandchild = createChildViaInjectExtract(tracer, childCtx);
+        grandchild.log("grandchild created");
         grandchild.finish();
 
         // Spawn some concurrent threads - which in turn will spawn their
@@ -83,7 +87,7 @@ public class Simple {
                         spawnWorkers(tracer, parentSpan);
                     } catch (InterruptedException e) {
                         parentSpan.setTag("error", "true");
-                        parentSpan.log("InterruptedException", e);
+                        parentSpan.log(getLogPayloadMap("InterruptedException", e));
                     }
                 }
             });
@@ -98,7 +102,7 @@ public class Simple {
     }
 
     // An ultra-hacky demonstration of inject() and extract() in-process.
-    private static Span createChildViaInjectExtract(Tracer tracer, String opName, SpanContext parentCtx) {
+    private static Span createChildViaInjectExtract(Tracer tracer, SpanContext parentCtx) {
         final Map<String, String> textMap = new HashMap<>();
         final TextMap demoCarrier = new TextMap() {
             public void put(String key, String value) {
@@ -118,7 +122,7 @@ public class Simple {
                             "', value='" + entry.getValue() + "'");
         }
         SpanContext extracted = tracer.extract(Format.Builtin.TEXT_MAP, demoCarrier);
-        return tracer.buildSpan(opName).asChildOf(extracted).start();
+        return tracer.buildSpan("grandchild").asChildOf(extracted).start();
     }
 
     private static void spawnWorkers(final Tracer tracer, Span outerSpan) throws InterruptedException {
@@ -142,7 +146,7 @@ public class Simple {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
                         childSpan.setTag("error", "true");
-                        childSpan.log("InterruptedException!", e);
+                        childSpan.log(getLogPayloadMap("InterruptedException!", e));
                     }
                     innerSpan.finish();
                 }
@@ -155,13 +159,13 @@ public class Simple {
                         .asChildOf(parentSpan.context())
                         .start();
                 for (int i = 0; i < 20; i++) {
-                    childSpan.log("Beginning inner loop", i);
+                    childSpan.log(getLogPayloadMap("Beginning inner loop", i));
                     for (int j = 0; j < 10; j++) {
                         try {
                             Thread.sleep(1);
                         } catch (InterruptedException e) {
                             childSpan.setTag("error", "true");
-                            childSpan.log("InterruptedException!", e);
+                            childSpan.log(getLogPayloadMap("InterruptedException!", e));
                         }
                     }
                 }
@@ -177,7 +181,7 @@ public class Simple {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
                     childSpan.setTag("error", "true");
-                    childSpan.log("InterruptedException!", e);
+                    childSpan.log(getLogPayloadMap("InterruptedException!", e));
                 }
                 childSpan.finish();
             }
@@ -192,7 +196,7 @@ public class Simple {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
                         childSpan.setTag("error", "true");
-                        childSpan.log("InterruptedException!", e);
+                        childSpan.log(getLogPayloadMap("InterruptedException!", e));
                     }
                 }
                 childSpan.finish();
@@ -207,5 +211,12 @@ public class Simple {
         }
         System.out.println("Finished worker threads.");
         parentSpan.finish();
+    }
+
+    private static Map<String, Object> getLogPayloadMap(String message, Object payload) {
+        Map<String,Object> m = new HashMap<>();
+        m.put(MESSAGE_KEY, message);
+        m.put(PAYLOAD_KEY, payload);
+        return m;
     }
 }

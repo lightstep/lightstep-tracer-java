@@ -1,8 +1,8 @@
 package com.lightstep.tracer.shared;
 
-import java.nio.ByteBuffer;
-
 import io.opentracing.propagation.TextMap;
+
+import java.nio.ByteBuffer;
 
 interface Propagator<C> {
     void inject(SpanContext spanContext, C carrier);

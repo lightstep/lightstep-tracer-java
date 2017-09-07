@@ -4,23 +4,18 @@ import com.lightstep.tracer.grpc.KeyValue;
 import com.lightstep.tracer.grpc.Span.Builder;
 import com.lightstep.tracer.shared.Options;
 import com.lightstep.tracer.shared.Status;
-
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.TextMapExtractAdapter;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.opentracing.Span;
-import io.opentracing.SpanContext;
-import io.opentracing.Tracer;
-import io.opentracing.propagation.TextMapExtractAdapter;
-
 import static io.opentracing.propagation.Format.Builtin.HTTP_HEADERS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class JRETracerTest {
     private static final String PREFIX_TRACER_STATE = "ot-tracer-";

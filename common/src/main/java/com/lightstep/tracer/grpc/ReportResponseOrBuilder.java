@@ -10,7 +10,7 @@ public interface ReportResponseOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.Command commands = 1;</code>
    */
-  java.util.List<com.lightstep.tracer.grpc.Command> 
+  java.util.List<Command>
       getCommandsList();
   /**
    * <code>repeated .lightstep.collector.Command commands = 1;</code>
@@ -23,13 +23,13 @@ public interface ReportResponseOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.Command commands = 1;</code>
    */
-  java.util.List<? extends com.lightstep.tracer.grpc.CommandOrBuilder> 
+  java.util.List<? extends CommandOrBuilder>
       getCommandsOrBuilderList();
   /**
    * <code>repeated .lightstep.collector.Command commands = 1;</code>
    */
   com.lightstep.tracer.grpc.CommandOrBuilder getCommandsOrBuilder(
-      int index);
+          int index);
 
   /**
    * <code>optional .google.protobuf.Timestamp receive_timestamp = 2;</code>
@@ -60,7 +60,7 @@ public interface ReportResponseOrBuilder extends
   /**
    * <code>repeated string errors = 4;</code>
    */
-  java.util.List<java.lang.String>
+  java.util.List<String>
       getErrorsList();
   /**
    * <code>repeated string errors = 4;</code>
@@ -69,7 +69,7 @@ public interface ReportResponseOrBuilder extends
   /**
    * <code>repeated string errors = 4;</code>
    */
-  java.lang.String getErrors(int index);
+  String getErrors(int index);
   /**
    * <code>repeated string errors = 4;</code>
    */

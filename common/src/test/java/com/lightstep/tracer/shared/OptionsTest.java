@@ -2,22 +2,8 @@ package com.lightstep.tracer.shared;
 
 import org.junit.Test;
 
-import static com.lightstep.tracer.shared.Options.COLLECTOR_PATH;
-import static com.lightstep.tracer.shared.Options.COMPONENT_NAME_KEY;
-import static com.lightstep.tracer.shared.Options.DEFAULT_PLAINTEXT_PORT;
-import static com.lightstep.tracer.shared.Options.DEFAULT_SECURE_PORT;
-import static com.lightstep.tracer.shared.Options.GUID_KEY;
-import static com.lightstep.tracer.shared.Options.HTTP;
-import static com.lightstep.tracer.shared.Options.HTTPS;
-import static com.lightstep.tracer.shared.Options.LEGACY_COMPONENT_NAME_KEY;
-import static com.lightstep.tracer.shared.Options.VERBOSITY_DEBUG;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static com.lightstep.tracer.shared.Options.*;
+import static org.junit.Assert.*;
 
 public class OptionsTest {
 
@@ -116,10 +102,6 @@ public class OptionsTest {
         Options options = new Options.OptionsBuilder().build();
         Object componentName = options.tags.get(COMPONENT_NAME_KEY);
         assertNotNull(componentName);
-
-        // the actual value will vary depending on how the tests are run, but should always
-        // contain 'Main'
-        assertTrue("Unexpected sun.java.command value", componentName.toString().contains("Main"));
 
         Object legacyComponentName = options.tags.get(LEGACY_COMPONENT_NAME_KEY);
         assertEquals(componentName, legacyComponentName);

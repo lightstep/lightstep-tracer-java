@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class Reference extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.Reference)
-    ReferenceOrBuilder {
+        ReferenceOrBuilder {
   // Use Reference.newBuilder() to construct.
   private Reference(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -18,7 +18,7 @@ public  final class Reference extends
     relationship_ = 0;
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -113,7 +113,7 @@ public  final class Reference extends
 
     public final int getNumber() {
       if (this == UNRECOGNIZED) {
-        throw new java.lang.IllegalArgumentException(
+        throw new IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
@@ -122,7 +122,7 @@ public  final class Reference extends
     /**
      * @deprecated Use {@link #forNumber(int)} instead.
      */
-    @java.lang.Deprecated
+    @Deprecated
     public static Relationship valueOf(int value) {
       return forNumber(value);
     }
@@ -165,7 +165,7 @@ public  final class Reference extends
     public static Relationship valueOf(
         com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
       if (desc.getType() != getDescriptor()) {
-        throw new java.lang.IllegalArgumentException(
+        throw new IllegalArgumentException(
           "EnumValueDescriptor is not for this type.");
       }
       if (desc.getIndex() == -1) {
@@ -258,8 +258,8 @@ public  final class Reference extends
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -278,7 +278,7 @@ public  final class Reference extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -367,7 +367,7 @@ public  final class Reference extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -547,7 +547,7 @@ public  final class Reference extends
       if (value == null) {
         throw new NullPointerException();
       }
-      
+
       relationship_ = value.getNumber();
       onChanged();
       return this;
@@ -556,7 +556,7 @@ public  final class Reference extends
      * <code>optional .lightstep.collector.Reference.Relationship relationship = 1;</code>
      */
     public Builder clearRelationship() {
-      
+
       relationship_ = 0;
       onChanged();
       return this;
@@ -647,7 +647,7 @@ public  final class Reference extends
      * <code>optional .lightstep.collector.SpanContext span_context = 2;</code>
      */
     public com.lightstep.tracer.grpc.SpanContext.Builder getSpanContextBuilder() {
-      
+
       onChanged();
       return getSpanContextFieldBuilder().getBuilder();
     }
@@ -666,7 +666,7 @@ public  final class Reference extends
      * <code>optional .lightstep.collector.SpanContext span_context = 2;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.lightstep.tracer.grpc.SpanContext, com.lightstep.tracer.grpc.SpanContext.Builder, com.lightstep.tracer.grpc.SpanContextOrBuilder> 
+        com.lightstep.tracer.grpc.SpanContext, com.lightstep.tracer.grpc.SpanContext.Builder, com.lightstep.tracer.grpc.SpanContextOrBuilder>
         getSpanContextFieldBuilder() {
       if (spanContextBuilder_ == null) {
         spanContextBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -716,7 +716,7 @@ public  final class Reference extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<Reference> getParserForType() {
     return PARSER;
   }

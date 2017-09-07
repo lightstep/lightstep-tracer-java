@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class Reporter extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.Reporter)
-    ReporterOrBuilder {
+        ReporterOrBuilder {
   // Use Reporter.newBuilder() to construct.
   private Reporter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -19,7 +19,7 @@ public  final class Reporter extends
     tags_ = java.util.Collections.emptyList();
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -51,7 +51,7 @@ public  final class Reporter extends
           }
           case 34: {
             if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-              tags_ = new java.util.ArrayList<com.lightstep.tracer.grpc.KeyValue>();
+              tags_ = new java.util.ArrayList<KeyValue>();
               mutable_bitField0_ |= 0x00000002;
             }
             tags_.add(
@@ -95,17 +95,17 @@ public  final class Reporter extends
   }
 
   public static final int TAGS_FIELD_NUMBER = 4;
-  private java.util.List<com.lightstep.tracer.grpc.KeyValue> tags_;
+  private java.util.List<KeyValue> tags_;
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 4;</code>
    */
-  public java.util.List<com.lightstep.tracer.grpc.KeyValue> getTagsList() {
+  public java.util.List<KeyValue> getTagsList() {
     return tags_;
   }
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 4;</code>
    */
-  public java.util.List<? extends com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+  public java.util.List<? extends KeyValueOrBuilder>
       getTagsOrBuilderList() {
     return tags_;
   }
@@ -167,8 +167,8 @@ public  final class Reporter extends
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -185,7 +185,7 @@ public  final class Reporter extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -275,7 +275,7 @@ public  final class Reporter extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -423,7 +423,7 @@ public  final class Reporter extends
             tagsBuilder_ = null;
             tags_ = other.tags_;
             bitField0_ = (bitField0_ & ~0x00000002);
-            tagsBuilder_ = 
+            tagsBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getTagsFieldBuilder() : null;
           } else {
@@ -469,7 +469,7 @@ public  final class Reporter extends
      * <code>optional uint64 reporter_id = 1;</code>
      */
     public Builder setReporterId(long value) {
-      
+
       reporterId_ = value;
       onChanged();
       return this;
@@ -478,17 +478,17 @@ public  final class Reporter extends
      * <code>optional uint64 reporter_id = 1;</code>
      */
     public Builder clearReporterId() {
-      
+
       reporterId_ = 0L;
       onChanged();
       return this;
     }
 
-    private java.util.List<com.lightstep.tracer.grpc.KeyValue> tags_ =
+    private java.util.List<KeyValue> tags_ =
       java.util.Collections.emptyList();
     private void ensureTagsIsMutable() {
       if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-        tags_ = new java.util.ArrayList<com.lightstep.tracer.grpc.KeyValue>(tags_);
+        tags_ = new java.util.ArrayList<KeyValue>(tags_);
         bitField0_ |= 0x00000002;
        }
     }
@@ -499,7 +499,7 @@ public  final class Reporter extends
     /**
      * <code>repeated .lightstep.collector.KeyValue tags = 4;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.KeyValue> getTagsList() {
+    public java.util.List<KeyValue> getTagsList() {
       if (tagsBuilder_ == null) {
         return java.util.Collections.unmodifiableList(tags_);
       } else {
@@ -622,7 +622,7 @@ public  final class Reporter extends
      * <code>repeated .lightstep.collector.KeyValue tags = 4;</code>
      */
     public Builder addAllTags(
-        java.lang.Iterable<? extends com.lightstep.tracer.grpc.KeyValue> values) {
+        Iterable<? extends KeyValue> values) {
       if (tagsBuilder_ == null) {
         ensureTagsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -679,7 +679,7 @@ public  final class Reporter extends
     /**
      * <code>repeated .lightstep.collector.KeyValue tags = 4;</code>
      */
-    public java.util.List<? extends com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+    public java.util.List<? extends KeyValueOrBuilder>
          getTagsOrBuilderList() {
       if (tagsBuilder_ != null) {
         return tagsBuilder_.getMessageOrBuilderList();
@@ -705,12 +705,12 @@ public  final class Reporter extends
     /**
      * <code>repeated .lightstep.collector.KeyValue tags = 4;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.KeyValue.Builder> 
+    public java.util.List<KeyValue.Builder>
          getTagsBuilderList() {
       return getTagsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.lightstep.tracer.grpc.KeyValue, com.lightstep.tracer.grpc.KeyValue.Builder, com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+        com.lightstep.tracer.grpc.KeyValue, com.lightstep.tracer.grpc.KeyValue.Builder, com.lightstep.tracer.grpc.KeyValueOrBuilder>
         getTagsFieldBuilder() {
       if (tagsBuilder_ == null) {
         tagsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -761,7 +761,7 @@ public  final class Reporter extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<Reporter> getParserForType() {
     return PARSER;
   }

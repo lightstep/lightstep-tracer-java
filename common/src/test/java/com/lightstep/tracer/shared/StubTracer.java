@@ -32,10 +32,6 @@ class StubTracer extends AbstractTracer {
         return consoleLogCalls.isEmpty();
     }
 
-    void resetConsoleLogCalls() {
-        consoleLogCalls.clear();
-    }
-
     int getNumberOfConsoleLogCalls() {
         if (consoleLogCallsIsEmpty()) {
             return 0;

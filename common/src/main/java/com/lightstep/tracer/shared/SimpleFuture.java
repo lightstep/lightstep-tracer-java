@@ -10,10 +10,12 @@ public class SimpleFuture<T> {
     private boolean resolved;
     private T value;
 
+    @SuppressWarnings("WeakerAccess")
     public SimpleFuture() {
         resolved = false;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public SimpleFuture(T value) {
         this.value = value;
         resolved = true;
@@ -36,7 +38,7 @@ public class SimpleFuture<T> {
         return value;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public T getWithTimeout(long millis) throws InterruptedException {
         if (!resolved) {
             synchronized (this) {

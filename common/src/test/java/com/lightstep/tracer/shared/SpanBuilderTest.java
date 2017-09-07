@@ -2,7 +2,6 @@ package com.lightstep.tracer.shared;
 
 import com.lightstep.tracer.grpc.KeyValue;
 import com.lightstep.tracer.grpc.Span.Builder;
-import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,12 +15,7 @@ import java.util.Map;
 
 import static com.lightstep.tracer.shared.SpanBuilder.PARENT_SPAN_GUID_KEY;
 import static io.opentracing.References.FOLLOWS_FROM;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)

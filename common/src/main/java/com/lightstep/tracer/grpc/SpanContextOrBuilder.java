@@ -25,29 +25,29 @@ public interface SpanContextOrBuilder extends
    * <code>map&lt;string, string&gt; baggage = 3;</code>
    */
   boolean containsBaggage(
-      java.lang.String key);
+          String key);
   /**
    * Use {@link #getBaggageMap()} instead.
    */
-  @java.lang.Deprecated
-  java.util.Map<java.lang.String, java.lang.String>
+  @Deprecated
+  java.util.Map<String, String>
   getBaggage();
   /**
    * <code>map&lt;string, string&gt; baggage = 3;</code>
    */
-  java.util.Map<java.lang.String, java.lang.String>
+  java.util.Map<String, String>
   getBaggageMap();
   /**
    * <code>map&lt;string, string&gt; baggage = 3;</code>
    */
 
-  java.lang.String getBaggageOrDefault(
-      java.lang.String key,
-      java.lang.String defaultValue);
+  String getBaggageOrDefault(
+          String key,
+          String defaultValue);
   /**
    * <code>map&lt;string, string&gt; baggage = 3;</code>
    */
 
-  java.lang.String getBaggageOrThrow(
-      java.lang.String key);
+  String getBaggageOrThrow(
+          String key);
 }

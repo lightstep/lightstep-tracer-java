@@ -28,7 +28,7 @@ public interface InternalMetricsOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.Log logs = 3;</code>
    */
-  java.util.List<com.lightstep.tracer.grpc.Log> 
+  java.util.List<Log>
       getLogsList();
   /**
    * <code>repeated .lightstep.collector.Log logs = 3;</code>
@@ -41,18 +41,18 @@ public interface InternalMetricsOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.Log logs = 3;</code>
    */
-  java.util.List<? extends com.lightstep.tracer.grpc.LogOrBuilder> 
+  java.util.List<? extends LogOrBuilder>
       getLogsOrBuilderList();
   /**
    * <code>repeated .lightstep.collector.Log logs = 3;</code>
    */
   com.lightstep.tracer.grpc.LogOrBuilder getLogsOrBuilder(
-      int index);
+          int index);
 
   /**
    * <code>repeated .lightstep.collector.MetricsSample counts = 4;</code>
    */
-  java.util.List<com.lightstep.tracer.grpc.MetricsSample> 
+  java.util.List<MetricsSample>
       getCountsList();
   /**
    * <code>repeated .lightstep.collector.MetricsSample counts = 4;</code>
@@ -65,18 +65,18 @@ public interface InternalMetricsOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.MetricsSample counts = 4;</code>
    */
-  java.util.List<? extends com.lightstep.tracer.grpc.MetricsSampleOrBuilder> 
+  java.util.List<? extends MetricsSampleOrBuilder>
       getCountsOrBuilderList();
   /**
    * <code>repeated .lightstep.collector.MetricsSample counts = 4;</code>
    */
   com.lightstep.tracer.grpc.MetricsSampleOrBuilder getCountsOrBuilder(
-      int index);
+          int index);
 
   /**
    * <code>repeated .lightstep.collector.MetricsSample gauges = 5;</code>
    */
-  java.util.List<com.lightstep.tracer.grpc.MetricsSample> 
+  java.util.List<MetricsSample>
       getGaugesList();
   /**
    * <code>repeated .lightstep.collector.MetricsSample gauges = 5;</code>
@@ -89,11 +89,11 @@ public interface InternalMetricsOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.MetricsSample gauges = 5;</code>
    */
-  java.util.List<? extends com.lightstep.tracer.grpc.MetricsSampleOrBuilder> 
+  java.util.List<? extends MetricsSampleOrBuilder>
       getGaugesOrBuilderList();
   /**
    * <code>repeated .lightstep.collector.MetricsSample gauges = 5;</code>
    */
   com.lightstep.tracer.grpc.MetricsSampleOrBuilder getGaugesOrBuilder(
-      int index);
+          int index);
 }

@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class InternalMetrics extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.InternalMetrics)
-    InternalMetricsOrBuilder {
+        InternalMetricsOrBuilder {
   // Use InternalMetrics.newBuilder() to construct.
   private InternalMetrics(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -21,7 +21,7 @@ public  final class InternalMetrics extends
     gauges_ = java.util.Collections.emptyList();
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -66,7 +66,7 @@ public  final class InternalMetrics extends
           }
           case 26: {
             if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-              logs_ = new java.util.ArrayList<com.lightstep.tracer.grpc.Log>();
+              logs_ = new java.util.ArrayList<Log>();
               mutable_bitField0_ |= 0x00000004;
             }
             logs_.add(
@@ -75,7 +75,7 @@ public  final class InternalMetrics extends
           }
           case 34: {
             if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-              counts_ = new java.util.ArrayList<com.lightstep.tracer.grpc.MetricsSample>();
+              counts_ = new java.util.ArrayList<MetricsSample>();
               mutable_bitField0_ |= 0x00000008;
             }
             counts_.add(
@@ -84,7 +84,7 @@ public  final class InternalMetrics extends
           }
           case 42: {
             if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-              gauges_ = new java.util.ArrayList<com.lightstep.tracer.grpc.MetricsSample>();
+              gauges_ = new java.util.ArrayList<MetricsSample>();
               mutable_bitField0_ |= 0x00000010;
             }
             gauges_.add(
@@ -155,17 +155,17 @@ public  final class InternalMetrics extends
   }
 
   public static final int LOGS_FIELD_NUMBER = 3;
-  private java.util.List<com.lightstep.tracer.grpc.Log> logs_;
+  private java.util.List<Log> logs_;
   /**
    * <code>repeated .lightstep.collector.Log logs = 3;</code>
    */
-  public java.util.List<com.lightstep.tracer.grpc.Log> getLogsList() {
+  public java.util.List<Log> getLogsList() {
     return logs_;
   }
   /**
    * <code>repeated .lightstep.collector.Log logs = 3;</code>
    */
-  public java.util.List<? extends com.lightstep.tracer.grpc.LogOrBuilder> 
+  public java.util.List<? extends LogOrBuilder>
       getLogsOrBuilderList() {
     return logs_;
   }
@@ -190,17 +190,17 @@ public  final class InternalMetrics extends
   }
 
   public static final int COUNTS_FIELD_NUMBER = 4;
-  private java.util.List<com.lightstep.tracer.grpc.MetricsSample> counts_;
+  private java.util.List<MetricsSample> counts_;
   /**
    * <code>repeated .lightstep.collector.MetricsSample counts = 4;</code>
    */
-  public java.util.List<com.lightstep.tracer.grpc.MetricsSample> getCountsList() {
+  public java.util.List<MetricsSample> getCountsList() {
     return counts_;
   }
   /**
    * <code>repeated .lightstep.collector.MetricsSample counts = 4;</code>
    */
-  public java.util.List<? extends com.lightstep.tracer.grpc.MetricsSampleOrBuilder> 
+  public java.util.List<? extends MetricsSampleOrBuilder>
       getCountsOrBuilderList() {
     return counts_;
   }
@@ -225,17 +225,17 @@ public  final class InternalMetrics extends
   }
 
   public static final int GAUGES_FIELD_NUMBER = 5;
-  private java.util.List<com.lightstep.tracer.grpc.MetricsSample> gauges_;
+  private java.util.List<MetricsSample> gauges_;
   /**
    * <code>repeated .lightstep.collector.MetricsSample gauges = 5;</code>
    */
-  public java.util.List<com.lightstep.tracer.grpc.MetricsSample> getGaugesList() {
+  public java.util.List<MetricsSample> getGaugesList() {
     return gauges_;
   }
   /**
    * <code>repeated .lightstep.collector.MetricsSample gauges = 5;</code>
    */
-  public java.util.List<? extends com.lightstep.tracer.grpc.MetricsSampleOrBuilder> 
+  public java.util.List<? extends MetricsSampleOrBuilder>
       getGaugesOrBuilderList() {
     return gauges_;
   }
@@ -318,8 +318,8 @@ public  final class InternalMetrics extends
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -345,7 +345,7 @@ public  final class InternalMetrics extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -447,7 +447,7 @@ public  final class InternalMetrics extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -641,7 +641,7 @@ public  final class InternalMetrics extends
             logsBuilder_ = null;
             logs_ = other.logs_;
             bitField0_ = (bitField0_ & ~0x00000004);
-            logsBuilder_ = 
+            logsBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getLogsFieldBuilder() : null;
           } else {
@@ -667,7 +667,7 @@ public  final class InternalMetrics extends
             countsBuilder_ = null;
             counts_ = other.counts_;
             bitField0_ = (bitField0_ & ~0x00000008);
-            countsBuilder_ = 
+            countsBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getCountsFieldBuilder() : null;
           } else {
@@ -693,7 +693,7 @@ public  final class InternalMetrics extends
             gaugesBuilder_ = null;
             gauges_ = other.gauges_;
             bitField0_ = (bitField0_ & ~0x00000010);
-            gaugesBuilder_ = 
+            gaugesBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getGaugesFieldBuilder() : null;
           } else {
@@ -813,7 +813,7 @@ public  final class InternalMetrics extends
      * <code>optional .google.protobuf.Timestamp start_timestamp = 1;</code>
      */
     public com.google.protobuf.Timestamp.Builder getStartTimestampBuilder() {
-      
+
       onChanged();
       return getStartTimestampFieldBuilder().getBuilder();
     }
@@ -832,7 +832,7 @@ public  final class InternalMetrics extends
      * <code>optional .google.protobuf.Timestamp start_timestamp = 1;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
         getStartTimestampFieldBuilder() {
       if (startTimestampBuilder_ == null) {
         startTimestampBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -856,7 +856,7 @@ public  final class InternalMetrics extends
      * <code>optional uint64 duration_micros = 2;</code>
      */
     public Builder setDurationMicros(long value) {
-      
+
       durationMicros_ = value;
       onChanged();
       return this;
@@ -865,17 +865,17 @@ public  final class InternalMetrics extends
      * <code>optional uint64 duration_micros = 2;</code>
      */
     public Builder clearDurationMicros() {
-      
+
       durationMicros_ = 0L;
       onChanged();
       return this;
     }
 
-    private java.util.List<com.lightstep.tracer.grpc.Log> logs_ =
+    private java.util.List<Log> logs_ =
       java.util.Collections.emptyList();
     private void ensureLogsIsMutable() {
       if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-        logs_ = new java.util.ArrayList<com.lightstep.tracer.grpc.Log>(logs_);
+        logs_ = new java.util.ArrayList<Log>(logs_);
         bitField0_ |= 0x00000004;
        }
     }
@@ -886,7 +886,7 @@ public  final class InternalMetrics extends
     /**
      * <code>repeated .lightstep.collector.Log logs = 3;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.Log> getLogsList() {
+    public java.util.List<Log> getLogsList() {
       if (logsBuilder_ == null) {
         return java.util.Collections.unmodifiableList(logs_);
       } else {
@@ -1009,7 +1009,7 @@ public  final class InternalMetrics extends
      * <code>repeated .lightstep.collector.Log logs = 3;</code>
      */
     public Builder addAllLogs(
-        java.lang.Iterable<? extends com.lightstep.tracer.grpc.Log> values) {
+        Iterable<? extends Log> values) {
       if (logsBuilder_ == null) {
         ensureLogsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1066,7 +1066,7 @@ public  final class InternalMetrics extends
     /**
      * <code>repeated .lightstep.collector.Log logs = 3;</code>
      */
-    public java.util.List<? extends com.lightstep.tracer.grpc.LogOrBuilder> 
+    public java.util.List<? extends LogOrBuilder>
          getLogsOrBuilderList() {
       if (logsBuilder_ != null) {
         return logsBuilder_.getMessageOrBuilderList();
@@ -1092,12 +1092,12 @@ public  final class InternalMetrics extends
     /**
      * <code>repeated .lightstep.collector.Log logs = 3;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.Log.Builder> 
+    public java.util.List<Log.Builder>
          getLogsBuilderList() {
       return getLogsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.lightstep.tracer.grpc.Log, com.lightstep.tracer.grpc.Log.Builder, com.lightstep.tracer.grpc.LogOrBuilder> 
+        com.lightstep.tracer.grpc.Log, com.lightstep.tracer.grpc.Log.Builder, com.lightstep.tracer.grpc.LogOrBuilder>
         getLogsFieldBuilder() {
       if (logsBuilder_ == null) {
         logsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -1111,11 +1111,11 @@ public  final class InternalMetrics extends
       return logsBuilder_;
     }
 
-    private java.util.List<com.lightstep.tracer.grpc.MetricsSample> counts_ =
+    private java.util.List<MetricsSample> counts_ =
       java.util.Collections.emptyList();
     private void ensureCountsIsMutable() {
       if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-        counts_ = new java.util.ArrayList<com.lightstep.tracer.grpc.MetricsSample>(counts_);
+        counts_ = new java.util.ArrayList<MetricsSample>(counts_);
         bitField0_ |= 0x00000008;
        }
     }
@@ -1126,7 +1126,7 @@ public  final class InternalMetrics extends
     /**
      * <code>repeated .lightstep.collector.MetricsSample counts = 4;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.MetricsSample> getCountsList() {
+    public java.util.List<MetricsSample> getCountsList() {
       if (countsBuilder_ == null) {
         return java.util.Collections.unmodifiableList(counts_);
       } else {
@@ -1249,7 +1249,7 @@ public  final class InternalMetrics extends
      * <code>repeated .lightstep.collector.MetricsSample counts = 4;</code>
      */
     public Builder addAllCounts(
-        java.lang.Iterable<? extends com.lightstep.tracer.grpc.MetricsSample> values) {
+        Iterable<? extends MetricsSample> values) {
       if (countsBuilder_ == null) {
         ensureCountsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1306,7 +1306,7 @@ public  final class InternalMetrics extends
     /**
      * <code>repeated .lightstep.collector.MetricsSample counts = 4;</code>
      */
-    public java.util.List<? extends com.lightstep.tracer.grpc.MetricsSampleOrBuilder> 
+    public java.util.List<? extends MetricsSampleOrBuilder>
          getCountsOrBuilderList() {
       if (countsBuilder_ != null) {
         return countsBuilder_.getMessageOrBuilderList();
@@ -1332,12 +1332,12 @@ public  final class InternalMetrics extends
     /**
      * <code>repeated .lightstep.collector.MetricsSample counts = 4;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.MetricsSample.Builder> 
+    public java.util.List<MetricsSample.Builder>
          getCountsBuilderList() {
       return getCountsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.lightstep.tracer.grpc.MetricsSample, com.lightstep.tracer.grpc.MetricsSample.Builder, com.lightstep.tracer.grpc.MetricsSampleOrBuilder> 
+        com.lightstep.tracer.grpc.MetricsSample, com.lightstep.tracer.grpc.MetricsSample.Builder, com.lightstep.tracer.grpc.MetricsSampleOrBuilder>
         getCountsFieldBuilder() {
       if (countsBuilder_ == null) {
         countsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -1351,11 +1351,11 @@ public  final class InternalMetrics extends
       return countsBuilder_;
     }
 
-    private java.util.List<com.lightstep.tracer.grpc.MetricsSample> gauges_ =
+    private java.util.List<MetricsSample> gauges_ =
       java.util.Collections.emptyList();
     private void ensureGaugesIsMutable() {
       if (!((bitField0_ & 0x00000010) == 0x00000010)) {
-        gauges_ = new java.util.ArrayList<com.lightstep.tracer.grpc.MetricsSample>(gauges_);
+        gauges_ = new java.util.ArrayList<MetricsSample>(gauges_);
         bitField0_ |= 0x00000010;
        }
     }
@@ -1366,7 +1366,7 @@ public  final class InternalMetrics extends
     /**
      * <code>repeated .lightstep.collector.MetricsSample gauges = 5;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.MetricsSample> getGaugesList() {
+    public java.util.List<MetricsSample> getGaugesList() {
       if (gaugesBuilder_ == null) {
         return java.util.Collections.unmodifiableList(gauges_);
       } else {
@@ -1489,7 +1489,7 @@ public  final class InternalMetrics extends
      * <code>repeated .lightstep.collector.MetricsSample gauges = 5;</code>
      */
     public Builder addAllGauges(
-        java.lang.Iterable<? extends com.lightstep.tracer.grpc.MetricsSample> values) {
+        Iterable<? extends MetricsSample> values) {
       if (gaugesBuilder_ == null) {
         ensureGaugesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1546,7 +1546,7 @@ public  final class InternalMetrics extends
     /**
      * <code>repeated .lightstep.collector.MetricsSample gauges = 5;</code>
      */
-    public java.util.List<? extends com.lightstep.tracer.grpc.MetricsSampleOrBuilder> 
+    public java.util.List<? extends MetricsSampleOrBuilder>
          getGaugesOrBuilderList() {
       if (gaugesBuilder_ != null) {
         return gaugesBuilder_.getMessageOrBuilderList();
@@ -1572,12 +1572,12 @@ public  final class InternalMetrics extends
     /**
      * <code>repeated .lightstep.collector.MetricsSample gauges = 5;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.MetricsSample.Builder> 
+    public java.util.List<MetricsSample.Builder>
          getGaugesBuilderList() {
       return getGaugesFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.lightstep.tracer.grpc.MetricsSample, com.lightstep.tracer.grpc.MetricsSample.Builder, com.lightstep.tracer.grpc.MetricsSampleOrBuilder> 
+        com.lightstep.tracer.grpc.MetricsSample, com.lightstep.tracer.grpc.MetricsSample.Builder, com.lightstep.tracer.grpc.MetricsSampleOrBuilder>
         getGaugesFieldBuilder() {
       if (gaugesBuilder_ == null) {
         gaugesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -1628,7 +1628,7 @@ public  final class InternalMetrics extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<InternalMetrics> getParserForType() {
     return PARSER;
   }

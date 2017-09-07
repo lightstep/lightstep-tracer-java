@@ -10,7 +10,7 @@ public interface AuthOrBuilder extends
   /**
    * <code>optional string access_token = 1;</code>
    */
-  java.lang.String getAccessToken();
+  String getAccessToken();
   /**
    * <code>optional string access_token = 1;</code>
    */

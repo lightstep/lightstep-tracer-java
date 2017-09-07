@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class ReportResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.ReportResponse)
-    ReportResponseOrBuilder {
+        ReportResponseOrBuilder {
   // Use ReportResponse.newBuilder() to construct.
   private ReportResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -19,7 +19,7 @@ public  final class ReportResponse extends
     errors_ = com.google.protobuf.LazyStringArrayList.EMPTY;
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -46,7 +46,7 @@ public  final class ReportResponse extends
           }
           case 10: {
             if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-              commands_ = new java.util.ArrayList<com.lightstep.tracer.grpc.Command>();
+              commands_ = new java.util.ArrayList<Command>();
               mutable_bitField0_ |= 0x00000001;
             }
             commands_.add(
@@ -80,7 +80,7 @@ public  final class ReportResponse extends
             break;
           }
           case 34: {
-            java.lang.String s = input.readStringRequireUtf8();
+            String s = input.readStringRequireUtf8();
             if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
               errors_ = new com.google.protobuf.LazyStringArrayList();
               mutable_bitField0_ |= 0x00000008;
@@ -119,17 +119,17 @@ public  final class ReportResponse extends
 
   private int bitField0_;
   public static final int COMMANDS_FIELD_NUMBER = 1;
-  private java.util.List<com.lightstep.tracer.grpc.Command> commands_;
+  private java.util.List<Command> commands_;
   /**
    * <code>repeated .lightstep.collector.Command commands = 1;</code>
    */
-  public java.util.List<com.lightstep.tracer.grpc.Command> getCommandsList() {
+  public java.util.List<Command> getCommandsList() {
     return commands_;
   }
   /**
    * <code>repeated .lightstep.collector.Command commands = 1;</code>
    */
-  public java.util.List<? extends com.lightstep.tracer.grpc.CommandOrBuilder> 
+  public java.util.List<? extends CommandOrBuilder>
       getCommandsOrBuilderList() {
     return commands_;
   }
@@ -213,7 +213,7 @@ public  final class ReportResponse extends
   /**
    * <code>repeated string errors = 4;</code>
    */
-  public java.lang.String getErrors(int index) {
+  public String getErrors(int index) {
     return errors_.get(index);
   }
   /**
@@ -280,8 +280,8 @@ public  final class ReportResponse extends
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -308,7 +308,7 @@ public  final class ReportResponse extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -407,7 +407,7 @@ public  final class ReportResponse extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -578,7 +578,7 @@ public  final class ReportResponse extends
             commandsBuilder_ = null;
             commands_ = other.commands_;
             bitField0_ = (bitField0_ & ~0x00000001);
-            commandsBuilder_ = 
+            commandsBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getCommandsFieldBuilder() : null;
           } else {
@@ -629,11 +629,11 @@ public  final class ReportResponse extends
     }
     private int bitField0_;
 
-    private java.util.List<com.lightstep.tracer.grpc.Command> commands_ =
+    private java.util.List<Command> commands_ =
       java.util.Collections.emptyList();
     private void ensureCommandsIsMutable() {
       if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-        commands_ = new java.util.ArrayList<com.lightstep.tracer.grpc.Command>(commands_);
+        commands_ = new java.util.ArrayList<Command>(commands_);
         bitField0_ |= 0x00000001;
        }
     }
@@ -644,7 +644,7 @@ public  final class ReportResponse extends
     /**
      * <code>repeated .lightstep.collector.Command commands = 1;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.Command> getCommandsList() {
+    public java.util.List<Command> getCommandsList() {
       if (commandsBuilder_ == null) {
         return java.util.Collections.unmodifiableList(commands_);
       } else {
@@ -767,7 +767,7 @@ public  final class ReportResponse extends
      * <code>repeated .lightstep.collector.Command commands = 1;</code>
      */
     public Builder addAllCommands(
-        java.lang.Iterable<? extends com.lightstep.tracer.grpc.Command> values) {
+        Iterable<? extends Command> values) {
       if (commandsBuilder_ == null) {
         ensureCommandsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -824,7 +824,7 @@ public  final class ReportResponse extends
     /**
      * <code>repeated .lightstep.collector.Command commands = 1;</code>
      */
-    public java.util.List<? extends com.lightstep.tracer.grpc.CommandOrBuilder> 
+    public java.util.List<? extends CommandOrBuilder>
          getCommandsOrBuilderList() {
       if (commandsBuilder_ != null) {
         return commandsBuilder_.getMessageOrBuilderList();
@@ -850,12 +850,12 @@ public  final class ReportResponse extends
     /**
      * <code>repeated .lightstep.collector.Command commands = 1;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.Command.Builder> 
+    public java.util.List<Command.Builder>
          getCommandsBuilderList() {
       return getCommandsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.lightstep.tracer.grpc.Command, com.lightstep.tracer.grpc.Command.Builder, com.lightstep.tracer.grpc.CommandOrBuilder> 
+        com.lightstep.tracer.grpc.Command, com.lightstep.tracer.grpc.Command.Builder, com.lightstep.tracer.grpc.CommandOrBuilder>
         getCommandsFieldBuilder() {
       if (commandsBuilder_ == null) {
         commandsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -954,7 +954,7 @@ public  final class ReportResponse extends
      * <code>optional .google.protobuf.Timestamp receive_timestamp = 2;</code>
      */
     public com.google.protobuf.Timestamp.Builder getReceiveTimestampBuilder() {
-      
+
       onChanged();
       return getReceiveTimestampFieldBuilder().getBuilder();
     }
@@ -973,7 +973,7 @@ public  final class ReportResponse extends
      * <code>optional .google.protobuf.Timestamp receive_timestamp = 2;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
         getReceiveTimestampFieldBuilder() {
       if (receiveTimestampBuilder_ == null) {
         receiveTimestampBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1071,7 +1071,7 @@ public  final class ReportResponse extends
      * <code>optional .google.protobuf.Timestamp transmit_timestamp = 3;</code>
      */
     public com.google.protobuf.Timestamp.Builder getTransmitTimestampBuilder() {
-      
+
       onChanged();
       return getTransmitTimestampFieldBuilder().getBuilder();
     }
@@ -1090,7 +1090,7 @@ public  final class ReportResponse extends
      * <code>optional .google.protobuf.Timestamp transmit_timestamp = 3;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
         getTransmitTimestampFieldBuilder() {
       if (transmitTimestampBuilder_ == null) {
         transmitTimestampBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1126,7 +1126,7 @@ public  final class ReportResponse extends
     /**
      * <code>repeated string errors = 4;</code>
      */
-    public java.lang.String getErrors(int index) {
+    public String getErrors(int index) {
       return errors_.get(index);
     }
     /**
@@ -1140,7 +1140,7 @@ public  final class ReportResponse extends
      * <code>repeated string errors = 4;</code>
      */
     public Builder setErrors(
-        int index, java.lang.String value) {
+        int index, String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -1153,7 +1153,7 @@ public  final class ReportResponse extends
      * <code>repeated string errors = 4;</code>
      */
     public Builder addErrors(
-        java.lang.String value) {
+        String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -1166,7 +1166,7 @@ public  final class ReportResponse extends
      * <code>repeated string errors = 4;</code>
      */
     public Builder addAllErrors(
-        java.lang.Iterable<java.lang.String> values) {
+        Iterable<String> values) {
       ensureErrorsIsMutable();
       com.google.protobuf.AbstractMessageLite.Builder.addAll(
           values, errors_);
@@ -1234,7 +1234,7 @@ public  final class ReportResponse extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<ReportResponse> getParserForType() {
     return PARSER;
   }

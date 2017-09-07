@@ -23,7 +23,7 @@ public interface SpanOrBuilder extends
   /**
    * <code>optional string operation_name = 2;</code>
    */
-  java.lang.String getOperationName();
+  String getOperationName();
   /**
    * <code>optional string operation_name = 2;</code>
    */
@@ -33,7 +33,7 @@ public interface SpanOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.Reference references = 3;</code>
    */
-  java.util.List<com.lightstep.tracer.grpc.Reference> 
+  java.util.List<Reference>
       getReferencesList();
   /**
    * <code>repeated .lightstep.collector.Reference references = 3;</code>
@@ -46,13 +46,13 @@ public interface SpanOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.Reference references = 3;</code>
    */
-  java.util.List<? extends com.lightstep.tracer.grpc.ReferenceOrBuilder> 
+  java.util.List<? extends ReferenceOrBuilder>
       getReferencesOrBuilderList();
   /**
    * <code>repeated .lightstep.collector.Reference references = 3;</code>
    */
   com.lightstep.tracer.grpc.ReferenceOrBuilder getReferencesOrBuilder(
-      int index);
+          int index);
 
   /**
    * <code>optional .google.protobuf.Timestamp start_timestamp = 4;</code>
@@ -75,7 +75,7 @@ public interface SpanOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 6;</code>
    */
-  java.util.List<com.lightstep.tracer.grpc.KeyValue> 
+  java.util.List<KeyValue>
       getTagsList();
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 6;</code>
@@ -88,18 +88,18 @@ public interface SpanOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 6;</code>
    */
-  java.util.List<? extends com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+  java.util.List<? extends KeyValueOrBuilder>
       getTagsOrBuilderList();
   /**
    * <code>repeated .lightstep.collector.KeyValue tags = 6;</code>
    */
   com.lightstep.tracer.grpc.KeyValueOrBuilder getTagsOrBuilder(
-      int index);
+          int index);
 
   /**
    * <code>repeated .lightstep.collector.Log logs = 7;</code>
    */
-  java.util.List<com.lightstep.tracer.grpc.Log> 
+  java.util.List<Log>
       getLogsList();
   /**
    * <code>repeated .lightstep.collector.Log logs = 7;</code>
@@ -112,11 +112,11 @@ public interface SpanOrBuilder extends
   /**
    * <code>repeated .lightstep.collector.Log logs = 7;</code>
    */
-  java.util.List<? extends com.lightstep.tracer.grpc.LogOrBuilder> 
+  java.util.List<? extends LogOrBuilder>
       getLogsOrBuilderList();
   /**
    * <code>repeated .lightstep.collector.Log logs = 7;</code>
    */
   com.lightstep.tracer.grpc.LogOrBuilder getLogsOrBuilder(
-      int index);
+          int index);
 }

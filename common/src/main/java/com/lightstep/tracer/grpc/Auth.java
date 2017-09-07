@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class Auth extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.Auth)
-    AuthOrBuilder {
+        AuthOrBuilder {
   // Use Auth.newBuilder() to construct.
   private Auth(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -18,7 +18,7 @@ public  final class Auth extends
     accessToken_ = "";
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -44,7 +44,7 @@ public  final class Auth extends
             break;
           }
           case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
+            String s = input.readStringRequireUtf8();
 
             accessToken_ = s;
             break;
@@ -73,18 +73,18 @@ public  final class Auth extends
   }
 
   public static final int ACCESS_TOKEN_FIELD_NUMBER = 1;
-  private volatile java.lang.Object accessToken_;
+  private volatile Object accessToken_;
   /**
    * <code>optional string access_token = 1;</code>
    */
-  public java.lang.String getAccessToken() {
-    java.lang.Object ref = accessToken_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
+  public String getAccessToken() {
+    Object ref = accessToken_;
+    if (ref instanceof String) {
+      return (String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
+      String s = bs.toStringUtf8();
       accessToken_ = s;
       return s;
     }
@@ -94,11 +94,11 @@ public  final class Auth extends
    */
   public com.google.protobuf.ByteString
       getAccessTokenBytes() {
-    java.lang.Object ref = accessToken_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+    Object ref = accessToken_;
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
+              (String) ref);
       accessToken_ = b;
       return b;
     } else {
@@ -136,8 +136,8 @@ public  final class Auth extends
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -152,7 +152,7 @@ public  final class Auth extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -237,7 +237,7 @@ public  final class Auth extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -375,20 +375,20 @@ public  final class Auth extends
       return this;
     }
 
-    private java.lang.Object accessToken_ = "";
+    private Object accessToken_ = "";
     /**
      * <code>optional string access_token = 1;</code>
      */
-    public java.lang.String getAccessToken() {
-      java.lang.Object ref = accessToken_;
-      if (!(ref instanceof java.lang.String)) {
+    public String getAccessToken() {
+      Object ref = accessToken_;
+      if (!(ref instanceof String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
+        String s = bs.toStringUtf8();
         accessToken_ = s;
         return s;
       } else {
-        return (java.lang.String) ref;
+        return (String) ref;
       }
     }
     /**
@@ -396,11 +396,11 @@ public  final class Auth extends
      */
     public com.google.protobuf.ByteString
         getAccessTokenBytes() {
-      java.lang.Object ref = accessToken_;
+      Object ref = accessToken_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+                (String) ref);
         accessToken_ = b;
         return b;
       } else {
@@ -411,11 +411,11 @@ public  final class Auth extends
      * <code>optional string access_token = 1;</code>
      */
     public Builder setAccessToken(
-        java.lang.String value) {
+        String value) {
       if (value == null) {
     throw new NullPointerException();
   }
-  
+
       accessToken_ = value;
       onChanged();
       return this;
@@ -424,7 +424,7 @@ public  final class Auth extends
      * <code>optional string access_token = 1;</code>
      */
     public Builder clearAccessToken() {
-      
+
       accessToken_ = getDefaultInstance().getAccessToken();
       onChanged();
       return this;
@@ -438,7 +438,7 @@ public  final class Auth extends
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-      
+
       accessToken_ = value;
       onChanged();
       return this;
@@ -481,7 +481,7 @@ public  final class Auth extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<Auth> getParserForType() {
     return PARSER;
   }

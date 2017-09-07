@@ -3,6 +3,9 @@ package com.lightstep.benchmark;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.shared.Options;
+import io.opentracing.NoopTracerFactory;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,10 +14,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-
-import io.opentracing.NoopTracerFactory;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
+import java.util.HashMap;
+import java.util.Map;
 
 class BenchmarkClient {
     private static final long PRIME_WORK = 982451653;
@@ -53,7 +54,6 @@ class BenchmarkClient {
         public long NumLogs;
         public boolean Trace;
         public boolean Exit;
-        public boolean Profile;
     }
 
     private static class Result {
@@ -81,8 +81,8 @@ class BenchmarkClient {
         }
     }
 
-    private <T> T postGetJson(String path, Class<T> cl) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(getUrlReader(path)))) {
+    private <T> T postGetJson(Class<T> cl) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getUrlReader("/control")))) {
             return objectMapper.readValue(br, cl);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -90,19 +90,19 @@ class BenchmarkClient {
     }
 
     private Control getControl() {
-        return postGetJson("/control", Control.class);
+        return postGetJson(Control.class);
     }
 
     private void postResult(Result r) {
-        StringBuilder rurl = new StringBuilder("/result?timing=");
-        rurl.append(r.runTime);
-        rurl.append("&flush=");
-        rurl.append(r.flushTime);
-        rurl.append("&s=");
-        rurl.append(r.sleepNanos / 1e9);
-        rurl.append("&a=");
-        rurl.append(r.answer);
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(getUrlReader(rurl.toString())))) {
+        String rurl = "/result?timing=" + r.runTime +
+                "&flush=" +
+                r.flushTime +
+                "&s=" +
+                r.sleepNanos / 1e9 +
+                "&a=" +
+                r.answer;
+        //noinspection EmptyTryBlock
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getUrlReader(rurl)))) {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -127,7 +127,10 @@ class BenchmarkClient {
             r.answer = work(c.Work);
 
             for (long l = 0; l < c.NumLogs; l++) {
-                span.log("testlog", LOG_PAYLOAD_STR.substring(0, (int) c.BytesPerLog));
+                Map<String,Object> log = new HashMap<>();
+                log.put("message", "testlog");
+                log.put("payload", LOG_PAYLOAD_STR.substring(0, (int) c.BytesPerLog));
+                span.log(log);
             }
 
             span.finish();

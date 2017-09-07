@@ -1,7 +1,8 @@
 package com.lightstep.tracer.grpc;
 
+import io.grpc.stub.ClientCalls;
+
 import static io.grpc.MethodDescriptor.generateFullMethodName;
-import static io.grpc.stub.ClientCalls.asyncUnaryCall;
 import static io.grpc.stub.ClientCalls.blockingUnaryCall;
 import static io.grpc.stub.ClientCalls.futureUnaryCall;
 import static io.grpc.stub.ServerCalls.asyncUnaryCall;
@@ -63,7 +64,7 @@ public class CollectorServiceGrpc {
       asyncUnimplementedUnaryCall(METHOD_REPORT, responseObserver);
     }
 
-    @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
+    @Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             METHOD_REPORT,
@@ -88,7 +89,7 @@ public class CollectorServiceGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected CollectorServiceStub build(io.grpc.Channel channel,
         io.grpc.CallOptions callOptions) {
       return new CollectorServiceStub(channel, callOptions);
@@ -98,7 +99,7 @@ public class CollectorServiceGrpc {
      */
     public void report(com.lightstep.tracer.grpc.ReportRequest request,
         io.grpc.stub.StreamObserver<com.lightstep.tracer.grpc.ReportResponse> responseObserver) {
-      asyncUnaryCall(
+      ClientCalls.asyncUnaryCall(
           getChannel().newCall(METHOD_REPORT, getCallOptions()), request, responseObserver);
     }
   }
@@ -115,7 +116,7 @@ public class CollectorServiceGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected CollectorServiceBlockingStub build(io.grpc.Channel channel,
         io.grpc.CallOptions callOptions) {
       return new CollectorServiceBlockingStub(channel, callOptions);
@@ -141,7 +142,7 @@ public class CollectorServiceGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected CollectorServiceFutureStub build(io.grpc.Channel channel,
         io.grpc.CallOptions callOptions) {
       return new CollectorServiceFutureStub(channel, callOptions);
@@ -171,8 +172,8 @@ public class CollectorServiceGrpc {
       this.methodId = methodId;
     }
 
-    @java.lang.Override
-    @java.lang.SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_REPORT:
@@ -184,8 +185,8 @@ public class CollectorServiceGrpc {
       }
     }
 
-    @java.lang.Override
-    @java.lang.SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public io.grpc.stub.StreamObserver<Req> invoke(
         io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
@@ -196,7 +197,7 @@ public class CollectorServiceGrpc {
   }
 
   private static final class CollectorServiceDescriptorSupplier implements io.grpc.protobuf.ProtoFileDescriptorSupplier {
-    @java.lang.Override
+    @Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
       return com.lightstep.tracer.grpc.Collector.getDescriptor();
     }

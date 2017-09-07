@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class Log extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.Log)
-    LogOrBuilder {
+        LogOrBuilder {
   // Use Log.newBuilder() to construct.
   private Log(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -18,7 +18,7 @@ public  final class Log extends
     keyvalues_ = java.util.Collections.emptyList();
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -58,7 +58,7 @@ public  final class Log extends
           }
           case 18: {
             if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-              keyvalues_ = new java.util.ArrayList<com.lightstep.tracer.grpc.KeyValue>();
+              keyvalues_ = new java.util.ArrayList<KeyValue>();
               mutable_bitField0_ |= 0x00000002;
             }
             keyvalues_.add(
@@ -114,17 +114,17 @@ public  final class Log extends
   }
 
   public static final int KEYVALUES_FIELD_NUMBER = 2;
-  private java.util.List<com.lightstep.tracer.grpc.KeyValue> keyvalues_;
+  private java.util.List<KeyValue> keyvalues_;
   /**
    * <code>repeated .lightstep.collector.KeyValue keyvalues = 2;</code>
    */
-  public java.util.List<com.lightstep.tracer.grpc.KeyValue> getKeyvaluesList() {
+  public java.util.List<KeyValue> getKeyvaluesList() {
     return keyvalues_;
   }
   /**
    * <code>repeated .lightstep.collector.KeyValue keyvalues = 2;</code>
    */
-  public java.util.List<? extends com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+  public java.util.List<? extends KeyValueOrBuilder>
       getKeyvaluesOrBuilderList() {
     return keyvalues_;
   }
@@ -186,8 +186,8 @@ public  final class Log extends
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -207,7 +207,7 @@ public  final class Log extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -298,7 +298,7 @@ public  final class Log extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -454,7 +454,7 @@ public  final class Log extends
             keyvaluesBuilder_ = null;
             keyvalues_ = other.keyvalues_;
             bitField0_ = (bitField0_ & ~0x00000002);
-            keyvaluesBuilder_ = 
+            keyvaluesBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getKeyvaluesFieldBuilder() : null;
           } else {
@@ -574,7 +574,7 @@ public  final class Log extends
      * <code>optional .google.protobuf.Timestamp timestamp = 1;</code>
      */
     public com.google.protobuf.Timestamp.Builder getTimestampBuilder() {
-      
+
       onChanged();
       return getTimestampFieldBuilder().getBuilder();
     }
@@ -593,7 +593,7 @@ public  final class Log extends
      * <code>optional .google.protobuf.Timestamp timestamp = 1;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
         getTimestampFieldBuilder() {
       if (timestampBuilder_ == null) {
         timestampBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -606,11 +606,11 @@ public  final class Log extends
       return timestampBuilder_;
     }
 
-    private java.util.List<com.lightstep.tracer.grpc.KeyValue> keyvalues_ =
+    private java.util.List<KeyValue> keyvalues_ =
       java.util.Collections.emptyList();
     private void ensureKeyvaluesIsMutable() {
       if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-        keyvalues_ = new java.util.ArrayList<com.lightstep.tracer.grpc.KeyValue>(keyvalues_);
+        keyvalues_ = new java.util.ArrayList<KeyValue>(keyvalues_);
         bitField0_ |= 0x00000002;
        }
     }
@@ -621,7 +621,7 @@ public  final class Log extends
     /**
      * <code>repeated .lightstep.collector.KeyValue keyvalues = 2;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.KeyValue> getKeyvaluesList() {
+    public java.util.List<KeyValue> getKeyvaluesList() {
       if (keyvaluesBuilder_ == null) {
         return java.util.Collections.unmodifiableList(keyvalues_);
       } else {
@@ -744,7 +744,7 @@ public  final class Log extends
      * <code>repeated .lightstep.collector.KeyValue keyvalues = 2;</code>
      */
     public Builder addAllKeyvalues(
-        java.lang.Iterable<? extends com.lightstep.tracer.grpc.KeyValue> values) {
+        Iterable<? extends KeyValue> values) {
       if (keyvaluesBuilder_ == null) {
         ensureKeyvaluesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -801,7 +801,7 @@ public  final class Log extends
     /**
      * <code>repeated .lightstep.collector.KeyValue keyvalues = 2;</code>
      */
-    public java.util.List<? extends com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+    public java.util.List<? extends KeyValueOrBuilder>
          getKeyvaluesOrBuilderList() {
       if (keyvaluesBuilder_ != null) {
         return keyvaluesBuilder_.getMessageOrBuilderList();
@@ -827,12 +827,12 @@ public  final class Log extends
     /**
      * <code>repeated .lightstep.collector.KeyValue keyvalues = 2;</code>
      */
-    public java.util.List<com.lightstep.tracer.grpc.KeyValue.Builder> 
+    public java.util.List<KeyValue.Builder>
          getKeyvaluesBuilderList() {
       return getKeyvaluesFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.lightstep.tracer.grpc.KeyValue, com.lightstep.tracer.grpc.KeyValue.Builder, com.lightstep.tracer.grpc.KeyValueOrBuilder> 
+        com.lightstep.tracer.grpc.KeyValue, com.lightstep.tracer.grpc.KeyValue.Builder, com.lightstep.tracer.grpc.KeyValueOrBuilder>
         getKeyvaluesFieldBuilder() {
       if (keyvaluesBuilder_ == null) {
         keyvaluesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -883,7 +883,7 @@ public  final class Log extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<Log> getParserForType() {
     return PARSER;
   }

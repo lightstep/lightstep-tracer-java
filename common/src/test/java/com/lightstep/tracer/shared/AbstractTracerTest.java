@@ -1,5 +1,8 @@
 package com.lightstep.tracer.shared;
 
+import io.opentracing.SpanContext;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,26 +13,12 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Map;
 
-import io.opentracing.SpanContext;
-import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMap;
-
-import static com.lightstep.tracer.shared.Options.VERBOSITY_DEBUG;
-import static com.lightstep.tracer.shared.Options.VERBOSITY_ERRORS_ONLY;
-import static com.lightstep.tracer.shared.Options.VERBOSITY_FIRST_ERROR_ONLY;
-import static com.lightstep.tracer.shared.Options.VERBOSITY_INFO;
-import static com.lightstep.tracer.shared.Options.VERBOSITY_NONE;
-import static com.lightstep.tracer.shared.TextMapPropagator.FIELD_NAME_SAMPLED;
-import static com.lightstep.tracer.shared.TextMapPropagator.FIELD_NAME_SPAN_ID;
-import static com.lightstep.tracer.shared.TextMapPropagator.FIELD_NAME_TRACE_ID;
-import static com.lightstep.tracer.shared.TextMapPropagator.PREFIX_BAGGAGE;
+import static com.lightstep.tracer.shared.Options.*;
+import static com.lightstep.tracer.shared.TextMapPropagator.*;
 import static io.opentracing.propagation.Format.Builtin.BINARY;
 import static io.opentracing.propagation.Format.Builtin.HTTP_HEADERS;
 import static io.opentracing.propagation.Format.Builtin.TEXT_MAP;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 

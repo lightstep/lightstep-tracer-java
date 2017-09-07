@@ -9,7 +9,7 @@ package com.lightstep.tracer.grpc;
 public  final class MetricsSample extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:lightstep.collector.MetricsSample)
-    MetricsSampleOrBuilder {
+        MetricsSampleOrBuilder {
   // Use MetricsSample.newBuilder() to construct.
   private MetricsSample(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -18,7 +18,7 @@ public  final class MetricsSample extends
     name_ = "";
   }
 
-  @java.lang.Override
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -44,7 +44,7 @@ public  final class MetricsSample extends
             break;
           }
           case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
+            String s = input.readStringRequireUtf8();
 
             name_ = s;
             break;
@@ -83,7 +83,7 @@ public  final class MetricsSample extends
   }
 
   private int valueCase_ = 0;
-  private java.lang.Object value_;
+  private Object value_;
   public enum ValueCase
       implements com.google.protobuf.Internal.EnumLite {
     INT_VALUE(2),
@@ -96,7 +96,7 @@ public  final class MetricsSample extends
     /**
      * @deprecated Use {@link #forNumber(int)} instead.
      */
-    @java.lang.Deprecated
+    @Deprecated
     public static ValueCase valueOf(int value) {
       return forNumber(value);
     }
@@ -121,18 +121,18 @@ public  final class MetricsSample extends
   }
 
   public static final int NAME_FIELD_NUMBER = 1;
-  private volatile java.lang.Object name_;
+  private volatile Object name_;
   /**
    * <code>optional string name = 1;</code>
    */
-  public java.lang.String getName() {
-    java.lang.Object ref = name_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
+  public String getName() {
+    Object ref = name_;
+    if (ref instanceof String) {
+      return (String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
+      String s = bs.toStringUtf8();
       name_ = s;
       return s;
     }
@@ -142,11 +142,11 @@ public  final class MetricsSample extends
    */
   public com.google.protobuf.ByteString
       getNameBytes() {
-    java.lang.Object ref = name_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+    Object ref = name_;
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
+              (String) ref);
       name_ = b;
       return b;
     } else {
@@ -160,7 +160,7 @@ public  final class MetricsSample extends
    */
   public long getIntValue() {
     if (valueCase_ == 2) {
-      return (java.lang.Long) value_;
+      return (Long) value_;
     }
     return 0L;
   }
@@ -171,7 +171,7 @@ public  final class MetricsSample extends
    */
   public double getDoubleValue() {
     if (valueCase_ == 3) {
-      return (java.lang.Double) value_;
+      return (Double) value_;
     }
     return 0D;
   }
@@ -193,11 +193,11 @@ public  final class MetricsSample extends
     }
     if (valueCase_ == 2) {
       output.writeInt64(
-          2, (long)((java.lang.Long) value_));
+          2, (long)((Long) value_));
     }
     if (valueCase_ == 3) {
       output.writeDouble(
-          3, (double)((java.lang.Double) value_));
+          3, (double)((Double) value_));
     }
   }
 
@@ -212,20 +212,20 @@ public  final class MetricsSample extends
     if (valueCase_ == 2) {
       size += com.google.protobuf.CodedOutputStream
         .computeInt64Size(
-            2, (long)((java.lang.Long) value_));
+            2, (long)((Long) value_));
     }
     if (valueCase_ == 3) {
       size += com.google.protobuf.CodedOutputStream
         .computeDoubleSize(
-            3, (double)((java.lang.Double) value_));
+            3, (double)((Double) value_));
     }
     memoizedSize = size;
     return size;
   }
 
   private static final long serialVersionUID = 0L;
-  @java.lang.Override
-  public boolean equals(final java.lang.Object obj) {
+  @Override
+  public boolean equals(final Object obj) {
     if (obj == this) {
      return true;
     }
@@ -247,8 +247,8 @@ public  final class MetricsSample extends
         break;
       case 3:
         result = result && (
-            java.lang.Double.doubleToLongBits(getDoubleValue())
-            == java.lang.Double.doubleToLongBits(
+            Double.doubleToLongBits(getDoubleValue())
+            == Double.doubleToLongBits(
                 other.getDoubleValue()));
         break;
       case 0:
@@ -257,7 +257,7 @@ public  final class MetricsSample extends
     return result;
   }
 
-  @java.lang.Override
+  @Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -275,7 +275,7 @@ public  final class MetricsSample extends
       case 3:
         hash = (37 * hash) + DOUBLE_VALUE_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-            java.lang.Double.doubleToLongBits(getDoubleValue()));
+            Double.doubleToLongBits(getDoubleValue()));
         break;
       case 0:
       default:
@@ -356,7 +356,7 @@ public  final class MetricsSample extends
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @java.lang.Override
+  @Override
   protected Builder newBuilderForType(
       com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
@@ -516,7 +516,7 @@ public  final class MetricsSample extends
       return this;
     }
     private int valueCase_ = 0;
-    private java.lang.Object value_;
+    private Object value_;
     public ValueCase
         getValueCase() {
       return ValueCase.forNumber(
@@ -531,20 +531,20 @@ public  final class MetricsSample extends
     }
 
 
-    private java.lang.Object name_ = "";
+    private Object name_ = "";
     /**
      * <code>optional string name = 1;</code>
      */
-    public java.lang.String getName() {
-      java.lang.Object ref = name_;
-      if (!(ref instanceof java.lang.String)) {
+    public String getName() {
+      Object ref = name_;
+      if (!(ref instanceof String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
+        String s = bs.toStringUtf8();
         name_ = s;
         return s;
       } else {
-        return (java.lang.String) ref;
+        return (String) ref;
       }
     }
     /**
@@ -552,11 +552,11 @@ public  final class MetricsSample extends
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
-      java.lang.Object ref = name_;
+      Object ref = name_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+                (String) ref);
         name_ = b;
         return b;
       } else {
@@ -567,11 +567,11 @@ public  final class MetricsSample extends
      * <code>optional string name = 1;</code>
      */
     public Builder setName(
-        java.lang.String value) {
+        String value) {
       if (value == null) {
     throw new NullPointerException();
   }
-  
+
       name_ = value;
       onChanged();
       return this;
@@ -580,7 +580,7 @@ public  final class MetricsSample extends
      * <code>optional string name = 1;</code>
      */
     public Builder clearName() {
-      
+
       name_ = getDefaultInstance().getName();
       onChanged();
       return this;
@@ -594,7 +594,7 @@ public  final class MetricsSample extends
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-      
+
       name_ = value;
       onChanged();
       return this;
@@ -605,7 +605,7 @@ public  final class MetricsSample extends
      */
     public long getIntValue() {
       if (valueCase_ == 2) {
-        return (java.lang.Long) value_;
+        return (Long) value_;
       }
       return 0L;
     }
@@ -635,7 +635,7 @@ public  final class MetricsSample extends
      */
     public double getDoubleValue() {
       if (valueCase_ == 3) {
-        return (java.lang.Double) value_;
+        return (Double) value_;
       }
       return 0D;
     }
@@ -697,7 +697,7 @@ public  final class MetricsSample extends
     return PARSER;
   }
 
-  @java.lang.Override
+  @Override
   public com.google.protobuf.Parser<MetricsSample> getParserForType() {
     return PARSER;
   }
