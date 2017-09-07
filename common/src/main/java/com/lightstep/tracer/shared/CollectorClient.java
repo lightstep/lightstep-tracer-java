@@ -6,7 +6,6 @@ import com.lightstep.tracer.grpc.CollectorServiceGrpc.CollectorServiceBlockingSt
 import com.lightstep.tracer.grpc.ReportRequest;
 import com.lightstep.tracer.grpc.ReportResponse;
 import com.lightstep.tracer.grpc.Span;
-import io.grpc.CallOptions;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
@@ -21,7 +20,7 @@ public class CollectorClient {
   private CollectorServiceBlockingStub blockingStub;
   private final ClientMetrics clientMetrics;
   private final AbstractTracer tracer;
-  private final CallOptions callOptions;
+  private final long deadlineMillis;
 
   /**
    * Constructor client for accessing CollectorService using the existing channel
@@ -29,8 +28,7 @@ public class CollectorClient {
   public CollectorClient(AbstractTracer tracer, ManagedChannelBuilder<?> channelBuilder, long deadlineMillis) {
     this.tracer = tracer;
     this.channelBuilder = channelBuilder;
-    callOptions = CallOptions.DEFAULT.withDeadlineAfter(deadlineMillis, TimeUnit.MILLISECONDS);
-    connect();
+    this.deadlineMillis = deadlineMillis;
     clientMetrics = new ClientMetrics(Util.epochTimeMicrosToProtoTime(Util.nowMicrosApproximate()));
   }
 
@@ -53,7 +51,9 @@ public class CollectorClient {
     // send report to collector
     boolean success = false;
     try {
-      resp = blockingStub.report(reqBuilder.build());
+      resp = blockingStub.
+              withDeadlineAfter(deadlineMillis, TimeUnit.MILLISECONDS).
+              report(reqBuilder.build());
 
       // check response for errors
       if (resp.getErrorsCount() != 0) {
@@ -80,7 +80,7 @@ public class CollectorClient {
 
   private synchronized void connect() {
     channel = channelBuilder.build();
-    blockingStub = CollectorServiceGrpc.newBlockingStub(channel, callOptions);
+    blockingStub = CollectorServiceGrpc.newBlockingStub(channel);
   }
 
   synchronized void reconnect() {
