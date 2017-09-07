@@ -14,7 +14,9 @@ The LightStep distributed tracing library for the standard Java runtime environm
 
 ## Getting started: JRE
 
-The JRE library is hosted on Bintray, jcenter, and Maven Central. The Bintray [lightstep-tracer-jre](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view) project contains additional installation and setup information for using the library with various build systems such as Ivy and Maven.
+The JRE library is hosted on Bintray, jcenter, and Maven Central. 
+The Bintray [lightstep-tracer-jre](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view) project contains 
+additional installation and setup information for using the library with various build systems such as Ivy and Maven.
 
 ### Maven
 
@@ -23,6 +25,18 @@ The JRE library is hosted on Bintray, jcenter, and Maven Central. The Bintray [l
   <groupId>com.lightstep.tracer</groupId>
   <artifactId>lightstep-tracer-jre</artifactId>
   <version> VERSION </version>
+</dependency>
+
+<dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty</artifactId>
+      <version>1.4.0</version>
+</dependency>
+
+<dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-tcnative-boringssl-static</artifactId>
+      <version>2.0.5.Final</version>
 </dependency>
 ```
 
