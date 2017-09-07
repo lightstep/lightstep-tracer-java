@@ -17,7 +17,7 @@ public class CollectorClient {
   private final ManagedChannelBuilder<?> channelBuilder;
   private ManagedChannel channel;
   private CollectorServiceBlockingStub blockingStub;
-  private ClientMetrics clientMetrics;
+  private final ClientMetrics clientMetrics;
   private final AbstractTracer tracer;
 
   /**
@@ -51,11 +51,7 @@ public class CollectorClient {
    */
   public synchronized ReportResponse report(ReportRequest.Builder reqBuilder) {
     ReportResponse resp = null;
-    if (clientMetrics != null) {
-      reqBuilder.setInternalMetrics(clientMetrics.toGrpc());
-    }
-    // reset client metrics
-    clientMetrics = new ClientMetrics(Util.epochTimeMicrosToProtoTime(Util.nowMicrosApproximate()));
+    reqBuilder.setInternalMetrics(clientMetrics.toGrpcAndReset());
 
     // send report to collector
     boolean success = false;
@@ -90,20 +86,20 @@ public class CollectorClient {
     blockingStub = CollectorServiceGrpc.newBlockingStub(channel);
   }
 
-  public synchronized void reconnect() {
+  synchronized void reconnect() {
     this.shutdown();
     connect();
   }
 
-  public synchronized void dropSpan() {
-    clientMetrics.spansDropped++;
+  void dropSpan() {
+    clientMetrics.dropSpans(1);
   }
 
-  public synchronized void dropSpans(List<Span> spans) {
-    clientMetrics.spansDropped += spans.size();
+  private void dropSpans(List<Span> spans) {
+    clientMetrics.dropSpans(spans.size());
   }
 
-  public ClientMetrics getClientMetrics() {
+  ClientMetrics getClientMetrics() {
     return clientMetrics;
   }
 }
