@@ -43,6 +43,11 @@ public final class Options {
      */
     private static final long DEFAULT_REPORTING_INTERVAL_MILLIS = 3000;
 
+    /**
+     * Default duration the tracer should wait for a response from the collector when sending a report.
+     */
+    private static final long DEFAULT_DEADLINE_MILLIS = 30000;
+
     static final String HTTPS = "https";
 
     static final String HTTP = "http";
@@ -100,9 +105,14 @@ public final class Options {
     final boolean resetClient;
     final boolean useClockCorrection;
 
+    /**
+     * The maximum amount of time the tracer should wait for a response from the collector when sending a report.
+     */
+    final long deadlineMillis;
+
     private Options(String accessToken, URL collectorUrl, long maxReportingIntervalMillis,
                     int maxBufferedSpans, int verbosity, boolean disableReportingLoop, boolean resetClient,
-                    Map<String, Object> tags, boolean useClockCorrection) {
+                    Map<String, Object> tags, boolean useClockCorrection, long deadlineMillis) {
         this.accessToken = accessToken;
         this.collectorUrl = collectorUrl;
         this.maxReportingIntervalMillis = maxReportingIntervalMillis;
@@ -112,6 +122,7 @@ public final class Options {
         this.resetClient = resetClient;
         this.tags = tags;
     	this.useClockCorrection = useClockCorrection;
+    	this.deadlineMillis = deadlineMillis;
     }
 
     long getGuid() {
@@ -131,6 +142,7 @@ public final class Options {
         private boolean resetClient = true;
         private boolean useClockCorrection = true;
         private Map<String, Object> tags = new HashMap<>();
+        private long deadlineMillis = -1;
 
         public OptionsBuilder() {
         }
@@ -147,6 +159,7 @@ public final class Options {
             this.resetClient = options.resetClient;
             this.tags = options.tags;
             this.useClockCorrection = options.useClockCorrection;
+            this.deadlineMillis = options.deadlineMillis;
         }
 
         /**
@@ -297,9 +310,10 @@ public final class Options {
             defaultGuid();
             defaultMaxReportingIntervalMillis();
             defaultMaxBufferedSpans();
+            defaultDeadlineMillis();
 
             return new Options(accessToken, getCollectorUrl(), maxReportingIntervalMillis, maxBufferedSpans, verbosity,
-                    disableReportingLoop, resetClient, tags, useClockCorrection);
+                    disableReportingLoop, resetClient, tags, useClockCorrection, deadlineMillis);
         }
 
         private void defaultMaxReportingIntervalMillis() {
@@ -334,6 +348,12 @@ public final class Options {
                         tags.put(LEGACY_COMPONENT_NAME_KEY, name);
                     }
                 }
+            }
+        }
+
+        private void defaultDeadlineMillis() {
+            if (deadlineMillis < 0) {
+                deadlineMillis = DEFAULT_DEADLINE_MILLIS;
             }
         }
 

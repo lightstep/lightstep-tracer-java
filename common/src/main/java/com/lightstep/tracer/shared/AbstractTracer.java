@@ -104,7 +104,7 @@ public abstract class AbstractTracer implements Tracer {
 
         // initialize collector client
         boolean validCollectorClient = true;
-        if (!initializeCollectorClient()) {
+        if (!initializeCollectorClient(options.deadlineMillis)) {
             validCollectorClient = false;
             disable();
         }
@@ -121,14 +121,14 @@ public abstract class AbstractTracer implements Tracer {
     /**
      * This call is not synchronized
      */
-    private boolean initializeCollectorClient() {
+    private boolean initializeCollectorClient(long deadlineMillis) {
         try {
             ManagedChannelBuilder builder =
                     ManagedChannelBuilder.forAddress(collectorURL.getHost(), collectorURL.getPort());
             if (collectorURL.getProtocol() == "http") {
                 builder.usePlaintext(true);
             }
-            client = new CollectorClient(this, builder);
+            client = new CollectorClient(this, builder, deadlineMillis);
         } catch (ProviderNotFoundException e) {
             error("Exception creating GRPC client.");
             return false;

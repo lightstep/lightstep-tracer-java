@@ -1,14 +1,16 @@
 package com.lightstep.tracer.shared;
 
 import com.google.protobuf.ByteString;
-import com.lightstep.tracer.grpc.Span;
 import com.lightstep.tracer.grpc.CollectorServiceGrpc;
 import com.lightstep.tracer.grpc.CollectorServiceGrpc.CollectorServiceBlockingStub;
 import com.lightstep.tracer.grpc.ReportRequest;
 import com.lightstep.tracer.grpc.ReportResponse;
+import com.lightstep.tracer.grpc.Span;
+import io.grpc.CallOptions;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -19,20 +21,15 @@ public class CollectorClient {
   private CollectorServiceBlockingStub blockingStub;
   private final ClientMetrics clientMetrics;
   private final AbstractTracer tracer;
-
-  /**
-   * Constructor client for accessing CollectorService at {@code host:port}
-   */
-  public CollectorClient(AbstractTracer tracer, String host, int port) {
-    this(tracer, ManagedChannelBuilder.forAddress(host, port));
-  }
+  private final CallOptions callOptions;
 
   /**
    * Constructor client for accessing CollectorService using the existing channel
    */
-  public CollectorClient(AbstractTracer tracer, ManagedChannelBuilder<?> channelBuilder) {
+  public CollectorClient(AbstractTracer tracer, ManagedChannelBuilder<?> channelBuilder, long deadlineMillis) {
     this.tracer = tracer;
     this.channelBuilder = channelBuilder;
+    callOptions = CallOptions.DEFAULT.withDeadlineAfter(deadlineMillis, TimeUnit.MILLISECONDS);
     connect();
     clientMetrics = new ClientMetrics(Util.epochTimeMicrosToProtoTime(Util.nowMicrosApproximate()));
   }
@@ -83,7 +80,7 @@ public class CollectorClient {
 
   private synchronized void connect() {
     channel = channelBuilder.build();
-    blockingStub = CollectorServiceGrpc.newBlockingStub(channel);
+    blockingStub = CollectorServiceGrpc.newBlockingStub(channel, callOptions);
   }
 
   synchronized void reconnect() {
