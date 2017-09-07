@@ -203,7 +203,7 @@ public abstract class AbstractTracer implements Tracer {
                     client.reconnect();
                     nextResetMillis = System.currentTimeMillis() + DEFAULT_CLIENT_RESET_INTERVAL_MILLIS;
                 }
-                if (nowMillis >= nextReportMillis) {
+                if (spans.size() >= (maxBufferedSpans/2) || nowMillis >= nextReportMillis) {
                     SimpleFuture<Boolean> result = flushInternal(false);
                     boolean reportSucceeded = false;
                     try {
