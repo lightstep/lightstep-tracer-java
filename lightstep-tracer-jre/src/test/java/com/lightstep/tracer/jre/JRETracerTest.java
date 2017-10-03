@@ -3,8 +3,8 @@ package com.lightstep.tracer.jre;
 import com.lightstep.tracer.grpc.KeyValue;
 import com.lightstep.tracer.grpc.Span.Builder;
 import com.lightstep.tracer.shared.Options;
-import com.lightstep.tracer.shared.Status;
-import io.opentracing.ActiveSpan;
+import com.lightstep.tracer.shared.Status;;
+import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
@@ -87,8 +87,8 @@ public class JRETracerTest {
             t[j] = new Thread() {
                 public void run() {
                     for (int i = 0; i < 1024; i++) {
-                        try(ActiveSpan activeSpan = tracer.buildSpan("test_span").startActive()) {
-                            SpanContext ctx = activeSpan.context();
+                        try(Scope activeScope = tracer.buildSpan("test_span").startActive()) {
+                            SpanContext ctx = activeScope.span().context();
                             long id = ((com.lightstep.tracer.shared.SpanContext) ctx).getSpanId();
                             assertEquals(m.containsKey(id), false);
                             m.put(Long.toHexString(id), true);
@@ -146,13 +146,13 @@ public class JRETracerTest {
         Tracer tracer = new JRETracer(
                 new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
 
-       try(ActiveSpan activeSpan = tracer
+       try(Scope activeScope = tracer
                 .buildSpan("test_span")
                 .startActive()) {
-           activeSpan.setTag("test", "test");
-           assertNotNull(tracer.activeSpan());
+           activeScope.span().setTag("test", "test");
+           assertNotNull(tracer.scopeManager().active());
        }
-       assertNull(tracer.activeSpan());
+       assertNull(tracer.scopeManager().active());
     }
 
     @Test
@@ -165,12 +165,12 @@ public class JRETracerTest {
         Status status = tracer.status();
         assertEquals(status.getSpansDropped(), 0);
         for (int i = 0; i < Options.DEFAULT_MAX_BUFFERED_SPANS; i++) {
-            try(ActiveSpan ignored = tracer.buildSpan("test_span").startActive()){}
+            try(Scope ignored = tracer.buildSpan("test_span").startActive()){}
         }
         status = tracer.status();
         assertEquals(status.getSpansDropped(), 0);
         for (int i = 0; i < 10; i++) {
-            try(ActiveSpan ignored = tracer.buildSpan("test_span").startActive()){}
+            try(Scope ignored = tracer.buildSpan("test_span").startActive()){}
         }
         status = tracer.status();
         assertEquals(status.getSpansDropped(), 10);
@@ -186,7 +186,7 @@ public class JRETracerTest {
         headerMap.put(FIELD_NAME_SPAN_ID, "123");
         SpanContext parentCtx = tracer.extract(HTTP_HEADERS, new TextMapExtractAdapter(headerMap));
 
-        try(ActiveSpan ignored = tracer.buildSpan("test_span")
+        try(Scope ignored = tracer.buildSpan("test_span")
                 .asChildOf(parentCtx)
                 .startActive()){}
     }
