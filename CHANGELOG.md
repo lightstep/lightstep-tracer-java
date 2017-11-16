@@ -1,5 +1,34 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.12.15)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.13.0)
+
+<a name="0.13.0"></a>
+## [0.13.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.15...0.13.0)
+* Bumped to 0.14.0 of lightstep-tracer-common.
+* Split grpc transport support into a separate dependency.
+
+We are splitting out our transport dependency from our main tracer to making binaries smaller.
+
+For the tracer to work, you will now need to provide a transport dependency with your tracer.
+
+### Maven
+
+```
+<dependency>
+   <groupId>com.lightstep.tracer</groupId>
+   <artifactId>tracer-grpc</artifactId>
+   <version>${com.lightstep.version}</version>
+</dependency>
+```
+
+### Gradle
+
+```
+dependencies {
+    ...
+    compile 'com.lightstep.tracer:tracer-grpc:VERSION'
+    ...
+}
+```
 
 <a name="0.12.15"></a>
 ## [0.12.15](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.14...0.12.15)
