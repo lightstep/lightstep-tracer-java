@@ -100,6 +100,7 @@ public class Simple {
         parentSpan.finish();
 
         ((com.lightstep.tracer.jre.JRETracer) tracer).flush(20000);
+        ((com.lightstep.tracer.jre.JRETracer) tracer).disable();
         System.out.println("Done!");
     }
 
