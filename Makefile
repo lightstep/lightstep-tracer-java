@@ -13,6 +13,9 @@ ci_test: clean
 	mvn test
 	mvn exec:java -pl examples
 
+inc-version:
+	./inc-version.sh
+
 # See https://bintray.com/lightstep for published artifacts
 # You must have the following entry in your settings.xml of your .m2 directory
 # This matches the distributionManagement/repository defined in the pom.xml
@@ -31,4 +34,4 @@ publish: build
 	@test -n "$$BINTRAY_GPG_PASSPHRASE" || (echo "$$BINTRAY_GPG_PASSPHRASE must be defined to publish" && false)
 
 	@git diff-index --quiet HEAD || (echo "git has uncommitted changes. Refusing to publish." && false)
-	./inc-version.sh
+	./verify-version.sh
