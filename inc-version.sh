@@ -23,3 +23,6 @@ git add lightstep-tracer-jre/pom.xml
 git add pom.xml
 git add shadow/pom.xml
 git add lightstep-tracer-jre/src/main/java/com/lightstep/tracer/jre/Version.java
+
+git commit -m "VERSION $NEW_VERSION"
+git push
