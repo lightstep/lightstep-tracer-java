@@ -1,5 +1,5 @@
 package com.lightstep.tracer.jre;
 
 class Version {
-    static final String LIGHTSTEP_TRACER_VERSION = "0.12.16-RC1";
+    static final String LIGHTSTEP_TRACER_VERSION = "0.13.2-RC1";
 }
