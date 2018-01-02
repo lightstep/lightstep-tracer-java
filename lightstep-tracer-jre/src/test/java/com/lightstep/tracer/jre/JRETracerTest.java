@@ -3,7 +3,7 @@ package com.lightstep.tracer.jre;
 import com.lightstep.tracer.grpc.KeyValue;
 import com.lightstep.tracer.grpc.Span.Builder;
 import com.lightstep.tracer.shared.Options;
-import com.lightstep.tracer.shared.Status;;
+import com.lightstep.tracer.shared.Status;
 import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
@@ -87,7 +87,7 @@ public class JRETracerTest {
             t[j] = new Thread() {
                 public void run() {
                     for (int i = 0; i < 1024; i++) {
-                        try(Scope activeScope = tracer.buildSpan("test_span").startActive()) {
+                        try(Scope activeScope = tracer.buildSpan("test_span").startActive(true)) {
                             SpanContext ctx = activeScope.span().context();
                             long id = ((com.lightstep.tracer.shared.SpanContext) ctx).getSpanId();
                             assertEquals(m.containsKey(id), false);
@@ -148,7 +148,7 @@ public class JRETracerTest {
 
        try(Scope activeScope = tracer
                 .buildSpan("test_span")
-                .startActive()) {
+                .startActive(true)) {
            activeScope.span().setTag("test", "test");
            assertNotNull(tracer.scopeManager().active());
        }
@@ -165,12 +165,12 @@ public class JRETracerTest {
         Status status = tracer.status();
         assertEquals(status.getSpansDropped(), 0);
         for (int i = 0; i < Options.DEFAULT_MAX_BUFFERED_SPANS; i++) {
-            try(Scope ignored = tracer.buildSpan("test_span").startActive()){}
+            try(Scope ignored = tracer.buildSpan("test_span").startActive(true)){}
         }
         status = tracer.status();
         assertEquals(status.getSpansDropped(), 0);
         for (int i = 0; i < 10; i++) {
-            try(Scope ignored = tracer.buildSpan("test_span").startActive()){}
+            try(Scope ignored = tracer.buildSpan("test_span").startActive(true)){}
         }
         status = tracer.status();
         assertEquals(status.getSpansDropped(), 10);
@@ -188,7 +188,7 @@ public class JRETracerTest {
 
         try(Scope ignored = tracer.buildSpan("test_span")
                 .asChildOf(parentCtx)
-                .startActive()){}
+                .startActive(true)){}
     }
 
     private void assertSpanHasTag(Span span, String key, String value) {
