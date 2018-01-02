@@ -34,10 +34,6 @@ dependencies {
 }
 ```
 
-<a name="0.12.16-RC1"></a>
-## [0.12.16-RC1](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.16-RC1...0.12.15)
-* Upgraded to io.opentracing 0.31.0-RC1
-
 <a name="0.12.15"></a>
 ## [0.12.15](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.14...0.12.15)
 * Fixed issue where shadow jar was not published to Maven
