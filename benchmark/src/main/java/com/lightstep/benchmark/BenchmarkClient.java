@@ -3,7 +3,7 @@ package com.lightstep.benchmark;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lightstep.tracer.jre.JRETracer;
 import com.lightstep.tracer.shared.Options;
-import io.opentracing.NoopTracerFactory;
+import io.opentracing.noop.NoopTracerFactory;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 
