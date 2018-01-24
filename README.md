@@ -28,6 +28,12 @@ additional installation and setup information for using the library with various
 </dependency>
 
 <dependency>
+   <groupId>com.lightstep.tracer</groupId>
+   <artifactId>tracer-grpc</artifactId>
+   <version> VERSION </version>
+</dependency>
+
+<dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-netty</artifactId>
       <version>1.4.0</version>
@@ -52,6 +58,7 @@ repositories {
 }
 dependencies {
     compile 'com.lightstep.tracer:lightstep-tracer-jre:VERSION'
+    compile 'com.lightstep.tracer:tracer-grpc:VERSION'
 }
 ```
 
@@ -137,6 +144,45 @@ options = new com.lightstep.tracer.shared.Options.OptionsBuilder()
                       .withAccessToken("{your_access_token}")
                       .withClockSkewCorrection(false)
                       .build();
+```
+
+### Advanced Option: Transport and Serialization Protocols
+
+By following the above configuration, the tracer will send information to LightStep using GRPC and Protocol Buffers which is the recommended configuration. If there are no specific transport protocol needs you have, there is no need to change this default.
+
+There are two options for transport protocols:
+
+- [Protocol Buffers](https://developers.google.com/protocol-buffers/) over [GRPC](https://grpc.io/) - The recommended, default, and most performant solution.
+- \[ EXPERIMENTAL \] [Protocol Buffers](https://developers.google.com/protocol-buffers/) over HTTP using [OkHttp](http://square.github.io/okhttp/) - New transport protocol supported for use cases where GRPC isn't an option. In order to enable HTTP you will need to configure the LightStep collectors receiving the data to accept HTTP traffic. Reach out to LightStep for support in this.
+
+You can configure the tracer to support HTTP by replacing `com.lightstep.tracer:tracer-grpc` with `com.lightstep.tracer:tracer-okhttp` when including the tracer dependency. i.e.
+
+#### Maven 
+
+```xml
+<dependency>
+  <groupId>com.lightstep.tracer</groupId>
+  <artifactId>lightstep-tracer-jre</artifactId>
+  <version> VERSION </version>
+</dependency>
+
+<dependency>
+   <groupId>com.lightstep.tracer</groupId>
+   <artifactId>tracer-okhttp</artifactId>
+   <version> VERSION </version>
+</dependency>
+```
+
+#### Gradle
+
+```
+repositories {
+    mavenCentral() // OR jcenter()
+}
+dependencies {
+    compile 'com.lightstep.tracer:lightstep-tracer-jre:VERSION'
+    compile 'com.lightstep.tracer:tracer-okhttp:VERSION'
+}
 ```
 
 ## Development info
