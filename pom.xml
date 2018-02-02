@@ -7,7 +7,7 @@
     <groupId>com.lightstep.tracer</groupId>
     <artifactId>lightstep-tracer-java</artifactId>
     <packaging>pom</packaging>
-    <version>0.13.1</version>
+    <version>0.14.0</version>
 
     <name>LightStep Tracer Java (parent)</name>
     <description>LightStep Tracer Java (parent)</description>
@@ -50,7 +50,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <org.slf4j.version>1.7.25</org.slf4j.version>
-        <io.opentracing.version>0.30.0</io.opentracing.version>
+        <io.opentracing.version>0.31.0</io.opentracing.version>
         <io.grpc.version>1.4.0</io.grpc.version>
         <io.netty.version>2.0.5.Final</io.netty.version>
     </properties>

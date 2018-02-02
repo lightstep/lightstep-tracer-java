@@ -1,5 +1,16 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.13.0)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.14.0)
+
+<a name="0.14.0"></a>
+## [0.14.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.0...0.13.1)
+* Upgraded to io.opentracing 0.31.0, for more information see 
+[Announcing Java OpenTracing v0.31](https://medium.com/opentracing/announcing-java-v0-31-release-candidate-6e1f1a922d2e)
+
+### BREAKING CHANGES
+* BaseSpan and ActiveSpan are simplified into a single Span class.
+* Scope replaces ActiveSpan, removing the continuation concept.
+* ScopeManager replaces ActiveSpanSource
+* ThreadLocalScopeManager replaces ThreadLocalActiveSpanSource
 
 <a name="0.13.0"></a>
 ## [0.13.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.12.15...0.13.0)
