@@ -3,7 +3,8 @@
 
 <a name="0.14.0"></a>
 ## [0.14.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.0...0.13.1)
-* Upgraded to io.opentracing 0.31.0
+* Upgraded to io.opentracing 0.31.0, for more information see 
+[Announcing Java OpenTracing v0.31](https://medium.com/opentracing/announcing-java-v0-31-release-candidate-6e1f1a922d2e)
 
 ### BREAKING CHANGES
 * BaseSpan and ActiveSpan are simplified into a single Span class.
