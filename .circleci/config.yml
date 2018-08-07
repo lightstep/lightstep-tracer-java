@@ -7,10 +7,10 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-        keys:
-          - maven-repo-v1-{{ .Branch }}-{{ checksum "pom.xml" }}
-          - maven-repo-v1-{{ .Branch }}-
-          - maven-repo-v1-
+          keys:
+            - maven-repo-v1-{{ .Branch }}-{{ checksum "pom.xml" }}
+            - maven-repo-v1-{{ .Branch }}-
+            - maven-repo-v1-
       - run: make ci_test
       - save_cache:
           paths:
