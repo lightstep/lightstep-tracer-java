@@ -6,7 +6,16 @@ jobs:
       - image: circleci/openjdk:8u171-jdk-node
     steps:
       - checkout
+      - restore_cache:
+        keys:
+          - maven-repo-v1-{{ .Branch }}-{{ checksum "pom.xml" }}
+          - maven-repo-v1-{{ .Branch }}-
+          - maven-repo-v1-
       - run: make ci_test
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: maven-repo-v1-{{ .Branch }}-{{ checksum "pom.xml" }}
 
 workflows:
   version: 2
