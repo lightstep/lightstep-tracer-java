@@ -1,0 +1,15 @@
+version: 2
+
+jobs:
+  test:
+    docker:
+      - image: circleci/openjdk:8u171-jdk-node
+    steps:
+      - run: make ci_test
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
+
