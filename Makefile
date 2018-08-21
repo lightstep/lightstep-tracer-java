@@ -9,7 +9,7 @@ clean:
 test: ci_test
 
 ci_build:
-	mvn clean test package
+	mvn install
 
 # CircleCI test
 ci_test:
