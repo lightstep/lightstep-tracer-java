@@ -33,29 +33,25 @@ additional installation and setup information for using the library with various
     <version> VERSION </version>
 </dependency>
 
-<!-- Provided Dependencies -->
 <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-simple</artifactId>
     <version>1.7.25</version>
-    <scope>provided</scope>
 </dependency>
 <dependency>
     <groupId>io.grpc</groupId>
     <artifactId>grpc-netty</artifactId>
     <version>1.14.0</version>
-    <scope>provided</scope>
 </dependency>
 <dependency>
     <groupId>io.netty</groupId>
     <artifactId>netty-tcnative-boringssl-static</artifactId>
     <version>2.0.12.Final</version>
-    <scope>provided</scope>
 </dependency>
 ```
 
 * Be sure to replace `VERSION` with the current version of the library
-* LightStep libraries will rely on whichever gRPC/Netty/sl4j version is provided (i.e. pulled in at runtime) to avoid conflicting with existing versions within your project
+* LightStep libraries use provided scope for grpc-netty, netty-tcnative-boringssl-static and slf4j. In other words, LightStep tracer libraries will rely on whichever gRPC/Netty/sl4j version is currently available (i.e. pulled in at runtime) to avoid conflicting with existing versions within your project
 
 ### Gradle
 
