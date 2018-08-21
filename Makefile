@@ -8,9 +8,11 @@ clean:
 
 test: ci_test
 
+ci_build:
+	mvn build
+
 # CircleCI test
-ci_test: clean
-	mvn test
+ci_test:
 	mvn exec:java -pl examples
 
 inc-version:
