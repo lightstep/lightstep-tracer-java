@@ -1,4 +1,4 @@
-.PHONY: build publish ci_test clean test inc-version
+.PHONY: build publish ci_build ci_test clean test inc-version
 
 build: test
 	mvn package
