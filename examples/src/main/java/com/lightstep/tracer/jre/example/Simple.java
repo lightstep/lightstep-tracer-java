@@ -54,7 +54,7 @@ public class Simple {
         // Create an outer span to capture all activity
         final Span parentSpan = tracer
                 .buildSpan("outer_span")
-                .withTag("favorie_unicode", "🌠🍕🍕🍕🍕")
+                .withTag("favorite_unicode", "🌠🍕🍕🍕🍕")
                 .withTag("boring_characters", " \n\b\t()%20/\\#@$!-=")
                 .withTag("Valid ASCII", "abcdefg")
                 .withTag("Manual unicode", "\u0027\u0018\u00f6\u0003\u0012\u008e\u00fa\u00ec\u0011\r")
