@@ -10,7 +10,7 @@
     <parent>
         <artifactId>lightstep-tracer-java</artifactId>
         <groupId>com.lightstep.tracer</groupId>
-        <version>0.14.2</version>
+        <version>0.14.4</version>
     </parent>
 
     <distributionManagement>
@@ -25,7 +25,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
+                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -41,7 +41,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>com.lightstep.tracer</groupId>
             <artifactId>lightstep-tracer-jre</artifactId>
-            <version>0.14.2</version>
+            <version>0.14.4</version>
         </dependency>
     </dependencies>
 

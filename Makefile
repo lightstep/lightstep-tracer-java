@@ -1,4 +1,4 @@
-.PHONY: build publish ci_test clean test inc-version
+.PHONY: build publish ci_build ci_test clean test inc-version
 
 build: test
 	mvn package
@@ -8,9 +8,11 @@ clean:
 
 test: ci_test
 
+ci_build:
+	mvn install
+
 # CircleCI test
-ci_test: clean
-	mvn test
+ci_test:
 	mvn exec:java -pl examples
 
 inc-version:

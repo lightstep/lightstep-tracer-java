@@ -22,31 +22,36 @@ additional installation and setup information for using the library with various
 
 ```xml
 <dependency>
-  <groupId>com.lightstep.tracer</groupId>
-  <artifactId>lightstep-tracer-jre</artifactId>
-  <version> VERSION </version>
+    <groupId>com.lightstep.tracer</groupId>
+    <artifactId>lightstep-tracer-jre</artifactId>
+    <version> VERSION </version>
 </dependency>
 
 <dependency>
-   <groupId>com.lightstep.tracer</groupId>
-   <artifactId>tracer-grpc</artifactId>
-   <version> VERSION </version>
+    <groupId>com.lightstep.tracer</groupId>
+    <artifactId>tracer-grpc</artifactId>
+    <version> VERSION </version>
 </dependency>
 
 <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-netty</artifactId>
-      <version>1.4.0</version>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-simple</artifactId>
+    <version>1.7.25</version>
 </dependency>
-
 <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-tcnative-boringssl-static</artifactId>
-      <version>2.0.5.Final</version>
+    <groupId>io.grpc</groupId>
+    <artifactId>grpc-netty</artifactId>
+    <version>1.14.0</version>
+</dependency>
+<dependency>
+    <groupId>io.netty</groupId>
+    <artifactId>netty-tcnative-boringssl-static</artifactId>
+    <version>2.0.12.Final</version>
 </dependency>
 ```
 
 * Be sure to replace `VERSION` with the current version of the library
+* LightStep libraries use provided scope for grpc-netty, netty-tcnative-boringssl-static and slf4j. In other words, LightStep tracer libraries will rely on whichever gRPC/Netty/sl4j version is currently available (i.e. pulled in at runtime) to avoid conflicting with existing versions within your project
 
 ### Gradle
 
@@ -153,7 +158,7 @@ By following the above configuration, the tracer will send information to LightS
 There are two options for transport protocols:
 
 - [Protocol Buffers](https://developers.google.com/protocol-buffers/) over [GRPC](https://grpc.io/) - The recommended, default, and most performant solution.
-- \[ EXPERIMENTAL \] [Protocol Buffers](https://developers.google.com/protocol-buffers/) over HTTP using [OkHttp](http://square.github.io/okhttp/) - New transport protocol supported for use cases where GRPC isn't an option. In order to enable HTTP you will need to configure the LightStep collectors receiving the data to accept HTTP traffic. Reach out to LightStep for support in this.
+- [Protocol Buffers](https://developers.google.com/protocol-buffers/) over HTTP using [OkHttp](http://square.github.io/okhttp/) - New transport protocol supported for use cases where GRPC isn't an option. In order to enable HTTP you will need to configure the LightStep collectors receiving the data to accept HTTP traffic. Reach out to LightStep for support in this.
 
 You can configure the tracer to support HTTP by replacing `com.lightstep.tracer:tracer-grpc` with `com.lightstep.tracer:tracer-okhttp` when including the tracer dependency. i.e.
 
