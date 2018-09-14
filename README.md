@@ -87,7 +87,7 @@ Tracer tracer = new com.lightstep.tracer.jre.JRETracer(
 );
 
 // Start and finish a Span
-Span span = this.tracer.buildSpan("my_span").start();
+Span span = tracer.buildSpan("my_span").start();
 this.doSomeWorkHere();
 span.finish();
 ```
