@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.14.4)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.14.6)
+
+<a name="0.14.6"></a>
+## [0.14.6](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.6...0.14.5)
+* Upgraded lightstep-tracer-common to 0.15.7
+  - 0.15.7 Fixes a bug regarding parent SpanContext's baggage handling.
 
 <a name="0.14.5></a>
 ## [0.14.5](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.5...0.14.4)
