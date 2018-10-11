@@ -25,9 +25,11 @@ public class Simple {
         System.out.println("Starting Simple example...");
 
         Options options = new Options.OptionsBuilder()
-                .withAccessToken("{your_access_token}")
-                .withComponentName("JRE Simple")
-                .withVerbosity(4)
+                .withAccessToken("INSERT_KEY")
+                .withCollectorHost("127.0.0.1")
+                .withCollectorPort(9995)
+                .withCollectorProtocol("http")
+                .withComponentName("asdfasdf")
                 .build();
         final Tracer tracer = new JRETracer(options);
 
@@ -51,56 +53,18 @@ public class Simple {
         mySpan.finish();
         Thread.sleep(4000);
 
-        // Create an outer span to capture all activity
-        final Span parentSpan = tracer
-                .buildSpan("outer_span")
-                .withTag("favorite_unicode", "🌠🍕🍕🍕🍕")
-                .withTag("boring_characters", " \n\b\t()%20/\\#@$!-=")
-                .withTag("Valid ASCII", "abcdefg")
-                .withTag("Manual unicode", "\u0027\u0018\u00f6\u0003\u0012\u008e\u00fa\u00ec\u0011\r")
-                .withTag("🍕", "pepperoni")
-                .startManual();
-        parentSpan.log("Starting outer span");
+        for (int i = 0; i < 1000000; i++) {
+          final Span parentSpan = tracer
+            .buildSpan("asdf")
+            .startManual();
 
-
-        // Create a simple child span
-        Span childSpan = tracer.buildSpan("hello_world")
-                .asChildOf(parentSpan.context())
-                .withTag("hello", "world")
-                .startManual();
-        Thread.sleep(100);
-        // Note that the returned SpanContext is still valid post-finish().
-        SpanContext childCtx = childSpan.context();
-        childSpan.finish();
-
-        // Throw inject and extract into the mix, even though we aren't making
-        // an RPC.
-        Span grandchild = createChildViaInjectExtract(tracer, childCtx);
-        grandchild.log("grandchild created");
-        grandchild.finish();
-
-        // Spawn some concurrent threads - which in turn will spawn their
-        // own worker threads
-        ExecutorService executor = Executors.newFixedThreadPool(4);
-        for (int i = 0; i < 4; i++) {
-            executor.execute(new Thread() {
-                public void run() {
-                    try {
-                        spawnWorkers(tracer, parentSpan);
-                    } catch (InterruptedException e) {
-                        parentSpan.setTag("error", "true");
-                        parentSpan.log(getLogPayloadMap("InterruptedException", e));
-                    }
-                }
-            });
+          parentSpan.setTag("lightstep.component_name", "override");
+          parentSpan.finish();
+          System.out.printf(".");
+          Thread.sleep(200);
         }
-        executor.shutdown();
-        executor.awaitTermination(20, TimeUnit.SECONDS);
 
-        parentSpan.finish();
-
-        ((com.lightstep.tracer.jre.JRETracer) tracer).flush(20000);
-        System.out.println("Done!");
+        System.out.printf("Done!");
     }
 
     // An ultra-hacky demonstration of inject() and extract() in-process.
