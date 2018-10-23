@@ -6,7 +6,7 @@ build: test
 clean:
 	mvn clean
 
-test: ci_test
+test: ci_build ci_test
 
 ci_build:
 	mvn install
