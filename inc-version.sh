@@ -4,6 +4,8 @@
 # make publish
 # which will call out to this script
 
+CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+
 CURRENT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
 
 # Increment the minor version
@@ -26,4 +28,4 @@ git add shadow/pom.xml
 git add lightstep-tracer-jre/src/main/java/com/lightstep/tracer/jre/Version.java
 
 git commit -m "VERSION $NEW_VERSION"
-git push
+git push --set-upstream origin $CURRENT_BRANCH
