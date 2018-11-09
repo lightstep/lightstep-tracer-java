@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.14.6)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.14.7)
+
+<a name="0.14.7"></a>
+## [0.14.7](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.7...0.14.6)
+* Upgraded lightstep-tracer-common to 0.15.9
+  - 0.15.9 lets users specify the ScopeManager instance.
 
 <a name="0.14.6"></a>
 ## [0.14.6](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.6...0.14.5)
