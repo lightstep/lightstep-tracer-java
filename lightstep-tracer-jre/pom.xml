@@ -48,7 +48,7 @@
         <dependency>
             <groupId>com.lightstep.tracer</groupId>
             <artifactId>java-common</artifactId>
-            <version>0.15.10</version>
+            <version>0.16.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>com.lightstep.tracer</groupId>
             <artifactId>tracer-grpc</artifactId>
-            <version>0.15.10</version>
+            <version>0.16.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

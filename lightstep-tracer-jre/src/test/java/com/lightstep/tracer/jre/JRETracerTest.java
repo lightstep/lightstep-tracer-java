@@ -191,6 +191,15 @@ public class JRETracerTest {
                 .startActive(true)){}
     }
 
+    @Test
+    public void closeTest() throws Exception {
+        JRETracer tracer = new JRETracer(
+                new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
+
+        tracer.close();
+        assertTrue(tracer.isDisabled());
+    }
+
     private void assertSpanHasTag(Span span, String key, String value) {
         com.lightstep.tracer.shared.Span lsSpan = (com.lightstep.tracer.shared.Span) span;
         Builder record = lsSpan.getGrpcSpan();
