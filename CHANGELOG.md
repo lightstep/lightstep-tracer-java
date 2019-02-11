@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.14.8)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.15.0)
+
+<a name="0.15.0"></a>
+## [0.15.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.0...0.14.8)
+* Upgraded lightstep-tracer-common to 0.16.1
+  - 0.16.1 adds support for meta events and makes AbstractTracer closeable.
 
 <a name="0.14.8"></a>
 ## [0.14.8](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.8...0.14.7)
