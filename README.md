@@ -30,7 +30,7 @@ additional installation and setup information for using the library with various
 <dependency>
     <groupId>com.lightstep.tracer</groupId>
     <artifactId>tracer-grpc</artifactId>
-    <version> VERSION </version>
+    <version> TRACER-GRPC-VERSION </version>
 </dependency>
 
 <dependency>
@@ -50,7 +50,7 @@ additional installation and setup information for using the library with various
 </dependency>
 ```
 
-* Be sure to replace `VERSION` with the current version of the library
+* Be sure to replace `VERSION` with the current version of the library. For `TRACER-GRPC-VERSION` you can refer to  [lightstep-tracer-common](https://github.com/lightstep/lightstep-tracer-java-common) which contains `tracer-grpc` (and `tracer-okhttp`).
 * LightStep libraries use provided scope for grpc-netty, netty-tcnative-boringssl-static and slf4j. In other words, LightStep tracer libraries will rely on whichever gRPC/Netty/sl4j version is currently available (i.e. pulled in at runtime) to avoid conflicting with existing versions within your project
 
 ### Gradle
