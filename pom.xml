@@ -50,13 +50,16 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <org.slf4j.version>1.7.25</org.slf4j.version>
+        <lightstep.parent.version>0.16.2</lightstep.parent.version>
         <io.opentracing.version>0.31.0</io.opentracing.version>
         <io.grpc.version>1.11.0</io.grpc.version>
         <io.netty.version>2.0.8.Final</io.netty.version>
+        <tracerresolver.version>0.1.5</tracerresolver.version>
     </properties>
 
     <modules>
         <module>lightstep-tracer-jre</module>
+        <module>lightstep-tracer-jre-bundle</module>
         <module>examples</module>
         <module>benchmark</module>
         <module>shadow</module>
