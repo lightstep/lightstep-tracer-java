@@ -1,6 +1,11 @@
 <a name="Pending Release"></a>
 ## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.15.1)
 
+<a name="0.15.2"></a>
+## [0.15.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.2...0.15.1)
+* Exposed a fat-jar with the OkHttp collector and TracerFactory included.
+  - This is expected to be used with the SpecialAgent.
+
 <a name="0.15.1"></a>
 ## [0.15.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.1...0.15.0)
 * Upgraded lightstep-tracer-common to 0.16.2
