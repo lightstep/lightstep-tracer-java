@@ -16,7 +16,7 @@ git push --tags
 echo "Publishing $VERSION"
 
 # Build and deploy to Bintray
-mvn deploy -pl .,lightstep-tracer-jre,shadow
+mvn deploy -pl .,lightstep-tracer-jre,lightstep-tracer-jre-bundle,shadow
 
 # Sign the jar and other files in Bintray
 curl -H "X-GPG-PASSPHRASE:$BINTRAY_GPG_PASSPHRASE" -u $BINTRAY_USER:$BINTRAY_API_KEY -X POST https://api.bintray.com/gpg/lightstep/maven/lightstep-tracer-jre/versions/$VERSION

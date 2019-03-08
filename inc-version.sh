@@ -23,6 +23,7 @@ perl -pi -e 's/(\d+)\.(\d+)\.(\d+)/ $ENV{NEW_VERSION} /ge' ${VERSION_SOURCE}
 git add benchmark/pom.xml
 git add examples/pom.xml
 git add lightstep-tracer-jre/pom.xml
+git add lightstep-tracer-jre-bundle/pom.xml
 git add pom.xml
 git add shadow/pom.xml
 git add lightstep-tracer-jre/src/main/java/com/lightstep/tracer/jre/Version.java
