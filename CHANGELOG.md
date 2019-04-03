@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.15.3)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.15.4)
+
+<a name="0.15.4"></a>
+## [0.15.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.4...0.15.3)
+* Remove slf4j-simple from our bundle jar.
+* Update jackson-databind to 2.9.8 to protect from a recent vulnerability.
 
 <a name="0.15.3"></a>
 ## [0.15.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.3...0.15.2)
