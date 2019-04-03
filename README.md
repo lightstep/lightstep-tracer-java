@@ -64,6 +64,9 @@ repositories {
 dependencies {
     compile 'com.lightstep.tracer:lightstep-tracer-jre:VERSION'
     compile 'com.lightstep.tracer:tracer-grpc:VERSION'
+    compile 'org.sl4j:sl4j-simple:1.7.25'
+    compile 'io.grpc:grpc-netty:1.14.0'
+    compile 'io.netty:netty-tcnative-boringssl-static:2.0.12.Final'
 }
 ```
 
