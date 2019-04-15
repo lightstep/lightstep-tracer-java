@@ -3,6 +3,7 @@
 A simple "Hello World"-esque sample using the LightStep JRE library.
 
 ## Usage
+Install Maven and run from the Lightstep-tracer-java root directory
 
 ```
 make build      # build the sample
