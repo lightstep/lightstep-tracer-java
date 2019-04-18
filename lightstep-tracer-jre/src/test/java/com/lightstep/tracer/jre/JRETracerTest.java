@@ -8,7 +8,7 @@ import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
-import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.propagation.TextMapAdapter;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -43,9 +43,9 @@ public class JRETracerTest {
     @Test
     public void tracerSupportsWithComponentName() throws Exception {
         Options options = new Options.OptionsBuilder()
-                .withAccessToken("{your_access_token}")
-                .withComponentName("my_component")
-                .build();
+            .withAccessToken("{your_access_token}")
+            .withComponentName("my_component")
+            .build();
         JRETracer tracer = new JRETracer(options);
 
         Status status = tracer.status();
@@ -133,9 +133,9 @@ public class JRETracerTest {
                 new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
 
         Span span = tracer
-                .buildSpan("test_span")
-                .withTag("my_key", "my_value")
-                .startManual();
+            .buildSpan("test_span")
+            .withTag("my_key", "my_value")
+            .startManual();
         span.finish();
 
         assertSpanHasTag(span, "my_key", "my_value");
@@ -146,21 +146,21 @@ public class JRETracerTest {
         Tracer tracer = new JRETracer(
                 new Options.OptionsBuilder().withAccessToken("{your_access_token}").build());
 
-       try(Scope activeScope = tracer
+        try(Scope activeScope = tracer
                 .buildSpan("test_span")
                 .startActive(true)) {
-           activeScope.span().setTag("test", "test");
-           assertNotNull(tracer.scopeManager().active());
-       }
-       assertNull(tracer.scopeManager().active());
+            activeScope.span().setTag("test", "test");
+            assertNotNull(tracer.scopeManager().active());
+                }
+        assertNull(tracer.scopeManager().active());
     }
 
     @Test
     public void spansDroppedCounterTest() throws Exception {
         JRETracer tracer = new JRETracer(
                 new Options.OptionsBuilder()
-                        .withAccessToken("{your_access_token}")
-                        .build());
+                .withAccessToken("{your_access_token}")
+                .build());
 
         Status status = tracer.status();
         assertEquals(status.getSpansDropped(), 0);
@@ -184,7 +184,7 @@ public class JRETracerTest {
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put(FIELD_NAME_TRACE_ID, "1");
         headerMap.put(FIELD_NAME_SPAN_ID, "123");
-        SpanContext parentCtx = tracer.extract(HTTP_HEADERS, new TextMapExtractAdapter(headerMap));
+        SpanContext parentCtx = tracer.extract(HTTP_HEADERS, new TextMapAdapter(headerMap));
 
         try(Scope ignored = tracer.buildSpan("test_span")
                 .asChildOf(parentCtx)
