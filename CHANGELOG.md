@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.15.4)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.16.0)
+
+<a name="0.16.0"></a>
+## [0.16.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.0...0.15.4)
+* Upgraded lightstep-tracer-common to 0.17.0
+  - 0.17.0 conforms to OT 0.32.0 and enables accesstoken-less usage.
 
 <a name="0.15.4"></a>
 ## [0.15.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.4...0.15.3)

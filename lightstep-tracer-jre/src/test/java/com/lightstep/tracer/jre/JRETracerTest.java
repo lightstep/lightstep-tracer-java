@@ -8,7 +8,7 @@ import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
-import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.propagation.TextMapAdapter;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -184,7 +184,7 @@ public class JRETracerTest {
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put(FIELD_NAME_TRACE_ID, "1");
         headerMap.put(FIELD_NAME_SPAN_ID, "123");
-        SpanContext parentCtx = tracer.extract(HTTP_HEADERS, new TextMapExtractAdapter(headerMap));
+        SpanContext parentCtx = tracer.extract(HTTP_HEADERS, new TextMapAdapter(headerMap));
 
         try(Scope ignored = tracer.buildSpan("test_span")
                 .asChildOf(parentCtx)
