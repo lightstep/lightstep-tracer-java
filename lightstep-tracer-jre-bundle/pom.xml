@@ -23,14 +23,14 @@
     <parent>
         <groupId>com.lightstep.tracer</groupId>
         <artifactId>lightstep-tracer-java</artifactId>
-        <version>0.16.0</version>
+        <version>0.16.1</version>
     </parent>
 
     <dependencies>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>lightstep-tracer-jre</artifactId>
-        <version>0.16.0</version>
+        <version>0.16.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
