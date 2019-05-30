@@ -31,21 +31,25 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>lightstep-tracer-jre</artifactId>
         <version>0.16.1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>tracer-okhttp</artifactId>
         <version>${lightstep.parent.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>io.opentracing</groupId>
         <artifactId>opentracing-api</artifactId>
         <version>${io.opentracing.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>io.opentracing.contrib</groupId>
         <artifactId>opentracing-tracerresolver</artifactId>
         <version>${tracerresolver.version}</version>
+        <scope>provided</scope>
       </dependency>
 
       <!-- Test dependencies -->
@@ -60,15 +64,21 @@
     <build>
       <plugins>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>3.2.1</version>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.1.1</version>
           <executions>
             <execution>
+              <id>jar-with-dependencies</id>
               <phase>package</phase>
               <goals>
-                <goal>shade</goal>
+                <goal>single</goal>
               </goals>
+              <configuration>
+                <descriptors>
+                  <descriptor>assembly.xml</descriptor>
+                </descriptors>
+                <appendAssemblyId>false</appendAssemblyId>
+              </configuration>
             </execution>
           </executions>
         </plugin>
