@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.16.1)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.16.2)
+
+<a name="0.16.2"></a>
+## [0.16.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.2...0.16.1)
+* Update jackson-databind to 2.9.9 to protect from a recent vulnerability.
+* Set the bundle deps to provided-scope (for better interaction with the SpecialAgent).
 
 <a name="0.16.1"></a>
 ## [0.16.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.1...0.16.0)
