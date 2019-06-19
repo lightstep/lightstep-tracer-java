@@ -13,6 +13,10 @@
       <useProjectArtifact>true</useProjectArtifact>
       <unpack>true</unpack>
       <scope>provided</scope>
+      <excludes>
+        <exclude>io.opentracing:opentracing-api</exclude>
+        <exclude>io.opentracing.contrib:opentracing-tracerresolver</exclude>
+      </excludes>
     </dependencySet>
     <dependencySet>
       <outputDirectory>/</outputDirectory>
