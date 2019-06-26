@@ -1,5 +1,9 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.16.2)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.16.3)
+
+<a name="0.16.3"></a>
+## [0.16.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.3...0.16.2)
+* Updated our bundle artifact to *not* include any OpenTracing artifacts.
 
 <a name="0.16.2"></a>
 ## [0.16.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.2...0.16.1)
