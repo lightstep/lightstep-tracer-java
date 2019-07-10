@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.16.3)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.16.4)
+
+<a name="0.16.4"></a>
+## [0.16.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.4...0.16.3)
+* Upgraded lightstep-tracer-common to 0.17.2.
+  - 0.17.2 allows users to specify the DNS used with OkHttp.
 
 <a name="0.16.3"></a>
 ## [0.16.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.3...0.16.2)
