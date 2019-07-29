@@ -52,7 +52,7 @@ repositories {
 dependencies {
     compile 'com.lightstep.tracer:lightstep-tracer-jre:VERSION'
     compile 'com.lightstep.tracer:tracer-okhttp:VERSION'
-    compile 'org.sl4j:sl4j-simple:1.7.25'
+    compile 'org.slf4j:slf4j-simple:1.7.25'
 }
 ```
 
