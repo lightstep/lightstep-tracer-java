@@ -33,7 +33,7 @@ public class Simple {
 
         // Create a simple span and delay for a while to ensure the reporting
         // loop works as expected
-        final Span mySpan = tracer.buildSpan("my_span").startManual();
+        final Span mySpan = tracer.buildSpan("my_span").start();
 
         // Play with different sorts of payloads for fun.
         mySpan.log("just a message");
@@ -59,7 +59,7 @@ public class Simple {
                 .withTag("Valid ASCII", "abcdefg")
                 .withTag("Manual unicode", "\u0027\u0018\u00f6\u0003\u0012\u008e\u00fa\u00ec\u0011\r")
                 .withTag("🍕", "pepperoni")
-                .startManual();
+                .start();
         parentSpan.log("Starting outer span");
 
 
@@ -67,7 +67,7 @@ public class Simple {
         Span childSpan = tracer.buildSpan("hello_world")
                 .asChildOf(parentSpan.context())
                 .withTag("hello", "world")
-                .startManual();
+                .start();
         Thread.sleep(100);
         // Note that the returned SpanContext is still valid post-finish().
         SpanContext childCtx = childSpan.context();
@@ -124,13 +124,13 @@ public class Simple {
                             "', value='" + entry.getValue() + "'");
         }
         SpanContext extracted = tracer.extract(Format.Builtin.TEXT_MAP, demoCarrier);
-        return tracer.buildSpan("grandchild").asChildOf(extracted).startManual();
+        return tracer.buildSpan("grandchild").asChildOf(extracted).start();
     }
 
     private static void spawnWorkers(final Tracer tracer, Span outerSpan) throws InterruptedException {
         final Span parentSpan = tracer.buildSpan("spawn_workers")
                 .asChildOf(outerSpan.context())
-                .startManual();
+                .start();
 
         System.out.println("Launching worker threads.");
 
@@ -139,11 +139,11 @@ public class Simple {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker0")
                         .asChildOf(parentSpan.context())
-                        .startManual();
+                        .start();
                 for (int i = 0; i < 20; i++) {
                     Span innerSpan = tracer.buildSpan("worker0/microspan")
                             .asChildOf(childSpan.context())
-                            .startManual();
+                            .start();
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
@@ -159,7 +159,7 @@ public class Simple {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker1")
                         .asChildOf(parentSpan.context())
-                        .startManual();
+                        .start();
                 for (int i = 0; i < 20; i++) {
                     childSpan.log(getLogPayloadMap("Beginning inner loop", i));
                     for (int j = 0; j < 10; j++) {
@@ -178,7 +178,7 @@ public class Simple {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker2")
                         .asChildOf(parentSpan.context())
-                        .startManual();
+                        .start();
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
@@ -192,7 +192,7 @@ public class Simple {
             public void run() {
                 Span childSpan = tracer.buildSpan("worker3")
                         .asChildOf(parentSpan.context())
-                        .startManual();
+                        .start();
                 for (int i = 0; i < 20; i++) {
                     try {
                         Thread.sleep(10);

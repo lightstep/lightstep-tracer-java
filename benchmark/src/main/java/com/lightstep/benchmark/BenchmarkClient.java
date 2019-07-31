@@ -123,7 +123,7 @@ class BenchmarkClient {
         long sleepDebt = 0;
 
         for (long i = 0; i < c.Repeat; i++) {
-            Span span = t.buildSpan("span/test").startManual();
+            Span span = t.buildSpan("span/test").start();
             r.answer = work(c.Work);
 
             for (long l = 0; l < c.NumLogs; l++) {
