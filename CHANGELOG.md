@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.17.0)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.17.1)
+
+<a name="0.17.1"></a>
+## [0.17.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.1...0.17.0)
+* Upgraded netty to 2.0.25.
+* Fix our explicit OpenTracing version (used for internal items) to 0.33 (as done by the parent artifact).
 
 <a name="0.17.0"></a>
 ## [0.17.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.0...0.16.4)
