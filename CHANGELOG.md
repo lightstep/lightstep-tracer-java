@@ -1,5 +1,9 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.17.1)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.17.2)
+
+<a name="0.17.2"></a>
+## [0.17.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.2...0.17.1)
+* tracerresolver version updated to 0.1.8.
 
 <a name="0.17.1"></a>
 ## [0.17.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.1...0.17.0)
