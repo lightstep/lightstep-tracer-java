@@ -1,5 +1,9 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.17.2)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.17.3)
+
+<a name="0.17.3"></a>
+## [0.17.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.3...0.17.2)
+* Revert netty to 2.0.8 for now. Upgrading it requires updates on grpc/protobuf as well.
 
 <a name="0.17.2"></a>
 ## [0.17.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.2...0.17.1)
