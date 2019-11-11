@@ -167,12 +167,12 @@ You can configure the tracer to support gRPC by replacing `com.lightstep.tracer:
 <dependency>
     <groupId>io.grpc</groupId>
     <artifactId>grpc-netty</artifactId>
-    <version>1.14.0</version>
+    <version>1.23.0</version>
 </dependency>
 <dependency>
     <groupId>io.netty</groupId>
     <artifactId>netty-tcnative-boringssl-static</artifactId>
-    <version>2.0.12.Final</version>
+    <version>2.0.25.Final</version>
 </dependency>
 ```
 
@@ -185,8 +185,8 @@ repositories {
 dependencies {
     compile 'com.lightstep.tracer:lightstep-tracer-jre:VERSION'
     compile 'com.lightstep.tracer:tracer-grpc:VERSION'
-    compile 'io.grpc:grpc-netty:1.14.0'
-    compile 'io.netty:netty-tcnative-boringssl-static:2.0.12.Final'
+    compile 'io.grpc:grpc-netty:1.23.0'
+    compile 'io.netty:netty-tcnative-boringssl-static:2.0.25.Final'
 }
 ```
 
