@@ -1,5 +1,15 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.17.3)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.18.1)
+
+<a name="0.18.1"></a>
+## [0.18.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.1...0.18.0)
+* Upgraded lightstep-tracer-common to 0.19.1.
+  - 0.19.1 improved the B3 format support.
+
+<a name="0.18.0"></a>
+## [0.18.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.0...0.17.3)
+* Upgraded lightstep-tracer-common to 0.19.0.
+  - 0.19.0 updated grpc, protobuf and netty.
 
 <a name="0.17.3"></a>
 ## [0.17.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.3...0.17.2)
