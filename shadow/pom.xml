@@ -58,7 +58,6 @@
                                 <excludes>
                                     <exclude>org.slf4j:slf4j-api</exclude>
                                     <exclude>io.opentracing</exclude>
-                                    <exclude>com.lightstep.tracer:java-common</exclude>
                                     <exclude>org.apache.tomcat:tomcat-jni</exclude>
                                 </excludes>
                             </artifactSet>
@@ -70,6 +69,10 @@
                                 <relocation>
                                     <pattern>google.protobuf</pattern>
                                     <shadedPattern>lightstep.google.protobuf</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.protobuf</pattern>
+                                    <shadedPattern>lightstep.com.google.protobuf</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>io.netty</pattern>
