@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.18.1)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.18.2)
+
+<a name="0.18.2"></a>
+## [0.18.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.2...0.18.1)
+* Upgraded lightstep-tracer-common to 0.19.2.
+  - 0.19.2 B3 format uses the new 0/1 format for the sampling flag.
 
 <a name="0.18.1"></a>
 ## [0.18.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.1...0.18.0)
