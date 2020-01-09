@@ -127,6 +127,34 @@ public class LightStepTracerFactoryTest
     }
 
     @Test
+    public void getTracer_withEmptyTags() {
+        System.setProperty(TracerParameters.TAGS, "");
+        tracer = new LightStepTracerFactory().getTracer();
+        assertNotNull(tracer); // No errors.
+    }
+
+    @Test
+    public void getTracer_withInvalidTags() {
+        System.setProperty(TracerParameters.TAGS, " ,,invalid,value,,name=value, ");
+        tracer = new LightStepTracerFactory().getTracer();
+        assertNotNull(tracer); // No errors.
+    }
+
+    @Test
+    public void getTracer_withSingleTag() {
+        System.setProperty(TracerParameters.TAGS, "name=value");
+        tracer = new LightStepTracerFactory().getTracer();
+        assertNotNull(tracer);
+    }
+
+    @Test
+    public void getTracer_withTags() {
+        System.setProperty(TracerParameters.TAGS, "name=value,name2=value2");
+        tracer = new LightStepTracerFactory().getTracer();
+        assertNotNull(tracer);
+    }
+
+    @Test
     public void getTracer_ConfigurationFile() throws Exception {
         System.clearProperty(TracerParameters.ACCESS_TOKEN);
 

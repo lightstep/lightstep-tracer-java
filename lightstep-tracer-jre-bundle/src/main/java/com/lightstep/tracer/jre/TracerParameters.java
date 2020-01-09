@@ -1,5 +1,6 @@
 package com.lightstep.tracer.jre;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -19,7 +20,10 @@ public final class TracerParameters {
     final static String DEFAULT_COLLECTOR_PROTOCOL = HTTPS;
     final static int DEFAULT_COLLECTOR_PORT = 443;
 
-    // TODO: add metaEventLogging, propagator, scopeManager and tags parameters.
+    final static String VALUES_SEPARATOR = ",";
+    final static String ASSIGN_CHAR = "=";
+
+    // TODO: add metaEventLogging, propagator, scopeManager.
     public final static String ACCESS_TOKEN = "ls.accessToken";
     public final static String CLOCK_SKEW_CORRECTION = "ls.clockSkewCorrection";
     public final static String COMPONENT_NAME = "ls.componentName";
@@ -32,6 +36,7 @@ public final class TracerParameters {
     public final static String MAX_REPORTING_INTERVAL_MILLIS = "ls.maxReportingIntervalMillis";
     public final static String RESET_CLIENT = "ls.resetClient";
     public final static String VERBOSITY = "ls.verbosity";
+    public final static String TAGS = "ls.tags";
 
     public final static String [] ALL = {
         ACCESS_TOKEN,
@@ -45,7 +50,8 @@ public final class TracerParameters {
         MAX_BUFFERED_SPANS,
         MAX_REPORTING_INTERVAL_MILLIS,
         RESET_CLIENT,
-        VERBOSITY
+        VERBOSITY,
+        TAGS
     };
 
     // NOTE: we could probably make this prettier
@@ -118,6 +124,13 @@ public final class TracerParameters {
                 opts.withVerbosity(value);
         }
 
+        if (params.containsKey(TAGS)) {
+            Map<String, String> tags = toStringMap(params.get(TAGS));
+            for (Map.Entry<String, String> entry : tags.entrySet()) {
+                opts.withTag(entry.getKey(), entry.getValue());
+            }
+        }
+
         return opts;
     }
 
@@ -165,6 +178,22 @@ public final class TracerParameters {
 
     private static Boolean toBoolean(String value) {
         return Boolean.valueOf(value);
+    }
+
+    private static Map<String, String> toStringMap(String value) {
+        Map<String, String> tagMap = new HashMap<>();
+
+        for (String part : value.split(VALUES_SEPARATOR)) {
+            String [] tagParts = part.split(ASSIGN_CHAR);
+            if (tagParts.length != 2) {
+                logger.log(Level.WARNING, "Failed to detect tag value '" + part + "'");
+                continue;
+            }
+
+            tagMap.put(tagParts[0].trim(), tagParts[1].trim());
+        }
+
+        return tagMap;
     }
 
     private static boolean validateProtocol(String value) {
