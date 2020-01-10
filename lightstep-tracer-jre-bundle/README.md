@@ -33,3 +33,4 @@ Common parameters are:
 |ls.collectorHost | String|
 |ls.collectorProtocol | http or https|
 |ls.collectorPort | Integer larger than 0|
+|ls.tags | Comma separates values, such as "clientid=21228915,offline=false"|
