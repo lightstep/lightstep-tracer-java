@@ -149,7 +149,7 @@ public class LightStepTracerFactoryTest
 
     @Test
     public void getTracer_withTags() {
-        System.setProperty(TracerParameters.TAGS, "name=value,name2=value2");
+        System.setProperty(TracerParameters.TAGS, "name=value,name2=false,name3=3,name4=4.0,");
         tracer = new LightStepTracerFactory().getTracer();
         assertNotNull(tracer);
     }

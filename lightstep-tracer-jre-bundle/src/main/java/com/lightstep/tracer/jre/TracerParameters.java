@@ -125,8 +125,8 @@ public final class TracerParameters {
         }
 
         if (params.containsKey(TAGS)) {
-            Map<String, String> tags = toStringMap(params.get(TAGS));
-            for (Map.Entry<String, String> entry : tags.entrySet()) {
+            Map<String, Object> tags = toMap(params.get(TAGS));
+            for (Map.Entry<String, Object> entry : tags.entrySet()) {
                 opts.withTag(entry.getKey(), entry.getValue());
             }
         }
@@ -180,8 +180,8 @@ public final class TracerParameters {
         return Boolean.valueOf(value);
     }
 
-    private static Map<String, String> toStringMap(String value) {
-        Map<String, String> tagMap = new HashMap<>();
+    private static Map<String, Object> toMap(String value) {
+        Map<String, Object> tagMap = new HashMap<>();
 
         for (String part : value.split(VALUES_SEPARATOR)) {
             String [] tagParts = part.split(ASSIGN_CHAR);
@@ -190,7 +190,7 @@ public final class TracerParameters {
                 continue;
             }
 
-            tagMap.put(tagParts[0].trim(), tagParts[1].trim());
+            tagMap.put(tagParts[0].trim(), parseStringValue(tagParts[1].trim()));
         }
 
         return tagMap;
@@ -221,5 +221,31 @@ public final class TracerParameters {
         }
 
         return true;
+    }
+
+    // Try to detect the value from the tag. No warnings must be issued.
+    private static Object parseStringValue(String value) {
+        // Boolean (Boolean.parseBoolean() only detects 'true' properly).
+        if (value.equalsIgnoreCase("true")) {
+            return Boolean.TRUE;
+        }
+        if (value.equalsIgnoreCase("false")) {
+            return Boolean.FALSE;
+        }
+
+        // Long.
+        try {
+            return Long.valueOf(value);
+        } catch (NumberFormatException e) {
+        }
+
+        // Double.
+        try {
+            return Double.valueOf(value);
+        } catch (NumberFormatException e) {
+        }
+
+        // Fallback to String.
+        return value;
     }
 }
