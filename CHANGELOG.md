@@ -1,5 +1,9 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.18.2)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.18.3)
+
+<a name="0.18.3"></a>
+## [0.18.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.3...0.18.2)
+* Allow setting of tags for the bundle artifact.
 
 <a name="0.18.2"></a>
 ## [0.18.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.2...0.18.1)
