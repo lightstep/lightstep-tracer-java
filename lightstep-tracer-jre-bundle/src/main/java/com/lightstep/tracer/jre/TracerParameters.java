@@ -6,7 +6,9 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import com.lightstep.tracer.shared.B3Propagator;
 import com.lightstep.tracer.shared.Options;
+import io.opentracing.propagation.Format;
 
 public final class TracerParameters {
     private TracerParameters() {}
@@ -37,6 +39,7 @@ public final class TracerParameters {
     public final static String RESET_CLIENT = "ls.resetClient";
     public final static String VERBOSITY = "ls.verbosity";
     public final static String TAGS = "ls.tags";
+    public final static String PROPAGATOR = "ls.propagator";
 
     public final static String [] ALL = {
         ACCESS_TOKEN,
@@ -51,7 +54,8 @@ public final class TracerParameters {
         MAX_REPORTING_INTERVAL_MILLIS,
         RESET_CLIENT,
         VERBOSITY,
-        TAGS
+        TAGS,
+        PROPAGATOR
     };
 
     // NOTE: we could probably make this prettier
@@ -128,6 +132,13 @@ public final class TracerParameters {
             Map<String, Object> tags = toMap(params.get(TAGS));
             for (Map.Entry<String, Object> entry : tags.entrySet()) {
                 opts.withTag(entry.getKey(), entry.getValue());
+            }
+        }
+
+        if (params.containsKey(PROPAGATOR)) {
+            String  propagator = params.get(PROPAGATOR);
+            if ("b3".equalsIgnoreCase(propagator)) {
+                opts.withPropagator(Format.Builtin.HTTP_HEADERS, new B3Propagator());
             }
         }
 
