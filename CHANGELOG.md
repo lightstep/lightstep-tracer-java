@@ -1,5 +1,10 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.18.4)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.19.0)
+
+<a name="0.19.0"></a>
+## [0.19.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.19.0...0.18.4)
+* Upgraded lightstep-tracer-common to 0.20.0
+* Allow the bundle artifact to specify the B3 propagator.
 
 <a name="0.18.4"></a>
 ## [0.18.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.4...0.18.3)
