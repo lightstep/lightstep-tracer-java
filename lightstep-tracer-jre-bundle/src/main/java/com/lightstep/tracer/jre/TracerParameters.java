@@ -1,14 +1,14 @@
 package com.lightstep.tracer.jre;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
 import com.lightstep.tracer.shared.B3Propagator;
 import com.lightstep.tracer.shared.Options;
 import io.opentracing.propagation.Format;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class TracerParameters {
     private TracerParameters() {}
@@ -66,12 +66,12 @@ public final class TracerParameters {
 
     // NOTE: we could probably make this prettier
     // if we could use Java 8 Lambdas ;)
-    public static Options.OptionsBuilder getOptionsFromParameters() {
+    public static Options.OptionsBuilder getOptionsFromParameters(Options.OptionsBuilder optionsBuilder) {
         Map<String, String> params = getParameters();
         if (!params.containsKey(ACCESS_TOKEN))
             return null;
 
-        Options.OptionsBuilder opts = new Options.OptionsBuilder()
+        Options.OptionsBuilder opts = optionsBuilder
             .withAccessToken(params.get(ACCESS_TOKEN));
 
         // As we use the okhttp collector, do override default values properly:
