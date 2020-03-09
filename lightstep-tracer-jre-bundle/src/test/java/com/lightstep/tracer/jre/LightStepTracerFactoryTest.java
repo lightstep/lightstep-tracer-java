@@ -87,6 +87,22 @@ public class LightStepTracerFactoryTest {
     }
 
     @Test
+    public void getTracer_withCollectorClient() {
+        System.setProperty(TracerParameters.COLLECTOR_CLIENT, "grpc");
+        tracer = createTracer();
+        assertNotNull(tracer); // No errors.
+
+        Mockito.verify(optionsBuilder).withCollectorClient(Options.CollectorClient.GRPC);
+    }
+
+    @Test
+    public void getTracer_withInvalidCollectorClient() {
+        System.setProperty(TracerParameters.COLLECTOR_CLIENT, "   ");
+        tracer = createTracer();
+        assertNotNull(tracer); // No errors.
+    }
+
+    @Test
     public void getTracer_withCollectorHost() {
         System.setProperty(TracerParameters.COLLECTOR_HOST, "example.com");
         tracer = createTracer();

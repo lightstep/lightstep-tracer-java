@@ -29,6 +29,7 @@ public final class TracerParameters {
     public final static String ACCESS_TOKEN = "ls.accessToken";
     public final static String CLOCK_SKEW_CORRECTION = "ls.clockSkewCorrection";
     public final static String COMPONENT_NAME = "ls.componentName";
+    public final static String COLLECTOR_CLIENT = "ls.collectorClient";
     public final static String COLLECTOR_HOST = "ls.collectorHost";
     public final static String COLLECTOR_PORT = "ls.collectorPort";
     public final static String COLLECTOR_PROTOCOL = "ls.collectorProtocol";
@@ -48,6 +49,7 @@ public final class TracerParameters {
         ACCESS_TOKEN,
         CLOCK_SKEW_CORRECTION,
         COMPONENT_NAME,
+        COLLECTOR_CLIENT,
         COLLECTOR_HOST,
         COLLECTOR_PORT,
         COLLECTOR_PROTOCOL,
@@ -85,6 +87,15 @@ public final class TracerParameters {
 
         if (params.containsKey(COMPONENT_NAME))
             opts.withComponentName(params.get(COMPONENT_NAME));
+
+        if (params.containsKey(COLLECTOR_CLIENT)) {
+            String value = params.get(COLLECTOR_CLIENT);
+            for (Options.CollectorClient client : Options.CollectorClient.values()) {
+                if (client.name().toLowerCase().equals(value)) {
+                    opts.withCollectorClient(client);
+                }
+            }
+        }
 
         if (params.containsKey(COLLECTOR_HOST)) {
             String value = params.get(COLLECTOR_HOST);
