@@ -34,3 +34,5 @@ Common parameters are:
 |ls.collectorProtocol | http or https|
 |ls.collectorPort | Integer larger than 0|
 |ls.tags | Comma separates values, such as "clientid=21228915,offline=false"|
+|ls.metricUrl | String, full url, such as "https://myhost:myport/metrics"|
+|ls.disableMetricsReporting | Boolean, defaults to false|
