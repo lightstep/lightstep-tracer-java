@@ -17,6 +17,8 @@ public final class TracerParametersTest {
     final static String COLLECTOR_HOST = "127.0.0.1";
     final static String COLLECTOR_PROTOCOL = "http";
     final static String COLLECTOR_PORT = "666";
+    final static String METRICS_URL = "https://localhost/metrics";
+    final static String DISABLE_METRICS = "true";
 
     @Before
     public void beforeTest() {
@@ -33,6 +35,8 @@ public final class TracerParametersTest {
         System.setProperty(TracerParameters.COLLECTOR_HOST, COLLECTOR_HOST);
         System.setProperty(TracerParameters.COLLECTOR_PROTOCOL, COLLECTOR_PROTOCOL);
         System.setProperty(TracerParameters.COLLECTOR_PORT, COLLECTOR_PORT);
+        System.setProperty(TracerParameters.METRICS_URL, METRICS_URL);
+        System.setProperty(TracerParameters.DISABLE_METRICS_REPORTING, DISABLE_METRICS);
 
         assertValidParameters(TracerParameters.getParameters());
     }
@@ -45,6 +49,8 @@ public final class TracerParametersTest {
         props.setProperty(TracerParameters.COLLECTOR_HOST, COLLECTOR_HOST);
         props.setProperty(TracerParameters.COLLECTOR_PROTOCOL, COLLECTOR_PROTOCOL);
         props.setProperty(TracerParameters.COLLECTOR_PORT, COLLECTOR_PORT);
+        System.setProperty(TracerParameters.METRICS_URL, METRICS_URL);
+        System.setProperty(TracerParameters.DISABLE_METRICS_REPORTING, DISABLE_METRICS);
 
         File file = null;
         try {
@@ -66,5 +72,7 @@ public final class TracerParametersTest {
         assertEquals(COLLECTOR_HOST, params.get(TracerParameters.COLLECTOR_HOST));
         assertEquals(COLLECTOR_PROTOCOL, params.get(TracerParameters.COLLECTOR_PROTOCOL));
         assertEquals(COLLECTOR_PORT, params.get(TracerParameters.COLLECTOR_PORT));
+        assertEquals(METRICS_URL, params.get(TracerParameters.METRICS_URL));
+        assertEquals(DISABLE_METRICS, params.get(TracerParameters.DISABLE_METRICS_REPORTING));
     }
 }

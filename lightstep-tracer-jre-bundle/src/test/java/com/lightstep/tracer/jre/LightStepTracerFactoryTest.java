@@ -155,6 +155,13 @@ public class LightStepTracerFactoryTest
     }
 
     @Test
+    public void getTracer_withInvalidMetricsUrl() {
+        System.setProperty(TracerParameters.METRICS_URL, "");
+        tracer = new LightStepTracerFactory().getTracer();
+        assertNotNull(tracer); // No errors.
+    }
+
+    @Test
     public void getTracer_ConfigurationFile() throws Exception {
         System.clearProperty(TracerParameters.ACCESS_TOKEN);
 

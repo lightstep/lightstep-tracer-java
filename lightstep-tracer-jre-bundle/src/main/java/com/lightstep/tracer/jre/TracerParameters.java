@@ -40,6 +40,9 @@ public final class TracerParameters {
     public final static String VERBOSITY = "ls.verbosity";
     public final static String TAGS = "ls.tags";
     public final static String PROPAGATOR = "ls.propagator";
+    public final static String SERVICE_VERSION = "ls.serviceVersion";
+    public final static String DISABLE_METRICS_REPORTING = "ls.disableMetricsReporting";
+    public final static String METRICS_URL = "ls.metricsUrl";
 
     public final static String [] ALL = {
         ACCESS_TOKEN,
@@ -55,7 +58,10 @@ public final class TracerParameters {
         RESET_CLIENT,
         VERBOSITY,
         TAGS,
-        PROPAGATOR
+        PROPAGATOR,
+        SERVICE_VERSION,
+        DISABLE_METRICS_REPORTING,
+        METRICS_URL
     };
 
     // NOTE: we could probably make this prettier
@@ -140,6 +146,23 @@ public final class TracerParameters {
             if ("b3".equalsIgnoreCase(propagator)) {
                 opts.withPropagator(Format.Builtin.HTTP_HEADERS, new B3Propagator());
             }
+        }
+
+        if (params.containsKey(SERVICE_VERSION)) {
+            String serviceVersion = params.get(SERVICE_VERSION);
+            if (validateNonEmptyString(serviceVersion))
+                opts.withServiceVersion(serviceVersion);
+        }
+
+        if (params.containsKey(DISABLE_METRICS_REPORTING)) {
+            Boolean disableMetrics = toBoolean(params.get(DISABLE_METRICS_REPORTING));
+            opts.withDisableMetricsReporting(disableMetrics);
+        }
+
+        if (params.containsKey(METRICS_URL)) {
+            String metricsUrl = params.get(METRICS_URL);
+            if (validateNonEmptyString(metricsUrl))
+                opts.withMetricsUrl(metricsUrl);
         }
 
         return opts;
