@@ -40,6 +40,7 @@ public final class TracerParameters {
     public final static String VERBOSITY = "ls.verbosity";
     public final static String TAGS = "ls.tags";
     public final static String PROPAGATOR = "ls.propagator";
+    public final static String SERVICE_VERSION = "ls.serviceVersion";
     public final static String DISABLE_METRICS_REPORTING = "ls.disableMetricsReporting";
     public final static String METRICS_URL = "ls.metricsUrl";
 
@@ -58,6 +59,7 @@ public final class TracerParameters {
         VERBOSITY,
         TAGS,
         PROPAGATOR,
+        SERVICE_VERSION,
         DISABLE_METRICS_REPORTING,
         METRICS_URL
     };
@@ -146,6 +148,12 @@ public final class TracerParameters {
             }
         }
 
+        if (params.containsKey(SERVICE_VERSION)) {
+            String serviceVersion = params.get(SERVICE_VERSION);
+            if (validateNonEmptyString(serviceVersion))
+                opts.withServiceVersion(serviceVersion);
+        }
+
         if (params.containsKey(DISABLE_METRICS_REPORTING)) {
             Boolean disableMetrics = toBoolean(params.get(DISABLE_METRICS_REPORTING));
             opts.withDisableMetricsReporting(disableMetrics);
@@ -154,7 +162,7 @@ public final class TracerParameters {
         if (params.containsKey(METRICS_URL)) {
             String metricsUrl = params.get(METRICS_URL);
             if (validateNonEmptyString(metricsUrl))
-                opts.withMetricsUrl(params.get(METRICS_URL));
+                opts.withMetricsUrl(metricsUrl);
         }
 
         return opts;

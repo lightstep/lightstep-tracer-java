@@ -26,10 +26,11 @@ LightStep Tracer parameters use the prefix `ls.`. The only required parameter is
 
 Common parameters are:
 
-|Parameter | Type|
+|Parameter | Type| Required|
 |----------|-----|
 |ls.accessToken | String|
 |ls.componentName | String|
+|ls.serviceVersion | String|
 |ls.collectorHost | String|
 |ls.collectorProtocol | http or https|
 |ls.collectorPort | Integer larger than 0|
