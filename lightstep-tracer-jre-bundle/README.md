@@ -29,8 +29,8 @@ Common parameters are:
 |Parameter | Type| Default| Description|
 |----------|-----|--------|------------|
 |ls.accessToken | String| (required) | access token for the collector |
-|ls.componentName | String| name of the java command | the LightStep service (`lightstep.component_name` tag) |
-|ls.serviceVersion | String| | sets the `service.version` tag |
+|ls.componentName | String| name of the java command | the service name |
+|ls.serviceVersion | String| `<null>` | sets the `service.version` tag |
 |ls.collectorClient | `grpc` or `http` | `http` | how spans are sent to the collector | 
 |ls.collectorHost | String| `collector.lightstep.com` | the collector host |
 |ls.collectorProtocol | `http` or `https`| `https` | the protocol to use for the `http` collector client |
@@ -44,5 +44,5 @@ Common parameters are:
 |ls.resetClient | boolean | true | if the collection to the collector should be reset each time | 
 |ls.verbosity | int | 1 | the logging verbosity | 
 |ls.propagator | `b3` | LightStep | the propagator to use for HTTP headers |
-|ls.metricUrl | String | | full url for metrics reporting, such as "https://myhost:myport/metrics" |
+|ls.metricsUrl | String | | full url for metrics reporting, such as "https://myhost:myport/metrics" |
 |ls.disableMetricsReporting | boolean | false | disables metrics reporting |  
