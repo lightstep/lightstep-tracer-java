@@ -1,14 +1,14 @@
 package com.lightstep.tracer.jre;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
 import com.lightstep.tracer.shared.B3Propagator;
 import com.lightstep.tracer.shared.Options;
 import io.opentracing.propagation.Format;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class TracerParameters {
     private TracerParameters() {}
@@ -29,6 +29,7 @@ public final class TracerParameters {
     public final static String ACCESS_TOKEN = "ls.accessToken";
     public final static String CLOCK_SKEW_CORRECTION = "ls.clockSkewCorrection";
     public final static String COMPONENT_NAME = "ls.componentName";
+    public final static String COLLECTOR_CLIENT = "ls.collectorClient";
     public final static String COLLECTOR_HOST = "ls.collectorHost";
     public final static String COLLECTOR_PORT = "ls.collectorPort";
     public final static String COLLECTOR_PROTOCOL = "ls.collectorProtocol";
@@ -48,6 +49,7 @@ public final class TracerParameters {
         ACCESS_TOKEN,
         CLOCK_SKEW_CORRECTION,
         COMPONENT_NAME,
+        COLLECTOR_CLIENT,
         COLLECTOR_HOST,
         COLLECTOR_PORT,
         COLLECTOR_PROTOCOL,
@@ -66,12 +68,12 @@ public final class TracerParameters {
 
     // NOTE: we could probably make this prettier
     // if we could use Java 8 Lambdas ;)
-    public static Options.OptionsBuilder getOptionsFromParameters() {
+    public static Options.OptionsBuilder getOptionsFromParameters(Options.OptionsBuilder optionsBuilder) {
         Map<String, String> params = getParameters();
         if (!params.containsKey(ACCESS_TOKEN))
             return null;
 
-        Options.OptionsBuilder opts = new Options.OptionsBuilder()
+        Options.OptionsBuilder opts = optionsBuilder
             .withAccessToken(params.get(ACCESS_TOKEN));
 
         // As we use the okhttp collector, do override default values properly:
@@ -85,6 +87,15 @@ public final class TracerParameters {
 
         if (params.containsKey(COMPONENT_NAME))
             opts.withComponentName(params.get(COMPONENT_NAME));
+
+        if (params.containsKey(COLLECTOR_CLIENT)) {
+            String value = params.get(COLLECTOR_CLIENT);
+            for (Options.CollectorClient client : Options.CollectorClient.values()) {
+                if (client.name().toLowerCase().equals(value)) {
+                    opts.withCollectorClient(client);
+                }
+            }
+        }
 
         if (params.containsKey(COLLECTOR_HOST)) {
             String value = params.get(COLLECTOR_HOST);

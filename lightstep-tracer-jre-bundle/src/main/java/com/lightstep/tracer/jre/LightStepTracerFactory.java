@@ -1,14 +1,11 @@
 package com.lightstep.tracer.jre;
 
-import java.net.MalformedURLException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
+import com.lightstep.tracer.shared.Options;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.tracerresolver.TracerFactory;
 
-import com.lightstep.tracer.jre.JRETracer;
-import com.lightstep.tracer.shared.Options;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LightStepTracerFactory implements TracerFactory {
     private static final Logger logger = Logger.getLogger(LightStepTracerFactory.class.getName());
@@ -16,7 +13,7 @@ public class LightStepTracerFactory implements TracerFactory {
     @Override
     public Tracer getTracer()
     {
-        Options.OptionsBuilder optsBuilder = TracerParameters.getOptionsFromParameters();
+        Options.OptionsBuilder optsBuilder = TracerParameters.getOptionsFromParameters(createOptionsBuilder());
         if (optsBuilder == null) {
             logger.log(Level.WARNING, "No ls.accessToken value was provided, not trying to initialize the LightStep Tracer");
             return null;
@@ -38,5 +35,9 @@ public class LightStepTracerFactory implements TracerFactory {
         }
 
         return tracer;
+    }
+
+    protected Options.OptionsBuilder createOptionsBuilder() {
+        return new Options.OptionsBuilder();
     }
 }
