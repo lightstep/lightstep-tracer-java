@@ -52,8 +52,8 @@
         </dependency>
         <dependency>
             <groupId>com.lightstep.tracer</groupId>
-            <artifactId>java-metrics</artifactId>
-            <version>${lightstep.parent.version}</version>
+            <artifactId>java-metrics-reporter</artifactId>
+            <version>${lightstep.metrics.reporter.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
