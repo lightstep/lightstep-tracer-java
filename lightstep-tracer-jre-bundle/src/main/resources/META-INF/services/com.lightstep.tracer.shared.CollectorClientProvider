@@ -1,0 +1,2 @@
+com.lightstep.tracer.shared.HttpCollectorClientProvider
+com.lightstep.tracer.shared.GrpcCollectorClientProvider

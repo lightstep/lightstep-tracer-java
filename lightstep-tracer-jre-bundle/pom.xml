@@ -40,6 +40,24 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>tracer-grpc</artifactId>
+        <version>${lightstep.parent.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-netty</artifactId>
+        <version>${io.grpc.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-tcnative-boringssl-static</artifactId>
+        <version>${io.netty.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>io.opentracing</groupId>
         <artifactId>opentracing-api</artifactId>
         <version>${io.opentracing.version}</version>
@@ -111,6 +129,29 @@
               <goals>
                 <goal>jar</goal>
               </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.2.4</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+              <configuration>
+                <createSourcesJar>true</createSourcesJar>
+                <shadeSourcesContent>true</shadeSourcesContent>
+                <relocations>
+                  <relocation>
+                    <pattern>okhttp</pattern>
+                    <shadedPattern>shaded.okhttp</shadedPattern>
+                  </relocation>
+                </relocations>
+              </configuration>
             </execution>
           </executions>
         </plugin>
