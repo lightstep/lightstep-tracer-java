@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public final class TracerParametersTest {
 
@@ -27,6 +28,18 @@ public final class TracerParametersTest {
         System.clearProperty(Configuration.CONFIGURATION_FILE_KEY);
         for (String paramName: TracerParameters.ALL)
             System.clearProperty(paramName);
+    }
+
+    @Test
+    public void testHideString() {
+        assertNull(TracerParameters.hideString(null));
+        assertEquals("", TracerParameters.hideString(""));
+        assertEquals("X", TracerParameters.hideString("a"));
+        assertEquals("XX", TracerParameters.hideString("ab"));
+        assertEquals("aXc", TracerParameters.hideString("abc"));
+        assertEquals("aXXd", TracerParameters.hideString("abcd"));
+        assertEquals("aXXXe", TracerParameters.hideString("abcde"));
+        assertEquals("1XXXXXXX9", TracerParameters.hideString("123456789"));
     }
 
     @Test
