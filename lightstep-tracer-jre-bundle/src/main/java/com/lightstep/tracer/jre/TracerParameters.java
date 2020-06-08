@@ -1,5 +1,6 @@
 package com.lightstep.tracer.jre;
 
+import com.google.common.base.Strings;
 import com.lightstep.tracer.shared.B3Propagator;
 import com.lightstep.tracer.shared.Options;
 import io.opentracing.propagation.Format;
@@ -179,16 +180,38 @@ public final class TracerParameters {
         return opts;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<String, String> getParameters() {
         Properties props = Configuration.loadConfigurationFile();
         loadSystemProperties(props);
 
-        for (String propName: props.stringPropertyNames())
-            logger.log(Level.INFO, "Retrieved Tracer parameter " + propName + "=" + props.getProperty(propName));
+        for (String propName : props.stringPropertyNames()) {
+            String value = props.getProperty(propName);
+            if (ACCESS_TOKEN.equals(propName) && value != null && value.length() >= 2) {
+                value = hideString(value);
+            }
+            logger.log(Level.INFO, "Retrieved Tracer parameter " + propName + "=" + value);
+        }
 
         // A Properties object is expected to only contain String keys/values.
         return (Map)props;
+    }
+
+    /**
+     * Replace all characters by 'X' except first and last. E.g. 'abcde' becomes 'aXXXe'. If input
+     * string has one or two characters then return 'X' or 'XX' respectively.
+     */
+    static String hideString(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+        if (input.length() <= 2) {
+            return Strings.repeat("X", input.length());
+        }
+
+        return new StringBuilder(input).replace(1, input.length() - 1,
+            Strings.repeat("X", input.length() - 2))
+            .toString();
     }
 
     static void loadSystemProperties(Properties props) {
