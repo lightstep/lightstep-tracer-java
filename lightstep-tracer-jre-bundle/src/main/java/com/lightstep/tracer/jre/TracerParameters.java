@@ -187,7 +187,7 @@ public final class TracerParameters {
 
         for (String propName : props.stringPropertyNames()) {
             String value = props.getProperty(propName);
-            if (ACCESS_TOKEN.equals(propName) && value != null && value.length() >= 2) {
+            if (ACCESS_TOKEN.equals(propName)) {
                 value = hideString(value);
             }
             logger.log(Level.INFO, "Retrieved Tracer parameter " + propName + "=" + value);
