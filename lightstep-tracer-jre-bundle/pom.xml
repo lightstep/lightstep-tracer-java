@@ -152,15 +152,15 @@
                 <relocations>
                   <relocation>
                     <pattern>okhttp</pattern>
-                    <shadedPattern>shaded.okhttp</shadedPattern>
+                    <shadedPattern>lightstep.okhttp</shadedPattern>
                   </relocation>
                   <relocation>
                     <pattern>io.grpc</pattern>
-                    <shadedPattern>shaded.io.grpc</shadedPattern>
+                    <shadedPattern>lightstep.io.grpc</shadedPattern>
                   </relocation>
                   <relocation>
                     <pattern>io.netty</pattern>
-                    <shadedPattern>io.shaded.netty</shadedPattern>
+                    <shadedPattern>lightstep.io.netty</shadedPattern>
                   </relocation>
                 </relocations>
               </configuration>
