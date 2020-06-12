@@ -169,6 +169,18 @@
                     <pattern>io.grpc</pattern>
                     <shadedPattern>lightstep.io.grpc</shadedPattern>
                   </relocation>
+                  <relocation>
+                    <pattern>io.netty</pattern>
+                    <shadedPattern>lightstep.io.netty</shadedPattern>
+                  </relocation>
+                  <relocation>
+                    <pattern>META-INF/native/libnetty</pattern>
+                    <shadedPattern>META-INF/native/liblightstep_netty</shadedPattern>
+                  </relocation>
+                  <relocation>
+                    <pattern>META-INF/native/netty</pattern>
+                    <shadedPattern>META-INF/native/lightstep_netty</shadedPattern>
+                  </relocation>
                 </relocations>
               </configuration>
             </execution>
