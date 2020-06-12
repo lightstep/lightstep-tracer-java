@@ -40,6 +40,24 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>tracer-grpc</artifactId>
+        <version>${lightstep.parent.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-netty</artifactId>
+        <version>${io.grpc.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-tcnative-boringssl-static</artifactId>
+        <version>${io.netty.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>io.opentracing</groupId>
         <artifactId>opentracing-api</artifactId>
         <version>${io.opentracing.version}</version>
@@ -111,6 +129,60 @@
               <goals>
                 <goal>jar</goal>
               </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.2.4</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+              <configuration>
+                <createSourcesJar>true</createSourcesJar>
+                <shadeSourcesContent>true</shadeSourcesContent>
+                <transformers>
+                  <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                </transformers>
+                <relocations>
+                  <relocation>
+                    <pattern>com.google</pattern>
+                    <shadedPattern>lightstep.com.google</shadedPattern>
+                  </relocation>
+                  <relocation>
+                    <pattern>google.protobuf</pattern>
+                    <shadedPattern>lightstep.google.protobuf</shadedPattern>
+                  </relocation>
+                  <relocation>
+                    <pattern>javax.annotation</pattern>
+                    <shadedPattern>lightstep.javax.annotation</shadedPattern>
+                  </relocation>
+                  <relocation>
+                    <pattern>okhttp</pattern>
+                    <shadedPattern>lightstep.okhttp</shadedPattern>
+                  </relocation>
+                  <relocation>
+                    <pattern>io.grpc</pattern>
+                    <shadedPattern>lightstep.io.grpc</shadedPattern>
+                  </relocation>
+                  <relocation>
+                    <pattern>io.netty</pattern>
+                    <shadedPattern>lightstep.io.netty</shadedPattern>
+                  </relocation>
+                  <relocation>
+                    <pattern>META-INF/native/libnetty</pattern>
+                    <shadedPattern>META-INF/native/liblightstep_netty</shadedPattern>
+                  </relocation>
+                  <relocation>
+                    <pattern>META-INF/native/netty</pattern>
+                    <shadedPattern>META-INF/native/lightstep_netty</shadedPattern>
+                  </relocation>
+                </relocations>
+              </configuration>
             </execution>
           </executions>
         </plugin>
