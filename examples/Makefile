@@ -5,4 +5,4 @@ build:
 	mvn package
 
 run:
-	mvn exec:exec
+	mvn exec:java
