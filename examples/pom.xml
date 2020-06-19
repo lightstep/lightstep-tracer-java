@@ -21,6 +21,12 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.6.0</version>
                 <configuration>
+                    <executable>java</executable>
+                    <arguments>
+                        <argument>-classpath</argument>
+                        <classpath/>
+                        <argument>com.lightstep.tracer.jre.example.Simple</argument>
+                    </arguments>
                     <mainClass>com.lightstep.tracer.jre.example.Simple</mainClass>
                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
                 </configuration>
