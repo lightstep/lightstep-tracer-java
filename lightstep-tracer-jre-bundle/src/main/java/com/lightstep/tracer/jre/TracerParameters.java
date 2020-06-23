@@ -83,7 +83,8 @@ public final class TracerParameters {
         opts
             .withCollectorHost(DEFAULT_COLLECTOR_HOST)
             .withCollectorProtocol(DEFAULT_COLLECTOR_PROTOCOL)
-            .withCollectorPort(DEFAULT_COLLECTOR_PORT);
+            .withCollectorPort(DEFAULT_COLLECTOR_PORT)
+            .withCollectorClient(Options.CollectorClient.HTTP);
 
         if (params.containsKey(CLOCK_SKEW_CORRECTION))
             opts.withClockSkewCorrection(toBoolean(params.get(CLOCK_SKEW_CORRECTION)));
