@@ -300,6 +300,22 @@ public class LightStepTracerFactoryTest {
     }
 
     @Test
+    public void getTracer_withHostname() {
+        System.setProperty(TracerParameters.HOSTNAME, "server-1");
+        tracer = createTracer();
+        assertNotNull(tracer); // No errors.
+
+        Mockito.verify(optionsBuilder).withHostname("server-1");
+    }
+
+    @Test
+    public void getTracer_withEmptyHostname() {
+        System.setProperty(TracerParameters.HOSTNAME, "");
+        tracer = createTracer();
+        assertNotNull(tracer); // No errors.
+    }
+
+    @Test
     public void getTracer_ConfigurationFile() throws Exception {
         System.clearProperty(TracerParameters.ACCESS_TOKEN);
 

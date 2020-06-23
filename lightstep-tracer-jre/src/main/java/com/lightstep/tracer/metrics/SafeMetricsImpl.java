@@ -18,7 +18,7 @@ public class SafeMetricsImpl implements SafeMetrics {
 
     // TODO: Can we unify samplePeriodSeconds in a single place?
     final Sender<?,?> sender = new OkHttpSender(componentName, accessToken, serviceVersion,
-                serviceUrl, samplePeriodSeconds * 1000, false);
+                serviceUrl, samplePeriodSeconds * 1000);
     return new Metrics(sender, samplePeriodSeconds);
   }
 }

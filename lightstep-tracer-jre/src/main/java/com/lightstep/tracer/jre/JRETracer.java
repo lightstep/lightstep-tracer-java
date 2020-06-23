@@ -33,27 +33,25 @@ public class JRETracer extends AbstractTracer {
     }
 
     // Flush any data stored in the log and span buffers
+    @Override
     protected SimpleFuture<Boolean> flushInternal(boolean explicitRequest) {
         return new SimpleFuture<>(sendReport(explicitRequest));
     }
 
-    protected void printLogToConsole(InternalLogLevel level, String msg, Object payload) {
-        String s = msg;
-        if (payload != null) {
-            s += " " + payload.toString();
-        }
+    @Override
+    protected void printLogToConsole(InternalLogLevel level, String msg, Throwable throwable) {
         switch (level) {
             case DEBUG:
-                LOGGER.debug(s);
+                LOGGER.debug(msg, throwable);
                 break;
             case INFO:
-                LOGGER.info(s);
+                LOGGER.info(msg, throwable);
                 break;
             case WARN:
-                LOGGER.warn(s);
+                LOGGER.warn(msg, throwable);
                 break;
             case ERROR:
-                LOGGER.error(s);
+                LOGGER.error(msg, throwable);
                 break;
         }
     }
