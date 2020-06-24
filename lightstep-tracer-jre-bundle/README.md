@@ -46,3 +46,4 @@ Common parameters are:
 |ls.propagator | `b3` | LightStep | the propagator to use for HTTP headers |
 |ls.metricsUrl | String | | full url for metrics reporting, such as "https://myhost:myport/metrics" |
 |ls.disableMetricsReporting | boolean | false | disables metrics reporting |  
+|ls.hostname | String | hostname from `InetAddress` | local hostname |

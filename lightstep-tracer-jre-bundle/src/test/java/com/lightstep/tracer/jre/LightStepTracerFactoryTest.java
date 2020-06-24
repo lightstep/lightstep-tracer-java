@@ -43,6 +43,7 @@ public class LightStepTracerFactoryTest {
             Mockito.verify(optionsBuilder).withCollectorHost(TracerParameters.DEFAULT_COLLECTOR_HOST);
             Mockito.verify(optionsBuilder).withCollectorPort(TracerParameters.DEFAULT_COLLECTOR_PORT);
             Mockito.verify(optionsBuilder).withCollectorProtocol(TracerParameters.DEFAULT_COLLECTOR_PROTOCOL);
+            Mockito.verify(optionsBuilder).withCollectorClient(Options.CollectorClient.HTTP);
             Mockito.verify(optionsBuilder).withAccessToken(expectedToken);
             Mockito.verify(optionsBuilder).withComponentName(Mockito.anyString()); //dependent on the test runtime
             Mockito.verify(optionsBuilder).withTag(Mockito.eq(LightStepConstants.Tags.COMPONENT_NAME_KEY), Mockito.anyString()); //dependent on the test runtime
@@ -100,6 +101,8 @@ public class LightStepTracerFactoryTest {
         System.setProperty(TracerParameters.COLLECTOR_CLIENT, "   ");
         tracer = createTracer();
         assertNotNull(tracer); // No errors.
+
+        Mockito.verify(optionsBuilder).withCollectorClient(Options.CollectorClient.HTTP);
     }
 
     @Test
@@ -295,6 +298,22 @@ public class LightStepTracerFactoryTest {
     @Test
     public void getTracer_withInvalidMetricsUrl() {
         System.setProperty(TracerParameters.METRICS_URL, "");
+        tracer = createTracer();
+        assertNotNull(tracer); // No errors.
+    }
+
+    @Test
+    public void getTracer_withHostname() {
+        System.setProperty(TracerParameters.HOSTNAME, "server-1");
+        tracer = createTracer();
+        assertNotNull(tracer); // No errors.
+
+        Mockito.verify(optionsBuilder).withHostname("server-1");
+    }
+
+    @Test
+    public void getTracer_withEmptyHostname() {
+        System.setProperty(TracerParameters.HOSTNAME, "");
         tracer = createTracer();
         assertNotNull(tracer); // No errors.
     }

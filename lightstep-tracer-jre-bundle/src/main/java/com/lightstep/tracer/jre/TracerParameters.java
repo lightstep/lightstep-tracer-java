@@ -45,6 +45,7 @@ public final class TracerParameters {
     public final static String SERVICE_VERSION = "ls.serviceVersion";
     public final static String DISABLE_METRICS_REPORTING = "ls.disableMetricsReporting";
     public final static String METRICS_URL = "ls.metricsUrl";
+    public final static String HOSTNAME = "ls.hostname";
 
     public final static String [] ALL = {
         ACCESS_TOKEN,
@@ -64,7 +65,8 @@ public final class TracerParameters {
         PROPAGATOR,
         SERVICE_VERSION,
         DISABLE_METRICS_REPORTING,
-        METRICS_URL
+        METRICS_URL,
+        HOSTNAME
     };
 
     // NOTE: we could probably make this prettier
@@ -81,7 +83,8 @@ public final class TracerParameters {
         opts
             .withCollectorHost(DEFAULT_COLLECTOR_HOST)
             .withCollectorProtocol(DEFAULT_COLLECTOR_PROTOCOL)
-            .withCollectorPort(DEFAULT_COLLECTOR_PORT);
+            .withCollectorPort(DEFAULT_COLLECTOR_PORT)
+            .withCollectorClient(Options.CollectorClient.HTTP);
 
         if (params.containsKey(CLOCK_SKEW_CORRECTION))
             opts.withClockSkewCorrection(toBoolean(params.get(CLOCK_SKEW_CORRECTION)));
@@ -175,6 +178,12 @@ public final class TracerParameters {
             String metricsUrl = params.get(METRICS_URL);
             if (validateNonEmptyString(metricsUrl))
                 opts.withMetricsUrl(metricsUrl);
+        }
+
+        if (params.containsKey(HOSTNAME)) {
+            String hostname = params.get(HOSTNAME);
+            if (validateNonEmptyString(hostname))
+                opts.withHostname(hostname);
         }
 
         return opts;
