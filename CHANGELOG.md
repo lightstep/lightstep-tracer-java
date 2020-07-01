@@ -1,5 +1,11 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.20.0)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.30.0)
+
+<a name="0.30.0"></a>
+## [0.30.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.30.0...0.20.0)
+* Upgraded lightstep-tracer-common to 0.30.0.
+* Misc bug fixes.
+* It's possible to select the collector from the bundle.
 
 <a name="0.20.0"></a>
 ## [0.20.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.20.0...0.19.0)
