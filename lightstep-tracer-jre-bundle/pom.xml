@@ -136,6 +136,16 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
           <version>3.2.4</version>
+          <configuration>
+            <filters>
+              <filter>
+                <artifact>*:*</artifact>
+                <excludes>
+                  <exclude>META-INF/services/lightstep.io.grpc.*</exclude>
+                </excludes>
+              </filter>
+            </filters>
+          </configuration>
           <executions>
             <execution>
               <phase>package</phase>
