@@ -18,6 +18,9 @@ The JRE library is hosted on Bintray, jcenter, and Maven Central.
 The Bintray [lightstep-tracer-jre](https://bintray.com/lightstep/maven/lightstep-tracer-jre/view) project contains 
 additional installation and setup information for using the library with various build systems such as Ivy and Maven.
 
+**Note**: Starting from version 0.30.0, lightstep-tracer-java-common and lightstep-tracer-java artifacts use the same
+major/minor version, only differing in the patch part.
+
 ### Maven
 
 ```xml
