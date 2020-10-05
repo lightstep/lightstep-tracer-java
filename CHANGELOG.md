@@ -1,143 +1,152 @@
 <a name="Pending Release"></a>
-## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/master...0.30.0)
+## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/0.30.1...master)
+
+<a name="0.30.1"></a>
+## [0.30.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.30.0...0.30.1)
+* Don't recreate the sources jar in the bundle artifact.
 
 <a name="0.30.0"></a>
-## [0.30.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.30.0...0.20.0)
+## [0.30.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.20.1...0.30.0)
 * Upgraded lightstep-tracer-common to 0.30.0.
-* Misc bug fixes.
 * It's possible to select the collector from the bundle.
+* Hide token during the logging.
+* Misc bug fixes.
+
+<a name="0.20.1"></a>
+## [0.20.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.20.0...0.20.1)
+* Upgraded lightstep-tracer-common to 0.21.1.
 
 <a name="0.20.0"></a>
-## [0.20.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.20.0...0.19.0)
+## [0.20.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.19.0...0.20.0)
 * Upgraded lightstep-tracer-common to 0.21.0.
 
 <a name="0.19.0"></a>
-## [0.19.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.19.0...0.18.4)
+## [0.19.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.4...0.19.0)
 * Upgraded lightstep-tracer-common to 0.20.0
 * Allow the bundle artifact to specify the B3 propagator.
 
 <a name="0.18.4"></a>
-## [0.18.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.4...0.18.3)
+## [0.18.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.3...0.18.4)
 * Upgraded lightstep-tracer-common to 0.19.3
 
 <a name="0.18.3"></a>
-## [0.18.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.3...0.18.2)
+## [0.18.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.2...0.18.3)
 * Allow setting of tags for the bundle artifact.
 
 <a name="0.18.2"></a>
-## [0.18.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.2...0.18.1)
+## [0.18.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.1...0.18.2)
 * Upgraded lightstep-tracer-common to 0.19.2.
   - 0.19.2 B3 format uses the new 0/1 format for the sampling flag.
 
 <a name="0.18.1"></a>
-## [0.18.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.1...0.18.0)
+## [0.18.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.0...0.18.1)
 * Upgraded lightstep-tracer-common to 0.19.1.
   - 0.19.1 improved the B3 format support.
 
 <a name="0.18.0"></a>
-## [0.18.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.18.0...0.17.3)
+## [0.18.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.3...0.18.0)
 * Upgraded lightstep-tracer-common to 0.19.0.
   - 0.19.0 updated grpc, protobuf and netty.
 
 <a name="0.17.3"></a>
-## [0.17.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.3...0.17.2)
+## [0.17.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.2...0.17.3)
 * Revert netty to 2.0.8 for now. Upgrading it requires updates on grpc/protobuf as well.
 
 <a name="0.17.2"></a>
-## [0.17.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.2...0.17.1)
+## [0.17.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.1...0.17.2)
 * tracerresolver version updated to 0.1.8.
 
 <a name="0.17.1"></a>
-## [0.17.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.1...0.17.0)
+## [0.17.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.0...0.17.1)
 * Upgraded netty to 2.0.25.
 * Fix our explicit OpenTracing version (used for internal items) to 0.33 (as done by the parent artifact).
 
 <a name="0.17.0"></a>
-## [0.17.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.17.0...0.16.4)
+## [0.17.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.4...0.17.0)
 * Upgraded lightstep-tracer-common to 0.18.0.
   - 0.18.0 updates OpenTracing to 0.33.0.
 
 <a name="0.16.4"></a>
-## [0.16.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.4...0.16.3)
+## [0.16.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.3...0.16.4)
 * Upgraded lightstep-tracer-common to 0.17.2.
   - 0.17.2 allows users to specify the DNS used with OkHttp.
 
 <a name="0.16.3"></a>
-## [0.16.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.3...0.16.2)
+## [0.16.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.2...0.16.3)
 * Updated our bundle artifact to *not* include any OpenTracing artifacts.
 
 <a name="0.16.2"></a>
-## [0.16.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.2...0.16.1)
+## [0.16.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.1...0.16.2)
 * Update jackson-databind to 2.9.9 to protect from a recent vulnerability.
 * Set the bundle deps to provided-scope (for better interaction with the SpecialAgent).
 
 <a name="0.16.1"></a>
-## [0.16.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.1...0.16.0)
+## [0.16.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.0...0.16.1)
 * Upgraded lightstep-tracer-common to 0.17.1
 
 <a name="0.16.0"></a>
-## [0.16.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.16.0...0.15.4)
+## [0.16.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.4...0.16.0)
 * Upgraded lightstep-tracer-common to 0.17.0
   - 0.17.0 conforms to OT 0.32.0 and enables accesstoken-less usage.
 
 <a name="0.15.4"></a>
-## [0.15.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.4...0.15.3)
+## [0.15.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.3...0.15.4)
 * Remove slf4j-simple from our bundle jar.
 * Update jackson-databind to 2.9.8 to protect from a recent vulnerability.
 
 <a name="0.15.3"></a>
-## [0.15.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.3...0.15.2)
+## [0.15.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.2...0.15.3)
 * Second try to publish the new fat-jar with the OkHttp collector and TracerFactory included.
 
 <a name="0.15.2"></a>
-## [0.15.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.2...0.15.1)
+## [0.15.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.1...0.15.2)
 * Exposed a fat-jar with the OkHttp collector and TracerFactory included.
   - This is expected to be used with the SpecialAgent.
 
 <a name="0.15.1"></a>
-## [0.15.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.1...0.15.0)
+## [0.15.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.0...0.15.1)
 * Upgraded lightstep-tracer-common to 0.16.2
   - 0.16.2 allows setting Component Name per Span and instructs gRPC to do load balancing.
 
 <a name="0.15.0"></a>
-## [0.15.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.15.0...0.14.8)
+## [0.15.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.8...0.15.0)
 * Upgraded lightstep-tracer-common to 0.16.1
   - 0.16.1 adds support for meta events and makes AbstractTracer closeable.
 
 <a name="0.14.8"></a>
-## [0.14.8](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.8...0.14.7)
+## [0.14.8](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.7...0.14.8)
 * Upgraded lightstep-tracer-common to 0.15.10
   - 0.15.10 Handle empty SpanContext headers upon extraction.
 
 <a name="0.14.7"></a>
-## [0.14.7](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.7...0.14.6)
+## [0.14.7](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.6...0.14.7)
 * Upgraded lightstep-tracer-common to 0.15.9
   - 0.15.9 lets users specify the ScopeManager instance.
 
 <a name="0.14.6"></a>
-## [0.14.6](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.6...0.14.5)
+## [0.14.6](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.5...0.14.6)
 * Upgraded lightstep-tracer-common to 0.15.8
   - 0.15.7 Fixed a bug regarding parent SpanContext's baggage handling.
   - 0.15.8 Replaced `googleapis-common-protos:0.0.3` dependency with `grpc-google-common-protos:1.12.0`
 
 <a name="0.14.5></a>
-## [0.14.5](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.5...0.14.4)
+## [0.14.5](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.4...0.14.5)
 * Upgraded lightstep-tracer-common to 0.15.6
   - 0.15.5 Exposes custom propagators support, and support for B3 headers.
 
 <a name="0.14.4></a>
-## [0.14.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.4...0.14.3)
+## [0.14.4](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.3...0.14.4)
 * Upgraded lightstep-tracer-common to 0.15.5
   - 0.15.5 Exposes deadlineMillis in OptionsBuilder.
 
 <a name="0.14.3></a>
-## [0.14.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.3...0.14.2)
+## [0.14.3](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.2...0.14.3)
 * Updated the compiled protos. Changed type of clock correction offset from int to long.
   - Included new dependency required by proto upgrade com.google.api.grpc:googleapis-common-protos:0.0.3
   - Fixed bug where large clock corrections caused crashes.
 
 <a name="0.14.2></a>
-## [0.14.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.2...0.14.1)
+## [0.14.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.1...0.14.2)
 * Upgrade dependencies (#140)    
   - com.fasterxml.jackson.core:jackson-databind from 2.8.9 to 2.9.5
   - com.lightstep.tracer from 0.15.1 to 0.15.2
@@ -145,11 +154,11 @@
   - io.netty from 2.0.5.Final to 2.0.8.Final
 
 <a name="0.14.1"></a>
-## [0.14.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.1...0.14.0)
+## [0.14.1](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.0...0.14.1)
 * Bugfixes
 
 <a name="0.14.0"></a>
-## [0.14.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.14.0...0.13.1)
+## [0.14.0](https://github.com/lightstep/lightstep-tracer-java/compare/0.13.1...0.14.0)
 * Upgraded to io.opentracing 0.31.0, for more information see 
 [Announcing Java OpenTracing v0.31](https://medium.com/opentracing/announcing-java-v0-31-release-candidate-6e1f1a922d2e)
 
