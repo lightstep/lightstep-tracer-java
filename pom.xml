@@ -51,7 +51,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <org.slf4j.version>1.7.25</org.slf4j.version>
         <lightstep.parent.version>0.30.1</lightstep.parent.version>
-        <lightstep.metrics.reporter.version>0.1.4</lightstep.metrics.reporter.version>
+        <lightstep.metrics.reporter.version>0.1.5</lightstep.metrics.reporter.version>
         <io.opentracing.version>0.33.0</io.opentracing.version>
         <io.grpc.version>1.23.0</io.grpc.version>
         <io.netty.version>2.0.25.Final</io.netty.version>
