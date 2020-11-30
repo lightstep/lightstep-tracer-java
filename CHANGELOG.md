@@ -1,5 +1,6 @@
 <a name="Pending Release"></a>
 ## [Pending Release](https://github.com/lightstep/lightstep-tracer-java/compare/0.30.2...master)
+* Updated java-metrics-reporter to 0.1.5.
 
 <a name="0.30.2"></a>
 ## [0.30.2](https://github.com/lightstep/lightstep-tracer-java/compare/0.30.1...0.30.2)
