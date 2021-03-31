@@ -27,7 +27,11 @@ jobs:
             - maven-repo-v1-{{ .Branch }}-{{ checksum "pom.xml" }}
             - maven-repo-v1-{{ .Branch }}-
             - maven-repo-v1-
-      - run: make publish
+      - run:
+          name: Deploying
+          command: |
+            echo -e "$GPG_SECRET_KEY" | gpg --import
+            make publish
       - save_cache:
           paths:
             - ~/.m2
