@@ -1,6 +1,11 @@
-# lightstep-tracer-java
+# lightstep-tracer-java [Deprecated]
 
 [ ![Download](https://maven-badges.herokuapp.com/maven-central/com.lightstep.tracer/lightstep-tracer-java/badge.svg) ](https://maven-badges.herokuapp.com/maven-central/com.lightstep.tracer/lightstep-tracer-java) [![Circle CI](https://circleci.com/gh/lightstep/lightstep-tracer-java.svg?style=shield)](https://circleci.com/gh/lightstep/lightstep-tracer-java) [![MIT license](http://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
+
+In August 2023, [Lightstep became ServiceNow
+Cloud](https://docs.lightstep.com/docs/banner-faq) Observability. To ease the
+transition, all code artifacts will continue to use the Lightstep name. You
+don't need to do anything to keep using this repository.
 
 The LightStep distributed tracing library for the standard Java runtime environment.
 
